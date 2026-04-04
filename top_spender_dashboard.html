@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Top Spender – Shop Unlimited</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f2f4f7;
+  --surface:#fff;
+  --surface2:#f7f8fa;
+  --border:#e2e6ed;
+  --text:#1a1d23;
+  --text2:#5a6070;
+  --text3:#9aa0ae;
+  --red:#e53e3e;
+  --red-l:#fff5f5;
+  --teal:#0d9488;
+  --teal-l:#e6fffa;
+  --amber:#d97706;
+  --amber-l:#fffbeb;
+  --blue:#2563eb;
+  --blue-l:#eff6ff;
+  --pink:#d63a7a;
+  --green:#16a34a;
+  --shadow:0 1px 3px rgba(0,0,0,0.07);
+  --shadow-md:0 2px 8px rgba(0,0,0,0.1);
+}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);font-size:11px;min-height:100vh}
+
+/* ── HEADER ────────────────────────────────────────── */
+.hdr{
+  background:var(--surface);
+  border-bottom:2px solid var(--red);
+  padding:10px 18px 8px;
+  display:flex;align-items:flex-start;justify-content:space-between;
+}
+.hdr-title{font-size:20px;font-weight:700;letter-spacing:-0.5px;line-height:1.1}
+.hdr-title span{color:var(--red)}
+.hdr-sub{font-size:9px;color:var(--text3);margin-top:3px}
+.hdr-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.day-label{font-size:13px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--text);white-space:nowrap}
+.day-track{width:200px;height:8px;background:#fee2e2;border-radius:4px;overflow:hidden}
+.day-fill{height:100%;background:var(--red);border-radius:4px;transition:width .6s}
+.days-left{font-size:10px;font-weight:600;color:var(--red);text-align:right}
+
+/* ── KPI ROW ───────────────────────────────────────── */
+.kpi-row{
+  display:grid;grid-template-columns:repeat(6,1fr);
+  gap:8px;padding:10px 18px;
+}
+.kpi{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;padding:9px 11px;box-shadow:var(--shadow);
+}
+.kpi-lbl{font-size:9px;color:var(--text3);font-weight:500;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.5px}
+.kpi-val{font-size:20px;font-weight:700;letter-spacing:-1px;font-family:'IBM Plex Mono',monospace;line-height:1;color:var(--text)}
+.kpi-val.red{color:var(--red)}
+.kpi-val.teal{color:var(--teal)}
+.kpi-val.amber{color:var(--amber)}
+.kpi-baseline{font-size:9px;color:var(--text3);margin-top:4px}
+.kpi-baseline .pos{color:var(--green)}
+.kpi-baseline .neg{color:var(--red)}
+.kpi-empty{display:flex;align-items:center;justify-content:center;min-height:40px}
+.kpi-empty-lbl{font-size:18px;font-weight:700;color:var(--border);letter-spacing:-0.5px}
+
+/* ── CONTENT ───────────────────────────────────────── */
+.content{padding:0 18px 18px;display:flex;flex-direction:column;gap:10px}
+
+/* ── CARDS ─────────────────────────────────────────── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:var(--shadow);overflow:hidden}
+.card-head{padding:8px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:11px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:5px}
+.card-title::before{content:'#';color:var(--red);font-weight:700}
+.card-body{padding:10px 12px}
+
+/* ── GRIDS ──────────────────────────────────────────── */
+.row2{display:grid;grid-template-columns:1.1fr 0.9fr;gap:10px}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.row4{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
+.row5{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* ── LEADERBOARD ───────────────────────────────────── */
+.lb-canvas-wrap{position:relative;height:240px}
+
+/* ── PROGRESS BAR ── */
+.day-progress-bar{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin:4px 0 8px}
+.day-progress-fill{height:100%;background:var(--red);border-radius:3px}
+
+/* ── MAP PLACEHOLDER ───────────────────────────────── */
+.map-placeholder{
+  height:220px;background:var(--surface2);border-radius:6px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;border:1px dashed var(--border);
+  position:relative;overflow:hidden;
+}
+.map-bg{
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,#e8f4fd 0%,#d1e8f7 40%,#c8e6d4 70%,#e8f4fd 100%);
+  opacity:0.6;
+}
+.map-dots{position:absolute;inset:0}
+.map-dot{
+  position:absolute;border-radius:50%;
+  background:var(--blue);opacity:0.7;
+}
+.map-label{position:relative;z-index:1;font-size:10px;font-weight:600;color:var(--text2)}
+.map-sub{position:relative;z-index:1;font-size:9px;color:var(--text3)}
+
+/* ── LEGEND ── */
+.legend{display:flex;flex-wrap:wrap;gap:6px}
+.leg{display:flex;align-items:center;gap:3px;font-size:9px;color:var(--text2)}
+.leg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.leg-sq{width:7px;height:7px;border-radius:2px;flex-shrink:0}
+
+/* ── TABLES ── */
+.dt{border-collapse:collapse;width:100%;font-size:10px}
+.dt th{font-size:9px;font-weight:600;padding:5px 7px;background:var(--surface2);color:var(--text2);border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+.dt th.r{text-align:right}
+.dt td{padding:5px 7px;border-bottom:1px solid var(--border)}
+.dt td.r{text-align:right;font-family:'IBM Plex Mono',monospace;font-size:10px}
+.dt tr:hover td{background:rgba(229,62,62,0.03)}
+.dt tr:last-child td{border-bottom:none}
+.rank-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:18px;height:18px;border-radius:50%;font-size:9px;font-weight:700;
+  background:var(--red);color:#fff;flex-shrink:0;
+}
+.rank-badge.gold{background:#d97706}
+.rank-badge.silver{background:#94a3b8}
+.rank-badge.bronze{background:#b45309}
+.sales-bar{display:inline-block;height:5px;border-radius:3px;background:var(--red);vertical-align:middle;margin-left:4px}
+
+/* ── HIGHLIGHT CELL ── */
+.hi-cell{background:#fff5f5;color:var(--red);font-weight:700;border-radius:3px;padding:2px 5px}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div>
+    <div class="hdr-title">TOP SPENDER <span>— SHOP UNLIMITED</span></div>
+    <div class="hdr-sub">Refreshed daily 09:40 am &nbsp;|&nbsp; Snapshot: 4/3/2026</div>
+  </div>
+  <div class="hdr-right">
+    <div class="day-label">Day <span id="dayNum">10</span>/31</div>
+    <div class="day-track"><div class="day-fill" id="dayFill" style="width:32%"></div></div>
+    <div class="days-left" id="daysLeft">21 days left</div>
+  </div>
+</div>
+
+<!-- KPI STRIP -->
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="kpi-lbl">Total spend</div>
+    <div class="kpi-val red">XXX.XM</div>
+    <div class="kpi-baseline">baseline: X,XXX.XM &nbsp;<span class="neg">(−XX.XX%)</span></div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-lbl">Total trips</div>
+    <div class="kpi-val teal">X.XM</div>
+    <div class="kpi-baseline">baseline: X.XM &nbsp;<span class="neg">(−XX.XX%)</span></div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-lbl">Avg. basket</div>
+    <div class="kpi-val amber">XXX.X</div>
+    <div class="kpi-baseline">baseline: XXX.X &nbsp;<span class="pos">(+X.XX%)</span></div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-lbl">#1 spend</div>
+    <div class="kpi-val red">XX.XK<span style="font-size:11px;font-weight:400">฿</span></div>
+    <div class="kpi-baseline">#2 spend: XX.XK &nbsp;<span class="pos">(+X.XX%)</span></div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-lbl">Racer & climber spend</div>
+    <div class="kpi-empty"><span class="kpi-empty-lbl">XXX.XM</span></div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-lbl">Basketsize uplift</div>
+    <div class="kpi-empty"><span class="kpi-empty-lbl">+X.X%</span></div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- ROW 2: Leaderboard + Basket -->
+  <div class="row2">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Leaderboard</span>
+        <div class="legend" id="lbLegend"></div>
+      </div>
+      <div class="card-body" style="padding:8px 10px">
+        <div class="lb-canvas-wrap"><canvas id="cLB"></canvas></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">basket</span>
+        <span style="font-size:9px;color:var(--text3)">avg. daily basket size</span>
+      </div>
+      <div class="card-body"><canvas id="cBasket" height="180"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ROW 3: Sales / Customer / Trips -->
+  <div class="row3">
+    <div class="card">
+      <div class="card-head"><span class="card-title">sales</span></div>
+      <div class="card-body"><canvas id="cSales" height="120"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">customer</span></div>
+      <div class="card-body"><canvas id="cCustomer" height="120"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">trips</span></div>
+      <div class="card-body"><canvas id="cTrips" height="120"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ROW 4: Map + Top10 % new to catg -->
+  <div class="row4">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">spend by region</span>
+        <span style="font-size:9px;color:var(--text3)">bubble = spend volume</span>
+      </div>
+      <div class="card-body" style="padding:8px">
+        <div class="map-placeholder">
+          <div class="map-bg"></div>
+          <div class="map-dots" id="mapDots"></div>
+          <div class="map-label">Thailand Regional Map</div>
+          <div class="map-sub">Connect live map data to enable</div>
+        </div>
+        <div style="margin-top:8px;overflow-x:auto" id="regionTable"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Top10 %new to catg by brand</span>
+        <div class="legend">
+          <span class="leg"><span class="leg-sq" style="background:#0d9488"></span>new to product</span>
+          <span class="leg"><span class="leg-sq" style="background:#1a1d23"></span>new to catg</span>
+          <span class="leg"><span class="leg-sq" style="background:#e53e3e"></span>new to store</span>
+        </div>
+      </div>
+      <div class="card-body"><canvas id="cNewCatg" height="220"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ROW 5: Top10 branch + Top10 product -->
+  <div class="row5">
+    <div class="card">
+      <div class="card-head"><span class="card-title">top10 spend by branch</span></div>
+      <div class="card-body" style="padding:0"><div id="branchTable"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Top10 spend by product</span></div>
+      <div class="card-body" style="padding:0"><div id="productTable"></div></div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<script>
+Chart.defaults.font.family = "'IBM Plex Sans', sans-serif";
+Chart.defaults.font.size = 9;
+Chart.defaults.color = '#9aa0ae';
+Chart.defaults.plugins.legend.display = false;
+
+// ── DATA (fully anonymized) ────────────────────────────
+
+const DAY = 10, TOTAL_DAYS = 31;
+const DAYS = Array.from({length:DAY},(_,i)=>i+1);  // days 1–10
+
+// Leaderboard: top 15 customers cumulative spend over days 1-10
+const LB_COLORS = [
+  '#e53e3e','#d97706','#0d9488','#2563eb','#7c3aed',
+  '#db2777','#059669','#dc2626','#0891b2','#65a30d',
+  '#9333ea','#ea580c','#0284c7','#16a34a','#b45309',
+];
+const LB_NAMES = ['Cust. A','Cust. B','Cust. C','Cust. D','Cust. E',
+  'Cust. F','Cust. G','Cust. H','Cust. I','Cust. J',
+  'Cust. K','Cust. L','Cust. M','Cust. N','Cust. O'];
+
+// Simulate cumulative spend trajectories
+function simCumulative(seed, multiplier){
+  let cum=0; const vals=[];
+  for(let d=0;d<DAY;d++){
+    cum += (Math.sin(d*0.7+seed)*0.4+1) * multiplier * (1+d*0.08);
+    vals.push(Math.round(cum));
+  }
+  return vals;
+}
+const LB_DATA = LB_NAMES.map((n,i)=>({
+  label:n,
+  data:simCumulative(i*1.3, 8000-i*350),
+  borderColor:LB_COLORS[i],
+  backgroundColor:LB_COLORS[i]+'40',
+  fill:true,tension:0.4,pointRadius:0,borderWidth:1.5,
+}));
+
+// Basket avg (fluctuating)
+const BASKET_VALS = [163.5,161.8,158.2,155.1,162.3,159.4,156.8,165.4,171.0,168.2];
+
+// Daily sales / customers / trips (bars by day)
+const DAILY_SALES    = [82,74,91,88,95,71,84,107,98,87].map(v=>v*1e3);
+const DAILY_CUST     = [280,256,302,294,311,249,278,340,318,291].map(v=>1e2*v);
+const DAILY_TRIPS    = [0.30,0.28,0.34,0.32,0.33,0.27,0.31,0.38,0.35,0.31].map(v=>v*1e6);
+
+// Region data (anonymized)
+const REGIONS = [
+  {name:'Region A', province:'Province 01', sales:'XXX,XXX'},
+  {name:'Region B', province:'Province 02', sales:'XXX,XXX'},
+  {name:'Region C', province:'Province 03', sales:'XX,XXX'},
+  {name:'Region D', province:'Province 04', sales:'XX,XXX'},
+  {name:'Region E', province:'Province 05', sales:'XX,XXX'},
+];
+
+// Map dots (random positions in Thailand bounds)
+const MAP_DOTS_DATA = [
+  {top:'38%',left:'42%',size:22},{top:'55%',left:'45%',size:32},
+  {top:'62%',left:'48%',size:18},{top:'45%',left:'38%',size:14},
+  {top:'70%',left:'52%',size:12},{top:'33%',left:'55%',size:16},
+  {top:'48%',left:'54%',size:20},{top:'60%',left:'40%',size:10},
+  {top:'75%',left:'44%',size:26},{top:'52%',left:'60%',size:8},
+  {top:'28%',left:'48%',size:12},{top:'42%',left:'62%',size:9},
+  {top:'67%',left:'56%',size:14},{top:'80%',left:'48%',size:18},
+  {top:'35%',left:'35%',size:11},
+];
+
+// Top10 % new to catg by brand
+const BRAND_NAMES = ['Brand A','Brand B','Brand C','Brand D','Brand E','Brand F','Brand G','Brand H','Brand I','Brand J'];
+const NEW_PRODUCT = [72,64,58,55,51,48,44,41,38,35];
+const NEW_CATG    = [45,38,32,28,25,22,19,17,15,13];
+const NEW_STORE   = [12,8,5,4,3,3,2,2,1,1];
+
+// Top10 branch
+const BRANCHES = [
+  {rank:1,  name:'Branch XX-001', region:'Region A', province:'Province 01', sales:924763},
+  {rank:2,  name:'Branch XX-002', region:'Region B', province:'Province 02', sales:871240},
+  {rank:3,  name:'Branch XX-003', region:'Region A', province:'Province 01', sales:834582},
+  {rank:4,  name:'Branch XX-004', region:'Region C', province:'Province 03', sales:798341},
+  {rank:5,  name:'Branch XX-005', region:'Region B', province:'Province 02', sales:762185},
+  {rank:6,  name:'Branch XX-006', region:'Region D', province:'Province 04', sales:741920},
+  {rank:7,  name:'Branch XX-007', region:'Region A', province:'Province 01', sales:718643},
+  {rank:8,  name:'Branch XX-008', region:'Region E', province:'Province 05', sales:695412},
+  {rank:9,  name:'Branch XX-009', region:'Region C', province:'Province 03', sales:672891},
+  {rank:10, name:'Branch XX-010', region:'Region B', province:'Province 02', sales:648234},
+];
+
+// Top10 product
+const PRODUCTS = [
+  {div:'DIV-01', catg:'Category A', brand:'Brand A', name:'Product Alpha XXXml Pack',   sales:2940968},
+  {div:'DIV-01', catg:'Category A', brand:'Brand B', name:'Product Beta XXXg Bottle',   sales:2712340},
+  {div:'DIV-02', catg:'Category B', brand:'Brand C', name:'Product Gamma XXXml Refill', sales:2498751},
+  {div:'DIV-01', catg:'Category A', brand:'Brand A', name:'Product Delta XXXg Sachet',  sales:2314582},
+  {div:'DIV-03', catg:'Category C', brand:'Brand D', name:'Product Epsilon XXXml',       sales:2187463},
+  {div:'DIV-02', catg:'Category B', brand:'Brand B', name:'Product Zeta XXXg Tube',     sales:1963241},
+  {div:'DIV-01', catg:'Category A', brand:'Brand C', name:'Product Eta XXXml Spray',    sales:1841920},
+  {div:'DIV-03', catg:'Category C', brand:'Brand E', name:'Product Theta XXXg',         sales:1724583},
+  {div:'DIV-02', catg:'Category B', brand:'Brand A', name:'Product Iota XXXml',         sales:1612894},
+  {div:'DIV-01', catg:'Category A', brand:'Brand D', name:'Product Kappa XXXg Box',     sales:1498231},
+];
+
+// ── BUILD CHARTS ──────────────────────────────────────
+const CH = {};
+function mk(id){if(CH[id]){CH[id].destroy();delete CH[id];}}
+
+// Leaderboard stacked area
+function buildLB(){
+  mk('cLB');
+  // Legend
+  const lg = document.getElementById('lbLegend');
+  lg.innerHTML = LB_NAMES.slice(0,8).map((n,i)=>
+    `<span class="leg"><span class="leg-dot" style="background:${LB_COLORS[i]}"></span>${n}</span>`
+  ).join('');
+
+  CH['cLB'] = new Chart(document.getElementById('cLB'),{
+    type:'line',
+    data:{labels:DAYS, datasets:LB_DATA},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      animation:{duration:700},
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        tooltip:{callbacks:{label:ctx=>{
+          const v=ctx.parsed.y;
+          return ` ${ctx.dataset.label}: ฿${v>=1000?(v/1000).toFixed(1)+'K':v}`;
+        }}}
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:8}}},
+        y:{stacked:true,grid:{color:'rgba(0,0,0,0.04)'},
+          ticks:{font:{size:8},callback:v=>v>=1000?(v/1000).toFixed(0)+'K':v}},
+      }
+    }
+  });
+}
+
+// Basket line
+function buildBasket(){
+  mk('cBasket');
+  CH['cBasket']=new Chart(document.getElementById('cBasket'),{
+    type:'line',
+    data:{labels:DAYS,datasets:[{
+      label:'Avg basket',data:BASKET_VALS,
+      borderColor:'#2563eb',pointBackgroundColor:'#2563eb',
+      pointRadius:4,pointHoverRadius:6,fill:false,tension:0.4,borderWidth:2,
+    }]},
+    options:{responsive:true,maintainAspectRatio:true,animation:{duration:600},
+      plugins:{tooltip:{callbacks:{label:ctx=>` Basket: ${ctx.parsed.y.toFixed(1)}`}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:8}}},
+        y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:8}},
+          min:145,max:175},
+      }
+    }
+  });
+}
+
+// Bar (sales/cust/trips)
+function buildBar(id,data,color,labelFn){
+  mk(id);
+  CH[id]=new Chart(document.getElementById(id),{
+    type:'bar',
+    data:{labels:DAYS,datasets:[{label:'',data,backgroundColor:color,borderRadius:3,barThickness:14}]},
+    options:{responsive:true,maintainAspectRatio:true,animation:{duration:600},
+      plugins:{tooltip:{callbacks:{label:ctx=>` ${labelFn(ctx.parsed.y)}`}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:8}}},
+        y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:8},callback:v=>labelFn(v)},beginAtZero:true},
+      }
+    }
+  });
+}
+
+// Top10 new to catg grouped
+function buildNewCatg(){
+  mk('cNewCatg');
+  CH['cNewCatg']=new Chart(document.getElementById('cNewCatg'),{
+    type:'bar',
+    data:{labels:BRAND_NAMES,datasets:[
+      {label:'New to product',data:NEW_PRODUCT,backgroundColor:'#0d9488',borderRadius:2,barThickness:10},
+      {label:'New to catg',   data:NEW_CATG,   backgroundColor:'#1a1d23',borderRadius:2,barThickness:10},
+      {label:'New to store',  data:NEW_STORE,  backgroundColor:'#e53e3e',borderRadius:2,barThickness:10},
+    ]},
+    options:{responsive:true,maintainAspectRatio:true,animation:{duration:600},
+      plugins:{tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y}%`}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:8},maxRotation:30}},
+        y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:8},callback:v=>v+'%'},beginAtZero:true},
+      }
+    }
+  });
+}
+
+// ── BUILD TABLES ──────────────────────────────────────
+function buildBranchTable(){
+  const maxSales = BRANCHES[0].sales;
+  let h=`<table class="dt"><thead><tr>
+    <th style="width:24px"></th>
+    <th>Branch name</th><th>Region</th><th>Province</th><th class="r">Sales</th>
+  </tr></thead><tbody>`;
+  BRANCHES.forEach(b=>{
+    const pct = Math.round((b.sales/maxSales)*80);
+    const rCls = b.rank===1?'gold':b.rank===2?'silver':b.rank===3?'bronze':'';
+    h+=`<tr>
+      <td><span class="rank-badge ${rCls}">${b.rank}</span></td>
+      <td>${b.name}</td><td>${b.region}</td><td>${b.province}</td>
+      <td class="r">
+        <span class="hi-cell">${b.sales.toLocaleString()}</span>
+        <span class="sales-bar" style="width:${pct}px"></span>
+      </td>
+    </tr>`;
+  });
+  h+='</tbody></table>';
+  document.getElementById('branchTable').innerHTML=h;
+}
+
+function buildProductTable(){
+  const maxSales = PRODUCTS[0].sales;
+  let h=`<table class="dt"><thead><tr>
+    <th>Division</th><th>Category</th><th>Brand</th><th>Product name</th><th class="r">Sales</th>
+  </tr></thead><tbody>`;
+  PRODUCTS.forEach((p,i)=>{
+    const pct = Math.round((p.sales/maxSales)*60);
+    h+=`<tr>
+      <td>${p.div}</td><td>${p.catg}</td><td>${p.brand}</td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.name}">${p.name}</td>
+      <td class="r">
+        <span class="hi-cell">${p.sales.toLocaleString()}</span>
+        <span class="sales-bar" style="width:${pct}px"></span>
+      </td>
+    </tr>`;
+  });
+  h+='</tbody></table>';
+  document.getElementById('productTable').innerHTML=h;
+}
+
+function buildRegionTable(){
+  let h=`<table class="dt" style="font-size:9px"><thead><tr>
+    <th>Region</th><th>Province</th><th class="r">Sales</th>
+  </tr></thead><tbody>`;
+  REGIONS.forEach(r=>{
+    h+=`<tr><td>${r.name}</td><td>${r.province}</td><td class="r">${r.sales}</td></tr>`;
+  });
+  h+='</tbody></table>';
+  document.getElementById('regionTable').innerHTML=h;
+}
+
+function buildMapDots(){
+  const wrap = document.getElementById('mapDots');
+  wrap.innerHTML = MAP_DOTS_DATA.map(d=>
+    `<div class="map-dot" style="top:${d.top};left:${d.left};width:${d.size}px;height:${d.size}px;margin-left:-${d.size/2}px;margin-top:-${d.size/2}px"></div>`
+  ).join('');
+}
+
+// ── DAY PROGRESS ─────────────────────────────────────
+function buildDayProgress(){
+  const pct = Math.round((DAY/TOTAL_DAYS)*100);
+  document.getElementById('dayFill').style.width = pct+'%';
+}
+
+// ── INIT ─────────────────────────────────────────────
+buildDayProgress();
+buildLB();
+buildBasket();
+buildBar('cSales',    DAILY_SALES,    '#e53e3e', v=>'฿'+(v/1e3).toFixed(0)+'K');
+buildBar('cCustomer', DAILY_CUST,     '#0d9488', v=>(v/1e3).toFixed(0)+'K');
+buildBar('cTrips',    DAILY_TRIPS,    '#d97706', v=>(v/1e6).toFixed(2)+'M');
+buildNewCatg();
+buildBranchTable();
+buildProductTable();
+buildRegionTable();
+buildMapDots();
+</script>
+</body>
+</html>
