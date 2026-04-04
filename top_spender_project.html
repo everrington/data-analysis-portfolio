@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Top Spender — Shop Unlimited · Jiranuwat N.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#fafaf8;--bg-2:#f3f2ef;--bg-3:#eceae5;
+  --text:#1a1916;--text-2:#6b6a65;--text-3:#a09f9a;
+  --border:rgba(26,25,22,0.1);--border-2:rgba(26,25,22,0.18);--border-3:rgba(26,25,22,0.28);
+  --accent:#c9a96e;--teal:#2a7a6e;--teal-dim:rgba(42,122,110,0.1);
+  --blue:#2a5a8a;--blue-dim:rgba(42,90,138,0.08);
+  --red:#b94040;--red-dim:rgba(185,64,64,0.08);
+  --code-bg:#1e1d1a;--code-text:#e8e6e0;
+}
+[data-theme="dark"]{
+  --bg:#141412;--bg-2:#1e1d1a;--bg-3:#272623;
+  --text:#f0ede8;--text-2:#9b9a95;--text-3:#5e5d59;
+  --border:rgba(240,237,232,0.08);--border-2:rgba(240,237,232,0.14);--border-3:rgba(240,237,232,0.22);
+  --code-bg:#0d0d0b;--code-text:#e8e6e0;
+}
+
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.7;font-weight:400;transition:background .3s,color .3s}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--bg);border-bottom:0.5px solid var(--border);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:background .3s}
+.nav-inner{max-width:820px;margin:0 auto;padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between}
+.nav-back{font-size:13px;color:var(--text-2);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s}
+.nav-back:hover{color:var(--text)}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:17px;color:var(--text);text-decoration:none;letter-spacing:-0.3px}
+.theme-btn{width:32px;height:32px;border:0.5px solid var(--border-2);border-radius:50%;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-2);font-size:14px;transition:background .2s,color .2s}
+.theme-btn:hover{background:var(--bg-2);color:var(--text)}
+
+/* ── PAGE ── */
+.page{max-width:820px;margin:0 auto;padding:5rem 2rem 4rem}
+
+/* ── HERO ── */
+.proj-eyebrow{font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--text-3);margin-bottom:1rem;display:flex;align-items:center;gap:10px}
+.proj-eyebrow::before{content:'';display:inline-block;width:24px;height:0.5px;background:var(--text-3)}
+.proj-title{font-family:'DM Serif Display',serif;font-size:clamp(32px,5vw,52px);line-height:1.08;letter-spacing:-1.5px;margin-bottom:1.25rem}
+.proj-title em{font-style:italic;color:var(--text-2)}
+.proj-meta-row{display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:2.5rem;padding-bottom:2rem;border-bottom:0.5px solid var(--border)}
+.tag{font-size:11px;padding:4px 12px;border-radius:40px;border:0.5px solid var(--border-2);color:var(--text-2)}
+.tag.campaign{border-color:var(--accent);color:var(--accent);background:rgba(201,169,110,0.1)}
+.tag.sql{border-color:var(--blue);color:var(--blue);background:var(--blue-dim)}
+.tag.teal{border-color:var(--teal);color:var(--teal);background:var(--teal-dim)}
+
+/* ── SECTION RULE ── */
+.sec-rule{display:flex;align-items:center;gap:1rem;margin:2.5rem 0 1.5rem}
+.sec-rule-label{font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-3);white-space:nowrap}
+.sec-rule-line{flex:1;height:0.5px;background:var(--border)}
+
+/* ── PROSE ── */
+.prose{font-size:15px;font-weight:300;line-height:1.85;color:var(--text-2);margin-bottom:1.25rem}
+.prose strong{font-weight:500;color:var(--text)}
+
+/* ── INFO GRID ── */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;border:0.5px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:2rem}
+.info-cell{padding:1rem 1.25rem;background:var(--bg-2)}
+.info-cell-label{font-size:10px;font-weight:500;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-3);margin-bottom:0.35rem}
+.info-cell-val{font-size:14px;color:var(--text);line-height:1.5}
+
+/* ── DASHBOARD LINK CARD ── */
+.dash-link{
+  display:flex;align-items:center;justify-content:space-between;
+  border:0.5px solid var(--border-2);border-radius:12px;
+  padding:1.25rem 1.5rem;margin-bottom:2rem;
+  background:var(--bg-2);text-decoration:none;color:inherit;
+  transition:border-color .2s,background .2s;
+}
+.dash-link:hover{border-color:var(--border-3);background:var(--bg-3)}
+.dash-link-left{display:flex;flex-direction:column;gap:4px}
+.dash-link-label{font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-3)}
+.dash-link-title{font-size:16px;font-weight:500;color:var(--text)}
+.dash-link-sub{font-size:13px;color:var(--text-2);font-weight:300}
+.dash-link-arrow{font-size:22px;color:var(--text-3);transition:transform .2s,color .2s}
+.dash-link:hover .dash-link-arrow{transform:translate(3px,-3px);color:var(--text)}
+
+/* ── RESULT CARDS ── */
+.result-row{display:flex;gap:1rem;margin:1.5rem 0}
+.result-card{flex:1;background:var(--bg-2);border-radius:10px;padding:1rem 1.25rem}
+.result-num{font-family:'DM Serif Display',serif;font-size:28px;color:var(--text);letter-spacing:-0.5px;margin-bottom:2px}
+.result-label{font-size:12px;color:var(--text-2);font-weight:300;line-height:1.4}
+
+/* ── SCORE TIER TABLE ── */
+.tier-table{width:100%;border-collapse:collapse;margin:1.25rem 0 1.75rem;font-size:14px}
+.tier-table th{text-align:left;font-size:11px;font-weight:500;letter-spacing:0.5px;color:var(--text-3);padding:6px 12px;border-bottom:0.5px solid var(--border)}
+.tier-table td{padding:10px 12px;border-bottom:0.5px solid var(--border);vertical-align:top;font-size:14px;font-weight:300;color:var(--text-2)}
+.tier-table td:first-child{font-weight:500;color:var(--text);white-space:nowrap}
+.tier-table tr:last-child td{border-bottom:none}
+.tier-badge{display:inline-block;font-size:11px;font-weight:500;padding:3px 10px;border-radius:40px}
+.tier-1{background:rgba(185,64,64,0.1);color:var(--red);border:0.5px solid var(--red)}
+.tier-2{background:rgba(201,169,110,0.12);color:var(--accent);border:0.5px solid var(--accent)}
+.tier-3{background:var(--teal-dim);color:var(--teal);border:0.5px solid var(--teal)}
+.tier-4{background:var(--bg-3);color:var(--text-3);border:0.5px solid var(--border-2)}
+
+/* ── CODE BLOCK ── */
+.code-section{margin-bottom:2.5rem}
+.code-section-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:0.75rem}
+.code-section-num{font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-3)}
+.code-section-title{font-size:16px;font-weight:500;color:var(--text)}
+.code-section-desc{font-size:14px;font-weight:300;line-height:1.75;color:var(--text-2);margin-bottom:0.75rem}
+.code-wrap{background:var(--code-bg);border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.15)}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.code-lang{font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:#6b6a65}
+.copy-btn{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;padding:4px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.12);background:transparent;color:#9b9a95;cursor:pointer;transition:background .15s,color .15s}
+.copy-btn:hover{background:rgba(255,255,255,0.08);color:#f0ede8}
+.copy-btn.copied{color:#4aaa9e;border-color:#4aaa9e}
+pre{margin:0;padding:20px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.7;color:var(--code-text)}
+.kw{color:#c792ea}
+.fn{color:#82aaff}
+.str{color:#c3e88d}
+.cm{color:#546e7a;font-style:italic}
+.num{color:#f78c6c}
+.op{color:#89ddff}
+
+/* ── BACK ── */
+.back-row{margin-top:3rem;padding-top:2rem;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.back-link{font-size:13px;font-weight:500;color:var(--text-2);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s}
+.back-link:hover{color:var(--text)}
+
+@media(max-width:600px){
+  .info-grid{grid-template-columns:1fr}
+  .result-row{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-back" href="portfolio.html">← Back to portfolio</a>
+    <a class="nav-logo" href="portfolio.html">Jiranuwat N.</a>
+    <button class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">☾</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <p class="proj-eyebrow">Campaign Analytics · SQL · 2026</p>
+  <h1 class="proj-title">Top Spender —<br><em>Shop Unlimited</em></h1>
+  <div class="proj-meta-row">
+    <span class="tag campaign">Campaign Analytics</span>
+    <span class="tag sql">BigQuery SQL</span>
+    <span class="tag">Intent Scoring</span>
+    <span class="tag">RFM</span>
+    <span class="tag teal">Power BI</span>
+  </div>
+
+  <!-- DESCRIPTION -->
+  <p class="prose">
+    The <strong>Shop Unlimited</strong> campaign rewarded the highest-spending customers over a 31-day window. The challenge wasn't tracking spend — it was distinguishing customers who were <strong>genuinely racing toward the reward threshold</strong> from those who simply happened to transact during the period.
+  </p>
+  <p class="prose">
+    To solve this, I built a <strong>multi-signal behavioral intent scoring model (v7)</strong> in BigQuery. The model compares each customer's campaign-period behavior against their own 60-day pre-campaign baseline — scoring them across four independent dimensions: spend acceleration, visit acceleration, spend velocity trend, and basket size uplift. A bonus is applied for customers showing a late-stage surge in Week 4, a strong signal of intentional behavior.
+  </p>
+  <p class="prose">
+    Customers who clear all gate thresholds and fire at least 3 signals are classified as <strong>Intentional Racers</strong> — the highest-priority segment for commercial intervention. The output feeds directly into the Power BI dashboard for real-time monitoring and stakeholder review.
+  </p>
+
+  <!-- INFO GRID -->
+  <div class="info-grid">
+    <div class="info-cell">
+      <p class="info-cell-label">My role</p>
+      <p class="info-cell-val">Sole analyst — designed scoring logic, built BigQuery pipeline, and delivered Power BI dashboard</p>
+    </div>
+    <div class="info-cell">
+      <p class="info-cell-label">Stack</p>
+      <p class="info-cell-val">BigQuery SQL · Power BI · DAX</p>
+    </div>
+    <div class="info-cell">
+      <p class="info-cell-label">Baseline window</p>
+      <p class="info-cell-val">60 days pre-campaign — normalized to 30-day equivalent for fair comparison</p>
+    </div>
+    <div class="info-cell">
+      <p class="info-cell-label">Test window</p>
+      <p class="info-cell-val">30 days campaign period — split into 4 weekly buckets for velocity tracking</p>
+    </div>
+  </div>
+
+  <!-- INTENT TIERS -->
+  <div class="sec-rule"><span class="sec-rule-label">Intent Tiers</span><div class="sec-rule-line"></div></div>
+  <p class="prose">The model outputs four tiers, ordered by behavioral confidence:</p>
+
+  <table class="tier-table">
+    <thead><tr><th>Tier</th><th>Score</th><th>Gate conditions</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="tier-badge tier-1">Intentional Racer</span></td>
+        <td>≥ 80</td>
+        <td>Min spend ≥ ฿1,500 · Min trips ≥ 4 · Baseline spend ≥ ฿400 · Baseline trips ≥ 4 · Signals fired ≥ 3</td>
+        <td>Actively chasing the reward — highest priority for commercial team</td>
+      </tr>
+      <tr>
+        <td><span class="tier-badge tier-2">Active Climber</span></td>
+        <td>≥ 55</td>
+        <td>Baseline spend ≥ ฿400 · Baseline trips ≥ 4 · Signals fired ≥ 3</td>
+        <td>Elevated engagement but not yet at racer velocity</td>
+      </tr>
+      <tr>
+        <td><span class="tier-badge tier-3">Passive Beneficiary</span></td>
+        <td>≥ 25</td>
+        <td>Baseline spend ≥ ฿400</td>
+        <td>Spending more but without the behavioral signals of intent</td>
+      </tr>
+      <tr>
+        <td><span class="tier-badge tier-4">Accidental Qualifier</span></td>
+        <td>&lt; 25</td>
+        <td>—</td>
+        <td>Transacting normally — no meaningful campaign-driven behavior change</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- RESULT CARDS -->
+  <div class="result-row">
+    <div class="result-card">
+      <p class="result-num">4</p>
+      <p class="result-label">Scoring dimensions — spend accel, visit accel, velocity, basket uplift</p>
+    </div>
+    <div class="result-card">
+      <p class="result-num">v7</p>
+      <p class="result-label">Model iteration — refined gate thresholds and signal weights across 7 versions</p>
+    </div>
+    <div class="result-card">
+      <p class="result-num">W4</p>
+      <p class="result-label">Late-surge bonus — W4 vs W1 ratio detects intentional end-of-campaign sprint</p>
+    </div>
+  </div>
+
+  <!-- DASHBOARD LINK -->
+  <div class="sec-rule"><span class="sec-rule-label">Live Dashboard</span><div class="sec-rule-line"></div></div>
+  <a class="dash-link" href="top_spender_dashboard.html" target="_blank">
+    <div class="dash-link-left">
+      <span class="dash-link-label">Interactive demo</span>
+      <span class="dash-link-title">Top Spender — Shop Unlimited Dashboard</span>
+      <span class="dash-link-sub">Leaderboard · Daily metrics · Regional spend · Brand acquisition · Top branch & product tables</span>
+    </div>
+    <span class="dash-link-arrow">↗</span>
+  </a>
+
+  <!-- SQL SECTIONS -->
+  <div class="sec-rule"><span class="sec-rule-label">Scoring SQL · v7</span><div class="sec-rule-line"></div></div>
+
+  <p class="prose">The query is structured as a chain of CTEs, each building on the last. Below is each section with an explanation of the logic.</p>
+
+  <!-- SECTION 1: Pre-campaign baseline -->
+  <div class="code-section">
+    <div class="code-section-head">
+      <span class="code-section-num">01</span>
+      <span class="code-section-title">Pre-campaign baseline</span>
+    </div>
+    <p class="code-section-desc">
+      Aggregate each customer's transaction history over the <strong>60-day period before the campaign</strong>. Spend and trips are then normalized to a 30-day equivalent so they can be directly compared against the 30-day campaign window — eliminating the time-length bias that would otherwise inflate campaign numbers.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">BigQuery SQL</span>
+        <button class="copy-btn" onclick="copyBlock(this, 'sql1')">Copy</button>
+      </div>
+      <pre id="sql1"><span class="cm">-- Baseline: [DATE_RANGE_1] — 60 days</span>
+<span class="cm">-- Test window: [DATE_RANGE_2] — 30 days</span>
+
+<span class="kw">WITH</span> pre_campaign <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    customer_code,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> doc_no)                                             <span class="kw">AS</span> pre_trips,
+    <span class="fn">ROUND</span>(<span class="fn">SUM</span>(sales_exc_vat), <span class="num">0</span>)                                       <span class="kw">AS</span> pre_spend,
+    <span class="fn">ROUND</span>(<span class="fn">SUM</span>(sales_exc_vat) <span class="op">/</span> <span class="fn">NULLIF</span>(<span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> doc_no), <span class="num">0</span>), <span class="num">0</span>)  <span class="kw">AS</span> pre_basket,
+
+    <span class="cm">-- Normalize 60-day spend → 30-day equivalent</span>
+    <span class="fn">ROUND</span>(<span class="fn">SUM</span>(sales_exc_vat) <span class="op">/</span> <span class="num">60.0</span> <span class="op">*</span> <span class="num">30</span>, <span class="num">0</span>)                          <span class="kw">AS</span> pre_spend_30d_equiv,
+    <span class="fn">ROUND</span>(<span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> doc_no) <span class="op">/</span> <span class="num">60.0</span> <span class="op">*</span> <span class="num">30</span>, <span class="num">1</span>)                       <span class="kw">AS</span> pre_trips_30d_equiv
+
+  <span class="kw">FROM</span> <span class="str">`[project].[dataset].transactions`</span>
+  <span class="kw">WHERE</span>
+    doc_date <span class="kw">BETWEEN</span> <span class="str">'[BASELINE_START]'</span> <span class="kw">AND</span> <span class="str">'[BASELINE_END]'</span>
+    <span class="kw">AND</span> customer_code <span class="kw">IS NOT NULL</span>
+    <span class="kw">AND</span> customer_code <span class="op">!=</span> <span class="str">'0'</span>
+  <span class="kw">GROUP BY</span> <span class="num">1</span>
+),</pre>
+    </div>
+  </div>
+
+  <!-- SECTION 2: Campaign weekly buckets -->
+  <div class="code-section">
+    <div class="code-section-head">
+      <span class="code-section-num">02</span>
+      <span class="code-section-title">Campaign weekly buckets</span>
+    </div>
+    <p class="code-section-desc">
+      Split the 30-day campaign window into <strong>4 weekly buckets (W1–W4)</strong>. This granularity is critical — it's what allows the model to detect late-stage behavioral surges, which are the strongest signal of intentional campaign participation.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">BigQuery SQL</span>
+        <button class="copy-btn" onclick="copyBlock(this, 'sql2')">Copy</button>
+      </div>
+      <pre id="sql2">campaign_weekly <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    customer_code,
+    <span class="kw">CASE</span>
+      <span class="kw">WHEN</span> doc_date <span class="kw">BETWEEN</span> <span class="str">'[W1_START]'</span> <span class="kw">AND</span> <span class="str">'[W1_END]'</span> <span class="kw">THEN</span> <span class="str">'W1'</span>
+      <span class="kw">WHEN</span> doc_date <span class="kw">BETWEEN</span> <span class="str">'[W2_START]'</span> <span class="kw">AND</span> <span class="str">'[W2_END]'</span> <span class="kw">THEN</span> <span class="str">'W2'</span>
+      <span class="kw">WHEN</span> doc_date <span class="kw">BETWEEN</span> <span class="str">'[W3_START]'</span> <span class="kw">AND</span> <span class="str">'[W3_END]'</span> <span class="kw">THEN</span> <span class="str">'W3'</span>
+      <span class="kw">WHEN</span> doc_date <span class="kw">BETWEEN</span> <span class="str">'[W4_START]'</span> <span class="kw">AND</span> <span class="str">'[W4_END]'</span> <span class="kw">THEN</span> <span class="str">'W4'</span>
+    <span class="kw">END AS</span> camp_week,
+    <span class="fn">SUM</span>(sales_exc_vat)     <span class="kw">AS</span> weekly_spend,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> doc_no) <span class="kw">AS</span> weekly_trips
+
+  <span class="kw">FROM</span> <span class="str">`[project].[dataset].transactions`</span>
+  <span class="kw">WHERE</span>
+    doc_date <span class="kw">BETWEEN</span> <span class="str">'[CAMPAIGN_START]'</span> <span class="kw">AND</span> <span class="str">'[CAMPAIGN_END]'</span>
+    <span class="kw">AND</span> customer_code <span class="kw">IS NOT NULL</span>
+    <span class="kw">AND</span> customer_code <span class="op">!=</span> <span class="str">'0'</span>
+  <span class="kw">GROUP BY</span> <span class="num">1</span>, <span class="num">2</span>
+),
+
+campaign_total <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    customer_code,
+    <span class="fn">SUM</span>(weekly_spend)  <span class="kw">AS</span> camp_spend,
+    <span class="fn">SUM</span>(weekly_trips)  <span class="kw">AS</span> camp_trips,
+
+    <span class="cm">-- W3+W4 vs W1+W2: measures whether spend is accelerating across the campaign</span>
+    <span class="fn">ROUND</span>(
+      <span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> camp_week <span class="kw">IN</span> (<span class="str">'W3'</span>,<span class="str">'W4'</span>) <span class="kw">THEN</span> weekly_spend <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) <span class="op">/</span>
+      <span class="fn">NULLIF</span>(<span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> camp_week <span class="kw">IN</span> (<span class="str">'W1'</span>,<span class="str">'W2'</span>) <span class="kw">THEN</span> weekly_spend <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>), <span class="num">0</span>)
+    , <span class="num">2</span>) <span class="kw">AS</span> spend_velocity_ratio,
+
+    <span class="cm">-- W4 vs W1: detects end-of-campaign sprint (late-surge signal)</span>
+    <span class="fn">ROUND</span>(
+      <span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> camp_week <span class="op">=</span> <span class="str">'W4'</span> <span class="kw">THEN</span> weekly_spend <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) <span class="op">/</span>
+      <span class="fn">NULLIF</span>(<span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> camp_week <span class="op">=</span> <span class="str">'W1'</span> <span class="kw">THEN</span> weekly_spend <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>), <span class="num">0</span>)
+    , <span class="num">2</span>) <span class="kw">AS</span> w4_vs_w1_ratio
+
+  <span class="kw">FROM</span> campaign_weekly
+  <span class="kw">GROUP BY</span> <span class="num">1</span>, <span class="num">2</span>
+),</pre>
+    </div>
+  </div>
+
+  <!-- SECTION 3: Scoring model -->
+  <div class="code-section">
+    <div class="code-section-head">
+      <span class="code-section-num">03</span>
+      <span class="code-section-title">Multi-signal scoring model</span>
+    </div>
+    <p class="code-section-desc">
+      Each customer is scored across <strong>four independent dimensions</strong>, each benchmarked against their own pre-campaign baseline rather than a population average. This makes the model self-calibrating — a customer who triples their normal spend scores identically regardless of their absolute spend level. Gate flags are also computed here as hard eligibility checks applied later.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">BigQuery SQL</span>
+        <button class="copy-btn" onclick="copyBlock(this, 'sql3')">Copy</button>
+      </div>
+      <pre id="sql3">scored <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    ct.customer_code,
+    ct.camp_spend,    ct.camp_trips,
+    ct.spend_velocity_ratio, ct.w4_vs_w1_ratio,
+    p.pre_spend,      p.pre_trips,
+    p.pre_spend_30d_equiv, p.pre_trips_30d_equiv,
+
+    <span class="cm">-- [1] SPEND ACCELERATION (max 30 pts)</span>
+    <span class="cm">-- How much did campaign spend exceed normalized baseline spend?</span>
+    <span class="kw">CASE</span>
+      <span class="kw">WHEN</span> p.pre_spend_30d_equiv <span class="kw">IS NULL</span> <span class="kw">OR</span> p.pre_spend_30d_equiv <span class="op">&lt;</span> <span class="num">200</span> <span class="kw">THEN</span> <span class="num">0</span>
+      <span class="kw">WHEN</span> ct.camp_spend <span class="op">&gt;=</span> p.pre_spend_30d_equiv <span class="op">*</span> <span class="num">5.0</span>  <span class="kw">THEN</span> <span class="num">30</span>
+      <span class="kw">WHEN</span> ct.camp_spend <span class="op">&gt;=</span> p.pre_spend_30d_equiv <span class="op">*</span> <span class="num">4.0</span>  <span class="kw">THEN</span> <span class="num">22</span>
+      <span class="kw">WHEN</span> ct.camp_spend <span class="op">&gt;=</span> p.pre_spend_30d_equiv <span class="op">*</span> <span class="num">3.0</span>  <span class="kw">THEN</span> <span class="num">14</span>
+      <span class="kw">WHEN</span> ct.camp_spend <span class="op">&gt;=</span> p.pre_spend_30d_equiv <span class="op">*</span> <span class="num">2.0</span>  <span class="kw">THEN</span> <span class="num">7</span>
+      <span class="kw">WHEN</span> ct.camp_spend <span class="op">&gt;=</span> p.pre_spend_30d_equiv <span class="op">*</span> <span class="num">1.5</span>  <span class="kw">THEN</span> <span class="num">3</span>
+      <span class="kw">ELSE</span> <span class="num">0</span>
+    <span class="kw">END AS</span> score_spend_accel,
+
+    <span class="cm">-- [2] VISIT ACCELERATION (max 25 pts)</span>
+    <span class="cm">-- Did the customer visit significantly more often during the campaign?</span>
+    <span class="kw">CASE</span>
+      <span class="kw">WHEN</span> p.pre_trips_30d_equiv <span class="kw">IS NULL</span> <span class="kw">OR</span> p.pre_trips_30d_equiv <span class="op">&lt;</span> <span class="num">2</span> <span class="kw">THEN</span> <span class="num">0</span>
+      <span class="kw">WHEN</span> ct.camp_trips <span class="op">&gt;=</span> p.pre_trips_30d_equiv <span class="op">*</span> <span class="num">4.0</span>  <span class="kw">THEN</span> <span class="num">25</span>
+      <span class="kw">WHEN</span> ct.camp_trips <span class="op">&gt;=</span> p.pre_trips_30d_equiv <span class="op">*</span> <span class="num">3.0</span>  <span class="kw">THEN</span> <span class="num">18</span>
+      <span class="kw">WHEN</span> ct.camp_trips <span class="op">&gt;=</span> p.pre_trips_30d_equiv <span class="op">*</span> <span class="num">2.0</span>  <span class="kw">THEN</span> <span class="num">11</span>
+      <span class="kw">WHEN</span> ct.camp_trips <span class="op">&gt;=</span> p.pre_trips_30d_equiv <span class="op">*</span> <span class="num">1.5</span>  <span class="kw">THEN</span> <span class="num">5</span>
+      <span class="kw">WHEN</span> ct.camp_trips <span class="op">&gt;=</span> p.pre_trips_30d_equiv <span class="op">*</span> <span class="num">1.2</span>  <span class="kw">THEN</span> <span class="num">2</span>
+      <span class="kw">ELSE</span> <span class="num">0</span>
+    <span class="kw">END AS</span> score_visit_accel,
+
+    <span class="cm">-- [3] SPEND VELOCITY (max 25 pts)</span>
+    <span class="cm">-- Is spend accelerating across the campaign weeks (W3+W4 vs W1+W2)?</span>
+    <span class="kw">CASE</span>
+      <span class="kw">WHEN</span> ct.spend_velocity_ratio <span class="kw">IS NULL</span>    <span class="kw">THEN</span> <span class="num">0</span>
+      <span class="kw">WHEN</span> ct.spend_velocity_ratio <span class="op">&gt;=</span> <span class="num">5.0</span>     <span class="kw">THEN</span> <span class="num">25</span>
+      <span class="kw">WHEN</span> ct.spend_velocity_ratio <span class="op">&gt;=</span> <span class="num">4.0</span>     <span class="kw">THEN</span> <span class="num">18</span>
+      <span class="kw">WHEN</span> ct.spend_velocity_ratio <span class="op">&gt;=</span> <span class="num">3.0</span>     <span class="kw">THEN</span> <span class="num">12</span>
+      <span class="kw">WHEN</span> ct.spend_velocity_ratio <span class="op">&gt;=</span> <span class="num">2.5</span>     <span class="kw">THEN</span> <span class="num">7</span>
+      <span class="kw">WHEN</span> ct.spend_velocity_ratio <span class="op">&gt;=</span> <span class="num">2.0</span>     <span class="kw">THEN</span> <span class="num">3</span>
+      <span class="kw">ELSE</span> <span class="num">0</span>
+    <span class="kw">END AS</span> score_velocity,
+
+    <span class="cm">-- [4] BASKET SIZE UPLIFT (max 20 pts)</span>
+    <span class="cm">-- Did spend-per-visit increase vs baseline? Signals consolidation behavior.</span>
+    <span class="kw">CASE</span>
+      <span class="kw">WHEN</span> p.pre_trips_30d_equiv <span class="kw">IS NULL</span> <span class="kw">OR</span> p.pre_trips_30d_equiv <span class="op">&lt;</span> <span class="num">2</span> <span class="kw">THEN</span> <span class="num">0</span>
+      <span class="kw">WHEN</span> (ct.camp_spend <span class="op">/</span> <span class="fn">NULLIF</span>(ct.camp_trips, <span class="num">0</span>))
+           <span class="op">&gt;=</span> (p.pre_spend_30d_equiv <span class="op">/</span> <span class="fn">NULLIF</span>(p.pre_trips_30d_equiv, <span class="num">0</span>)) <span class="op">*</span> <span class="num">3.0</span>  <span class="kw">THEN</span> <span class="num">20</span>
+      <span class="kw">WHEN</span> (ct.camp_spend <span class="op">/</span> <span class="fn">NULLIF</span>(ct.camp_trips, <span class="num">0</span>))
+           <span class="op">&gt;=</span> (p.pre_spend_30d_equiv <span class="op">/</span> <span class="fn">NULLIF</span>(p.pre_trips_30d_equiv, <span class="num">0</span>)) <span class="op">*</span> <span class="num">2.5</span>  <span class="kw">THEN</span> <span class="num">14</span>
+      <span class="kw">WHEN</span> (ct.camp_spend <span class="op">/</span> <span class="fn">NULLIF</span>(ct.camp_trips, <span class="num">0</span>))
+           <span class="op">&gt;=</span> (p.pre_spend_30d_equiv <span class="op">/</span> <span class="fn">NULLIF</span>(p.pre_trips_30d_equiv, <span class="num">0</span>)) <span class="op">*</span> <span class="num">2.0</span>  <span class="kw">THEN</span> <span class="num">8</span>
+      <span class="kw">WHEN</span> (ct.camp_spend <span class="op">/</span> <span class="fn">NULLIF</span>(ct.camp_trips, <span class="num">0</span>))
+           <span class="op">&gt;=</span> (p.pre_spend_30d_equiv <span class="op">/</span> <span class="fn">NULLIF</span>(p.pre_trips_30d_equiv, <span class="num">0</span>)) <span class="op">*</span> <span class="num">1.5</span>  <span class="kw">THEN</span> <span class="num">3</span>
+      <span class="kw">ELSE</span> <span class="num">0</span>
+    <span class="kw">END AS</span> score_basket_uplift,
+
+    <span class="cm">-- [BONUS] END-OF-CAMPAIGN SURGE (+5 pts)</span>
+    <span class="cm">-- W4 spend > 4× W1 spend: strong late-stage sprint signal</span>
+    <span class="kw">CASE WHEN</span> ct.w4_vs_w1_ratio <span class="op">&gt;</span> <span class="num">4.0</span> <span class="kw">THEN</span> <span class="num">5</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END AS</span> bonus_end_surge,
+
+    <span class="cm">-- GATE FLAGS (hard eligibility checks — all must pass for top tiers)</span>
+    <span class="kw">CASE WHEN</span> ct.camp_spend  <span class="op">&gt;=</span> <span class="num">1500</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END AS</span> gate_min_spend,
+    <span class="kw">CASE WHEN</span> ct.camp_trips  <span class="op">&gt;=</span> <span class="num">4</span>    <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END AS</span> gate_min_trips,
+    <span class="kw">CASE WHEN</span> p.pre_spend    <span class="op">&gt;=</span> <span class="num">400</span>  <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END AS</span> gate_min_baseline,
+    <span class="kw">CASE WHEN</span> p.pre_trips    <span class="op">&gt;=</span> <span class="num">4</span>    <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END AS</span> gate_baseline_trips
+
+  <span class="kw">FROM</span> campaign_total ct
+  <span class="kw">LEFT JOIN</span> pre_campaign p <span class="kw">USING</span> (customer_code)
+),</pre>
+    </div>
+  </div>
+
+  <!-- SECTION 4: Signal breadth + tier classification -->
+  <div class="code-section">
+    <div class="code-section-head">
+      <span class="code-section-num">04</span>
+      <span class="code-section-title">Signal breadth &amp; tier classification</span>
+    </div>
+    <p class="code-section-desc">
+      Signals fired counts how many dimensions scored above a meaningful threshold — this prevents a single extreme dimension from inflating the tier. The final classification requires <strong>both a score threshold and a minimum number of signals fired</strong>, ensuring tier assignment is robust and multi-dimensional.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">BigQuery SQL</span>
+        <button class="copy-btn" onclick="copyBlock(this, 'sql4')">Copy</button>
+      </div>
+      <pre id="sql4">signal_breadth <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    *,
+    <span class="cm">-- Total intent score (max 105 pts including bonus)</span>
+    (score_spend_accel <span class="op">+</span> score_visit_accel <span class="op">+</span> score_velocity
+     <span class="op">+</span> score_basket_uplift <span class="op">+</span> bonus_end_surge) <span class="kw">AS</span> intent_score,
+
+    <span class="cm">-- Count of dimensions that fired above meaningful threshold</span>
+    (<span class="kw">CASE WHEN</span> score_spend_accel   <span class="op">&gt;=</span> <span class="num">18</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span> <span class="op">+</span>
+     <span class="kw">CASE WHEN</span> score_visit_accel   <span class="op">&gt;=</span> <span class="num">15</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span> <span class="op">+</span>
+     <span class="kw">CASE WHEN</span> score_velocity      <span class="op">&gt;=</span> <span class="num">15</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span> <span class="op">+</span>
+     <span class="kw">CASE WHEN</span> score_basket_uplift <span class="op">&gt;=</span> <span class="num">12</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>)
+      <span class="kw">AS</span> signals_fired
+
+  <span class="kw">FROM</span> scored
+)
+
+<span class="cm">-- FINAL OUTPUT: tier summary with customer count and avg metrics</span>
+<span class="kw">SELECT</span>
+  intent_tier,
+  <span class="fn">COUNT</span>(*)                                                             <span class="kw">AS</span> customer_count,
+  <span class="fn">ROUND</span>(<span class="fn">COUNT</span>(*) <span class="op">*</span> <span class="num">100.0</span> <span class="op">/</span> <span class="fn">SUM</span>(<span class="fn">COUNT</span>(*)) <span class="kw">OVER</span>(), <span class="num">2</span>)               <span class="kw">AS</span> pct_of_total,
+  <span class="fn">ROUND</span>(<span class="fn">AVG</span>(camp_spend), <span class="num">0</span>)                                           <span class="kw">AS</span> avg_camp_spend,
+  <span class="fn">ROUND</span>(<span class="fn">AVG</span>(camp_trips), <span class="num">1</span>)                                           <span class="kw">AS</span> avg_camp_trips,
+  <span class="fn">ROUND</span>(<span class="fn">AVG</span>(intent_score), <span class="num">1</span>)                                         <span class="kw">AS</span> avg_intent_score
+<span class="kw">FROM</span> (
+  <span class="kw">SELECT</span>
+    *,
+    <span class="kw">CASE</span>
+      <span class="kw">WHEN</span> intent_score     <span class="op">&gt;=</span> <span class="num">80</span>
+       <span class="kw">AND</span> gate_min_spend    <span class="op">=</span> <span class="num">1</span>
+       <span class="kw">AND</span> gate_min_trips    <span class="op">=</span> <span class="num">1</span>
+       <span class="kw">AND</span> gate_min_baseline <span class="op">=</span> <span class="num">1</span>
+       <span class="kw">AND</span> gate_baseline_trips <span class="op">=</span> <span class="num">1</span>
+       <span class="kw">AND</span> signals_fired     <span class="op">&gt;=</span> <span class="num">3</span>  <span class="kw">THEN</span> <span class="str">'Intentional racer'</span>
+      <span class="kw">WHEN</span> intent_score     <span class="op">&gt;=</span> <span class="num">55</span>
+       <span class="kw">AND</span> gate_min_baseline <span class="op">=</span> <span class="num">1</span>
+       <span class="kw">AND</span> gate_baseline_trips <span class="op">=</span> <span class="num">1</span>
+       <span class="kw">AND</span> signals_fired     <span class="op">&gt;=</span> <span class="num">3</span>  <span class="kw">THEN</span> <span class="str">'Active climber'</span>
+      <span class="kw">WHEN</span> intent_score     <span class="op">&gt;=</span> <span class="num">25</span>
+       <span class="kw">AND</span> gate_min_baseline <span class="op">=</span> <span class="num">1</span>     <span class="kw">THEN</span> <span class="str">'Passive beneficiary'</span>
+      <span class="kw">ELSE</span>                              <span class="str">'Accidental qualifier'</span>
+    <span class="kw">END AS</span> intent_tier
+  <span class="kw">FROM</span> signal_breadth
+) t
+<span class="kw">GROUP BY</span> <span class="num">1</span>
+<span class="kw">ORDER BY</span>
+  <span class="kw">CASE</span> intent_tier
+    <span class="kw">WHEN</span> <span class="str">'Intentional racer'</span>   <span class="kw">THEN</span> <span class="num">1</span>
+    <span class="kw">WHEN</span> <span class="str">'Active climber'</span>      <span class="kw">THEN</span> <span class="num">2</span>
+    <span class="kw">WHEN</span> <span class="str">'Passive beneficiary'</span> <span class="kw">THEN</span> <span class="num">3</span>
+    <span class="kw">ELSE</span> <span class="num">4</span>
+  <span class="kw">END</span></pre>
+    </div>
+  </div>
+
+  <!-- BACK -->
+  <div class="back-row">
+    <a class="back-link" href="portfolio.html">← Back to all projects</a>
+    <span style="font-size:12px;color:var(--text-3)">© 2026 Jiranuwat Noonduang</span>
+  </div>
+
+</div>
+
+<script>
+// ── DARK MODE ──────────────────────────────────────────────
+const root = document.documentElement;
+const btn  = document.querySelector('.theme-btn');
+let dark = localStorage.getItem('theme')
+  ? localStorage.getItem('theme') === 'dark'
+  : window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+function applyTheme(animate){
+  if(animate){ root.classList.add('t'); setTimeout(()=>root.classList.remove('t'),350); }
+  dark ? root.setAttribute('data-theme','dark') : root.removeAttribute('data-theme');
+  btn.textContent = dark ? '☀' : '☾';
+  localStorage.setItem('theme', dark ? 'dark' : 'light');
+}
+function toggleTheme(){ dark=!dark; applyTheme(true); }
+applyTheme(false);
+
+// ── COPY INDIVIDUAL BLOCK ────────────────────────────────
+function copyBlock(btn, id){
+  const text = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='Copied!'; btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent='Copy'; btn.classList.remove('copied'); },2000);
+  });
+}
+</script>
+</body>
+</html>

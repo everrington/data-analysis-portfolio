@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PC&B Promotion Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f2f5;
+  --surface:#ffffff;
+  --surface2:#f7f8fa;
+  --surface3:#eef0f4;
+  --border:#dde1e8;
+  --border2:#c8cdd8;
+  --text:#1a1d23;
+  --text2:#5a6070;
+  --text3:#9aa0ae;
+  --blue:#1e56c8;
+  --blue2:#2563eb;
+  --blue-light:#dbeafe;
+  --teal:#0a8a7a;
+  --teal2:#0d9488;
+  --teal-light:#ccfbf1;
+  --pink:#d63a7a;
+  --pink-light:#fce7f3;
+  --orange:#e87820;
+  --green:#16a34a;
+  --red:#dc2626;
+  --purple:#7c3aed;
+  --amber:#d97706;
+  --shadow:0 1px 3px rgba(0,0,0,0.07),0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:0 4px 14px rgba(0,0,0,0.09);
+  --r:8px;
+}
+
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);font-size:12px;min-height:100vh}
+
+/* ═══ NAV TABS ═══════════════════════════════════════ */
+.page-tabs{
+  display:flex;align-items:center;gap:0;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:0 20px;
+  position:sticky;top:0;z-index:200;
+  box-shadow:var(--shadow);
+}
+.tab-btn{
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:12px;font-weight:500;
+  padding:13px 20px;
+  border:none;background:transparent;
+  color:var(--text2);cursor:pointer;
+  border-bottom:2px solid transparent;
+  transition:color .2s,border-color .2s;
+  white-space:nowrap;
+}
+.tab-btn.active{color:var(--blue2);border-bottom-color:var(--blue2)}
+.tab-btn:hover:not(.active){color:var(--text);background:var(--surface2)}
+.tab-sep{width:1px;height:20px;background:var(--border);margin:0 8px}
+
+/* ═══ PAGE WRAPPER ═══════════════════════════════════ */
+.page{display:none}
+.page.active{display:block}
+
+/* ═══ HEADER ════════════════════════════════════════ */
+.dash-header{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:12px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.dash-title{font-size:20px;font-weight:700;letter-spacing:-0.5px;color:var(--text)}
+.dash-meta{text-align:right}
+.dash-date{font-size:18px;font-weight:700;color:var(--blue2);letter-spacing:-0.5px}
+.dash-sub{font-size:9px;color:var(--text3);margin-top:2px}
+.date-range-bar{
+  display:flex;align-items:center;gap:6px;
+  font-size:10px;color:var(--text2);margin-top:4px;
+}
+.date-input{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  border:1px solid var(--border);border-radius:4px;
+  padding:3px 6px;background:var(--surface2);
+  color:var(--text);cursor:pointer;
+}
+
+/* ═══ FILTER PANEL ═══════════════════════════════════ */
+.filter-panel{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:10px 20px;
+}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;align-items:flex-end}
+.filter-row:last-child{margin-bottom:0}
+.fg{
+  display:flex;flex-direction:column;gap:2px;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:6px;padding:5px 8px;
+  min-width:110px;flex:1;max-width:170px;
+}
+.fg.blue{background:var(--blue-light);border-color:var(--blue2)}
+.fg.teal{background:var(--teal-light);border-color:var(--teal2)}
+.fg-lbl{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;color:var(--text3)}
+.fg-lbl.blue{color:var(--blue2)}
+.fg-lbl.teal{color:var(--teal2)}
+.fg-sub{font-size:9px;color:var(--text3);margin-top:2px}
+select.fgs{
+  font-family:'IBM Plex Sans',sans-serif;font-size:10px;font-weight:500;
+  border:none;background:transparent;color:var(--text);
+  width:100%;cursor:pointer;padding:0;appearance:none;
+}
+select.fgs:focus{outline:none}
+.filter-divider{width:1px;background:var(--border);align-self:stretch;margin:0 2px;flex-shrink:0}
+.clear-btn{
+  font-size:10px;font-weight:500;
+  padding:5px 12px;border:1px solid var(--border2);border-radius:6px;
+  background:var(--surface2);color:var(--text2);cursor:pointer;white-space:nowrap;
+  align-self:center;transition:background .15s;
+}
+.clear-btn:hover{background:var(--bg);color:var(--text)}
+
+/* ═══ MAIN CONTENT ═══════════════════════════════════ */
+.content{padding:16px 20px;display:flex;flex-direction:column;gap:14px}
+
+/* ═══ CARD ════════════════════════════════════════════ */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.card-head{
+  padding:10px 14px 8px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-title{font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px}
+.card-title::before{content:'#';color:var(--blue2);font-weight:700}
+.card-body{padding:12px 14px}
+.card-sub{font-size:9px;color:var(--text3);margin-left:4px;font-weight:400}
+
+/* ═══ TIMELINE / GANTT ════════════════════════════════ */
+.timeline-wrap{overflow-x:auto;font-size:10px}
+.tl-table{border-collapse:collapse;width:100%;min-width:900px}
+.tl-table th{
+  font-size:9px;font-weight:600;text-align:center;
+  padding:3px 2px;background:var(--surface2);color:var(--text2);
+  border:1px solid var(--border);white-space:nowrap;
+  position:sticky;top:0;z-index:10;
+}
+.tl-table th.year-head{background:var(--surface3);color:var(--text);font-size:10px}
+.tl-table th.month-head{background:var(--surface2)}
+.tl-table th.week-head{font-size:8px}
+.tl-table th.day-head{font-size:7px;min-width:14px;padding:2px 1px}
+.tl-table td{
+  border:1px solid var(--border);padding:2px 3px;
+  vertical-align:middle;white-space:nowrap;font-size:9px;
+}
+.tl-table td.meta{background:var(--surface2);position:sticky;left:0;z-index:5;min-width:80px;max-width:120px;overflow:hidden;text-overflow:ellipsis}
+.tl-table td.meta.lv1{font-weight:600;color:var(--text2);background:var(--surface3)}
+.tl-table .tl-bar{
+  display:block;height:12px;border-radius:3px;
+  transition:opacity .2s;cursor:pointer;
+}
+.tl-bar:hover{opacity:.75}
+.tl-cell-active{background:var(--teal2);opacity:.85}
+.tl-cell-active.highlight{background:var(--pink);opacity:1}
+.tl-cell-empty{background:transparent}
+.row-hover:hover td{background:rgba(37,99,235,0.04)}
+
+/* ═══ PRICE TABLE ════════════════════════════════════ */
+.price-table{border-collapse:collapse;width:100%;font-size:10px;min-width:700px}
+.price-table th{
+  font-size:9px;font-weight:600;padding:4px 6px;
+  background:var(--surface2);color:var(--text2);border:1px solid var(--border);
+  text-align:center;position:sticky;top:0;
+}
+.price-table th.left{text-align:left}
+.price-table td{border:1px solid var(--border);padding:3px 5px;font-size:9px}
+.price-table td.meta{background:var(--surface2);font-weight:500;color:var(--text);position:sticky;left:0}
+.price-cell{
+  text-align:center;font-family:'IBM Plex Mono',monospace;font-size:9px;
+  font-weight:500;color:#fff;border-radius:3px;padding:2px 3px;
+}
+.pc-teal{background:#0d9488}
+.pc-teal2{background:#0f766e}
+.pc-blue{background:#2563eb}
+.pc-amber{background:#d97706}
+.pc-empty{background:transparent;color:transparent}
+
+/* ═══ SALES TABLE ════════════════════════════════════ */
+.sales-table{border-collapse:collapse;width:100%;font-size:10px;min-width:700px}
+.sales-table th{
+  font-size:9px;font-weight:600;padding:4px 6px;
+  background:var(--surface2);color:var(--text2);border:1px solid var(--border);
+  text-align:center;position:sticky;top:0;
+}
+.sales-table th.left{text-align:left}
+.sales-table td{border:1px solid var(--border);padding:3px 5px;font-size:9px}
+.sales-table td.meta{background:var(--surface2);font-weight:500;color:var(--text);position:sticky;left:0}
+.sales-num{text-align:right;font-family:'IBM Plex Mono',monospace}
+
+/* ═══ KPI CARDS (PAGE 2) ═════════════════════════════ */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.kpi{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:12px 14px;
+  box-shadow:var(--shadow);
+}
+.kpi-lbl{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);margin-bottom:4px}
+.kpi-val{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-1px;font-family:'IBM Plex Mono',monospace;line-height:1}
+.kpi-delta{font-size:10px;margin-top:4px;font-weight:500}
+.kpi-delta.up{color:var(--teal2)}
+.kpi-delta.down{color:var(--red)}
+.kpi-date{font-size:26px;font-weight:700;color:var(--blue2);letter-spacing:-1px;font-family:'IBM Plex Mono',monospace}
+
+/* ═══ CHART GRID (PAGE 2) ═══════════════════════════ */
+.chart-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chart-grid-3{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chart-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:14px;box-shadow:var(--shadow);
+}
+.cc-title{font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px}
+.cc-sub{font-size:9px;color:var(--text3);margin-bottom:10px;display:flex;gap:8px;flex-wrap:wrap}
+.legend-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.leg-item{display:flex;align-items:center;gap:3px;font-size:9px;color:var(--text2)}
+.leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.leg-sq{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+
+/* ═══ PERFORMANCE TABLE ═════════════════════════════ */
+.perf-table{border-collapse:collapse;width:100%;font-size:10px}
+.perf-table th{
+  font-size:9px;font-weight:600;padding:5px 8px;
+  background:var(--surface2);color:var(--text2);border-bottom:1px solid var(--border);
+  text-align:left;white-space:nowrap;
+}
+.perf-table th.r{text-align:right}
+.perf-table td{padding:5px 8px;border-bottom:1px solid var(--border);font-size:10px}
+.perf-table td.r{text-align:right;font-family:'IBM Plex Mono',monospace;font-size:10px}
+.perf-table tr:last-child td{font-weight:600;background:var(--surface2)}
+.perf-table tr:hover td{background:rgba(37,99,235,0.03)}
+.badge{
+  display:inline-block;font-size:8px;font-weight:600;
+  padding:2px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:0.3px;
+}
+.badge-teal{background:var(--teal-light);color:var(--teal2)}
+.badge-blue{background:var(--blue-light);color:var(--blue2)}
+.badge-pink{background:var(--pink-light);color:var(--pink)}
+.badge-amber{background:#fef9c3;color:var(--amber)}
+
+/* ═══ SCATTER (BUBBLE CHART WRAPPER) ════════════════ */
+.bubble-wrap{position:relative;height:260px}
+
+/* ═══ TABS (page 2 table switch) ════════════════════ */
+.inner-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:10px}
+.inner-tab{
+  font-family:'IBM Plex Sans',sans-serif;font-size:10px;font-weight:500;
+  padding:6px 12px;border:none;background:transparent;color:var(--text2);
+  cursor:pointer;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;
+}
+.inner-tab.active{color:var(--blue2);border-bottom-color:var(--blue2)}
+
+@media(max-width:800px){
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  .chart-grid-2,.chart-grid-3{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- PAGE TABS -->
+<div class="page-tabs">
+  <button class="tab-btn active" onclick="switchPage(0)">📅 Promotion Timeline</button>
+  <div class="tab-sep"></div>
+  <button class="tab-btn" onclick="switchPage(1)">📊 Promotion Performance</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE 1 — PROMOTION TIMELINE
+══════════════════════════════════════════════════════ -->
+<div class="page active" id="page0">
+
+  <!-- HEADER -->
+  <div class="dash-header">
+    <div class="dash-title">PC&amp;B PROMOTION TIMELINE</div>
+    <div class="dash-meta">
+      <div class="dash-date">01-Apr-26</div>
+      <div class="dash-sub">Latest update</div>
+      <div class="date-range-bar">
+        <input type="date" class="date-input" value="2025-08-01"/>
+        <span>→</span>
+        <input type="date" class="date-input" value="2026-04-01"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filter-panel">
+    <div class="filter-row">
+      <div class="fg blue">
+        <span class="fg-lbl blue">Product Filter</span>
+        <span class="fg-sub">All store flag</span>
+        <select class="fgs"><option>Multiple selections</option><option>All</option></select>
+      </div>
+      <div class="fg">
+        <span class="fg-sub">Status group / Status name</span>
+        <select class="fgs"><option>All</option><option>Active</option><option>Inactive</option></select>
+        <span class="fg-sub">Promotion clear</span>
+        <select class="fgs"><option>All</option></select>
+      </div>
+      <div class="fg">
+        <span class="fg-sub">Start date</span>
+        <select class="fgs"><option>All</option></select>
+        <span class="fg-sub">End date</span>
+        <select class="fgs"><option>All</option></select>
+      </div>
+      <div class="filter-divider"></div>
+      <div class="fg teal">
+        <span class="fg-lbl teal">Product Filter</span>
+        <span class="fg-sub">Vendor name, Vendor code</span>
+        <select class="fgs"><option>All</option><option>Vendor A</option><option>Vendor B</option></select>
+      </div>
+      <div class="fg">
+        <span class="fg-sub">Division ID, Division name</span>
+        <select class="fgs"><option>All</option></select>
+        <span class="fg-sub">Category, Subcategory name</span>
+        <select class="fgs"><option>All</option></select>
+      </div>
+      <div class="fg">
+        <span class="fg-sub">Brand name, Brand code</span>
+        <select class="fgs"><option>All</option><option>Brand A</option><option>Brand B</option></select>
+        <span class="fg-sub">Packtype group</span>
+        <select class="fgs"><option>All</option></select>
+      </div>
+      <div class="fg">
+        <span class="fg-sub">Status</span>
+        <select class="fgs"><option>All</option></select>
+        <span class="fg-sub">OEM</span>
+        <select class="fgs"><option>All</option></select>
+      </div>
+      <div class="fg">
+        <span class="fg-sub">Tier product</span>
+        <select class="fgs"><option>All</option></select>
+      </div>
+      <button class="clear-btn" onclick="clearFilters(0)">Clear all</button>
+    </div>
+    <div class="filter-row">
+      <div class="fg">
+        <span class="fg-sub">Promotion main theme</span>
+        <select class="fgs" id="f-theme"><option>All</option><option>SPECIAL THEME</option><option>7 DAY</option><option>MAIL</option><option>IN STORE</option></select>
+      </div>
+      <div class="fg">
+        <span class="fg-sub">Promotion sub theme</span>
+        <select class="fgs"><option>All</option></select>
+      </div>
+      <div class="fg">
+        <span class="fg-sub">Mechanic</span>
+        <select class="fgs"><option>All</option></select>
+      </div>
+      <div class="fg">
+        <span class="fg-sub">Promotion group</span>
+        <select class="fgs"><option>All</option></select>
+      </div>
+      <div class="fg">
+        <span class="fg-sub">Promotion name, Promotion ID</span>
+        <select class="fgs"><option>All</option></select>
+      </div>
+      <div class="fg">
+        <span class="fg-sub">Material name, Product name, Material code, Barcode</span>
+        <select class="fgs"><option>All</option></select>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- GANTT: Promotion by Date -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">promotion by date <span class="card-sub">(pro overlapping)</span></span>
+        <div style="display:flex;gap:6px">
+          <span style="font-size:9px;display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;background:var(--teal2);border-radius:2px;display:inline-block"></span>Active period</span>
+          <span style="font-size:9px;display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;background:var(--pink);border-radius:2px;display:inline-block"></span>Featured</span>
+        </div>
+      </div>
+      <div class="card-body" style="padding:8px">
+        <div class="timeline-wrap" id="ganttWrap"></div>
+      </div>
+    </div>
+
+    <!-- MIN PRICE TABLE -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">min. of promotion price by date</span>
+      </div>
+      <div class="card-body" style="padding:8px">
+        <div style="overflow-x:auto" id="priceWrap"></div>
+      </div>
+    </div>
+
+    <!-- SALES TABLE -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">sales by promotion by date</span>
+      </div>
+      <div class="card-body" style="padding:8px">
+        <div style="overflow-x:auto" id="salesWrap"></div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /page0 -->
+
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE 2 — PROMOTION PERFORMANCE
+══════════════════════════════════════════════════════ -->
+<div class="page" id="page1">
+
+  <!-- HEADER -->
+  <div class="dash-header">
+    <div class="dash-title">PC&amp;B PROMOTION PERFORMANCE</div>
+    <div class="dash-meta">
+      <div class="dash-date">01-Apr-26</div>
+      <div class="dash-sub">Latest update</div>
+      <div class="date-range-bar">
+        <input type="date" class="date-input" value="2025-08-20"/>
+        <span>→</span>
+        <input type="date" class="date-input" value="2026-03-19"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILTERS (same structure) -->
+  <div class="filter-panel">
+    <div class="filter-row">
+      <div class="fg blue">
+        <span class="fg-lbl blue">Product Filter</span>
+        <span class="fg-sub">All store flag</span>
+        <select class="fgs"><option>All</option></select>
+      </div>
+      <div class="fg">
+        <span class="fg-sub">Status group</span>
+        <select class="fgs"><option>Created</option><option>All</option></select>
+        <span class="fg-sub">Status name</span>
+        <select class="fgs"><option>All</option></select>
+      </div>
+      <div class="fg">
+        <span class="fg-sub">Promotion main theme</span>
+        <select class="fgs"><option>All</option><option>SPECIAL THEME</option><option>7 DAY</option></select>
+        <span class="fg-sub">Alert date</span>
+        <select class="fgs"><option>All</option></select>
+      </div>
+      <div class="fg">
+        <span class="fg-sub">Mechanic</span>
+        <select class="fgs"><option>All</option></select>
+        <span class="fg-sub">Promotion group</span>
+        <select class="fgs"><option>All</option></select>
+      </div>
+      <div class="filter-divider"></div>
+      <div class="fg teal">
+        <span class="fg-lbl teal">Product Filter</span>
+        <span class="fg-sub">Vendor name, Vendor code</span>
+        <select class="fgs"><option>All</option><option>Vendor A</option></select>
+      </div>
+      <div class="fg">
+        <span class="fg-sub">Division ID, Division name</span>
+        <select class="fgs"><option>All</option></select>
+        <span class="fg-sub">Category, Subcategory name</span>
+        <select class="fgs"><option>All</option></select>
+      </div>
+      <div class="fg">
+        <span class="fg-sub">Brand name, Brand code</span>
+        <select class="fgs"><option>All</option><option>Brand A</option></select>
+        <span class="fg-sub">Packtype group</span>
+        <select class="fgs"><option>All</option></select>
+      </div>
+      <div class="fg">
+        <span class="fg-sub">Material, Product name, Code, Barcode</span>
+        <select class="fgs"><option>All</option></select>
+        <span class="fg-sub">Min sales amount (฿/m)</span>
+        <input type="range" min="0" max="2500000" step="50000" value="0" style="width:100%;margin-top:3px" oninput="updateKPIs()"/>
+      </div>
+      <button class="clear-btn" onclick="clearFilters(1)">Clear all slicers</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- KPI ROW -->
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-lbl">Total Sales TY</div>
+        <div class="kpi-val" id="k-sales">XXX M</div>
+        <div class="kpi-delta up" id="k-sales-d">▲ +X.X% vs LY</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl"># Promotions</div>
+        <div class="kpi-val" id="k-promo">42</div>
+        <div class="kpi-delta up" id="k-promo-d">▲ +225% vs LY (13)</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">Sales/Day</div>
+        <div class="kpi-val" id="k-spd">XX K</div>
+        <div class="kpi-delta up">▲ vs LY</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">Avg ASP (฿)</div>
+        <div class="kpi-val" id="k-asp">XXX</div>
+        <div class="kpi-delta down">▼ vs LY</div>
+      </div>
+      <div class="kpi" style="background:var(--blue-light);border-color:var(--blue2)">
+        <div class="kpi-lbl" style="color:var(--blue2)">Latest Promotion</div>
+        <div class="kpi-date">24-May</div>
+        <div class="kpi-delta up">Active now</div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW 1 -->
+    <div class="chart-grid-2">
+      <!-- Sales TY trend -->
+      <div class="chart-card">
+        <div class="cc-title">Promotion Sales TY</div>
+        <div class="cc-sub">
+          <span class="leg-item"><span class="leg-dot" style="background:var(--blue2)"></span>Sales TY</span>
+          <span class="leg-item"><span class="leg-dot" style="background:var(--teal2)"></span>ASP</span>
+        </div>
+        <canvas id="c-salesTY" height="140"></canvas>
+      </div>
+      <!-- Sales by theme -->
+      <div class="chart-card">
+        <div class="cc-title">Promotion Sales by Theme</div>
+        <div class="cc-sub">
+          <span class="leg-item"><span class="leg-sq" style="background:var(--blue2)"></span>7 Day</span>
+          <span class="leg-item"><span class="leg-sq" style="background:var(--teal2)"></span>Mail</span>
+          <span class="leg-item"><span class="leg-sq" style="background:var(--pink)"></span>Other</span>
+          <span class="leg-item"><span class="leg-sq" style="background:var(--amber)"></span>Special Theme</span>
+          <span class="leg-item"><span class="leg-sq" style="background:var(--purple)"></span>In Store</span>
+        </div>
+        <canvas id="c-salesTheme" height="140"></canvas>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW 2 -->
+    <div class="chart-grid-2">
+      <!-- Bubble: Sales/day by ASP -->
+      <div class="chart-card">
+        <div class="cc-title">Sales/day by ASP</div>
+        <div class="cc-sub">
+          <span>bubble size = total sales · x-axis = ASP · y-axis = sales/day</span>
+        </div>
+        <div class="bubble-wrap"><canvas id="c-bubble"></canvas></div>
+      </div>
+
+      <!-- RIGHT: theme performance table + item performance table -->
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="chart-card" style="padding:12px">
+          <div class="cc-title" style="margin-bottom:8px">Theme Performance</div>
+          <div style="overflow-x:auto" id="themeTableWrap"></div>
+        </div>
+        <div class="chart-card" style="padding:12px">
+          <div class="inner-tabs">
+            <button class="inner-tab active" onclick="switchInnerTab(0)">Promotion Performance</button>
+            <button class="inner-tab" onclick="switchInnerTab(1)">Item Detail</button>
+          </div>
+          <div style="overflow-x:auto" id="promoTableWrap"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /page1 -->
+
+<script>
+// ══════════════════════════════════════════════════════
+//  DATA (fully anonymized)
+// ══════════════════════════════════════════════════════
+
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const WEEKS  = ['WK1','WK2','WK3','WK4','WK5'];
+
+// Promotion rows for gantt
+const PROMOS = [
+  {tier:'T1', barcode:'XXX-001', name:'Product Alpha — SPECIAL 1,000g Bottle',  theme:'SPECIAL THEME', start:4,  len:28, color:'teal'},
+  {tier:'T1', barcode:'XXX-002', name:'Product Beta — Premium 500g Pack',        theme:'7 DAY',         start:15, len:7,  color:'pink'},
+  {tier:'T1', barcode:'XXX-003', name:'Product Gamma — Herbal 750ml Refill',     theme:'MAIL',          start:1,  len:14, color:'teal'},
+  {tier:'T2', barcode:'XXX-011', name:'SKU Delta — Classic 10g Sachet x10',      theme:'IN STORE',      start:8,  len:10, color:'teal'},
+  {tier:'T2', barcode:'XXX-012', name:'SKU Epsilon — Moisture 10g Pack',         theme:'IN STORE',      start:20, len:9,  color:'teal'},
+  {tier:'T2', barcode:'XXX-013', name:'SKU Zeta — Intensive 10g Sachets',        theme:'7 DAY',         start:3,  len:21, color:'teal'},
+  {tier:'T2', barcode:'XXX-021', name:'SKU Eta — Advanced 50ml Bottle',          theme:'SPECIAL THEME', start:12, len:15, color:'pink'},
+  {tier:'T2', barcode:'XXX-022', name:'SKU Theta — Repair 50ml Tube',            theme:'MAIL',          start:25, len:8,  color:'teal'},
+  {tier:'T2', barcode:'XXX-031', name:'SKU Iota — Nourish 2.8g Sachet',          theme:'SPECIAL THEME', start:6,  len:12, color:'teal'},
+  {tier:'T2', barcode:'XXX-032', name:'SKU Kappa — Revive 2.8g Pack',            theme:'7 DAY',         start:18, len:7,  color:'teal'},
+];
+
+const DAYS_SHOWN = 28; // show 4 weeks of days in table
+
+// Price data (anonymized index values)
+const PRICE_DATA = [
+  {tier:'T1', barcode:'XXX-001', name:'Product Alpha',    theme:'SPECIAL THEME', prices:[null,null,null,298,298,298,298,298,298,298,298,null,null,null]},
+  {tier:'T1', barcode:'XXX-002', name:'Product Beta',     theme:'7 DAY',         prices:[null,null,249,249,249,249,249,null,null,null,null,null,null,null]},
+  {tier:'T1', barcode:'XXX-003', name:'Product Gamma',    theme:'MAIL',          prices:[199,199,199,199,199,null,null,null,null,null,null,null,null,null]},
+  {tier:'T2', barcode:'XXX-011', name:'SKU Delta',        theme:'IN STORE',      prices:[null,26,26,26,26,26,26,26,null,null,null,null,null,null]},
+  {tier:'T2', barcode:'XXX-012', name:'SKU Epsilon',      theme:'IN STORE',      prices:[null,null,null,null,25,25,25,25,25,null,null,null,null,null]},
+  {tier:'T2', barcode:'XXX-013', name:'SKU Zeta',         theme:'7 DAY',         prices:[35,35,35,35,35,35,35,35,35,35,35,35,null,null]},
+  {tier:'T2', barcode:'XXX-021', name:'SKU Eta',          theme:'SPECIAL THEME', prices:[null,null,null,null,null,54,54,54,54,54,54,null,null,null]},
+  {tier:'T2', barcode:'XXX-022', name:'SKU Theta',        theme:'MAIL',          prices:[null,null,null,null,null,null,null,null,78,78,78,78,null,null]},
+];
+
+// Sales data (anonymized, indexed units)
+const SALES_DATA = [
+  {tier:'T1', barcode:'XXX-001', name:'Product Alpha',    theme:'7 DAY',  vals:[515,515,494,379,578,514,298,281,271,271,279,1110,null,271]},
+  {tier:'T1', barcode:'XXX-002', name:'Product Beta',     theme:'MAIL',   vals:[null,null,null,null,null,null,null,null,null,null,null,null,null,null]},
+  {tier:'T2', barcode:'XXX-011', name:'SKU Delta',        theme:'IN STORE',vals:[166,515,515,494,613,378,514,298,281,271,1410,407,795,620]},
+  {tier:'T2', barcode:'XXX-021', name:'SKU Eta',          theme:'SPECIAL THEME',vals:[566,661,661,607,366,622,321,331,566,145,566,145,567,811]},
+  {tier:'T2', barcode:'XXX-031', name:'SKU Iota',         theme:'7 DAY',  vals:[null,null,null,null,null,null,null,null,null,null,null,null,null,null]},
+];
+
+// Theme performance
+const THEME_PERF = [
+  {name:'SPECIAL THEME', sales:'X,XXX,XXX', spd:'XX,XXX', spp:'X,XXX,XXX', promos:2,  diffLY:1,  asp:83, rsi:199, last:'22-Sep-25'},
+  {name:'wagonek',       sales:'XXX,XXX',   spd:'X,XXX',  spp:'XXX,XXX',   promos:10, diffLY:9,  asp:72, rsi:null,last:'13-May-26'},
+  {name:'7 DAY',         sales:'X,XXX,XXX', spd:'XX,XXX', spp:'X,XXX,XXX', promos:8,  diffLY:1,  asp:179,rsi:199, last:'13-May-26'},
+  {name:'MAIL',          sales:'X,XXX,XXX', spd:'XX,XXX', spp:'XXX,XXX',   promos:8,  diffLY:2,  asp:142,rsi:199, last:'24-May-26'},
+  {name:'Others',        sales:'XXX,XXX',   spd:'XXX',    spp:'XXX,XXX',   promos:104,diffLY:1,  asp:86, rsi:199, last:'27-Jul-26'},
+  {name:'IN STORE',      sales:'—',         spd:'—',      spp:'—',         promos:0,  diffLY:0,  asp:null,rsi:null,last:'23-Apr-25'},
+  {name:'Total',         sales:'XX,XXX,XXX',spd:'XX,XXX', spp:'XX,XXX',   promos:125,diffLY:83, asp:97, rsi:199, last:'24-May-26'},
+];
+
+// Promo performance
+const PROMO_PERF = [
+  {name:'Promo SP25 - CJALL 31/07-06/08',  theme:'SPECIAL THEME',spd:'XX,XXX',sales:'X,XXX,XXX',asp:83,rsi:19},
+  {name:'Wed25 - CJALL 05/11',              theme:'wagonek',      spd:'X,XXX', sales:'XXX,XXX',  asp:72,rsi:19},
+  {name:'SP21 - CJALL 22/05',              theme:'SPECIAL THEME',spd:'XX,XXX',sales:'XXX,XXX',  asp:83,rsi:19},
+  {name:'7Day25 - CJALL 2-8/10',           theme:'7 DAY',        spd:'X,XXX', sales:'XXX,XXX',  asp:84,rsi:19},
+  {name:'7Day25 - CJALL 17-23/7',          theme:'7 DAY',        spd:'X,XXX', sales:'XXX,XXX',  asp:84,rsi:19},
+  {name:'7Day25 - CJALL 4-10/12',          theme:'7 DAY',        spd:'X,XXX', sales:'XXX,XXX',  asp:84,rsi:19},
+  {name:'Wed25 - CJALL 24/12',             theme:'wagonek',      spd:'XXX',   sales:'XX,XXX',   asp:83,rsi:19},
+  {name:'7Day25 - CJALL 23-29/10',         theme:'7 DAY',        spd:'X,XXX', sales:'XXX,XXX',  asp:84,rsi:19},
+  {name:'7Day25 - CJALL 1-7/12',           theme:'7 DAY',        spd:'X,XXX', sales:'XXX,XXX',  asp:84,rsi:19},
+  {name:'Total',                            theme:'7 DAY',        spd:'XX,XXX',sales:'XX,XXX,XXX',asp:97,rsi:19},
+];
+
+// Bubble chart data (sales/day by ASP)
+const BUBBLE_DATA = [
+  {label:'Brand A — Promo 1',  x:83,  y:24500, r:22, color:'#e4478a'},
+  {label:'Brand A — Promo 2',  x:72,  y:11600, r:14, color:'#e4478a'},
+  {label:'Brand B — Promo 1',  x:142, y:28000, r:30, color:'#2563eb'},
+  {label:'Brand B — Promo 2',  x:179, y:6200,  r:10, color:'#2563eb'},
+  {label:'Brand C — Promo 1',  x:86,  y:803,   r:8,  color:'#0d9488'},
+  {label:'Brand C — Promo 2',  x:97,  y:47085, r:38, color:'#0d9488'},
+  {label:'Special Theme SP25', x:58,  y:35000, r:32, color:'#7c3aed'},
+  {label:'7Day CJALL Oct',     x:84,  y:6313,  r:12, color:'#d97706'},
+  {label:'7Day CJALL Jul',     x:84,  y:5811,  r:11, color:'#d97706'},
+  {label:'Wed25 Dec',          x:83,  y:9490,  r:13, color:'#dc2626'},
+];
+
+// Monthly sales TY + ASP (p2)
+const MONTHLY_TY  = [0.8,0.6,0.9,1.2,1.8,2.1,3.4,2.8,1.6,1.2,0.9,0.4].map(v=>v*1e6);
+const MONTHLY_ASP = [89,84,92,97,105,98,88,83,94,84,79,76];
+
+// ══════════════════════════════════════════════════════
+//  BUILD GANTT
+// ══════════════════════════════════════════════════════
+function buildGantt(){
+  const COL_DAYS = DAYS_SHOWN;
+  let html = '<table class="tl-table"><thead>';
+  // Row 1: Year
+  html += '<tr>';
+  html += '<th class="year-head" colspan="4">Item</th>';
+  html += `<th class="year-head" colspan="${COL_DAYS}">2026 · April</th>`;
+  html += '</tr>';
+  // Row 2: Week
+  html += '<tr>';
+  html += '<th>Tier</th><th>Code</th><th style="min-width:140px;text-align:left">Material name</th><th>Theme</th>';
+  for(let w=1;w<=4;w++){
+    html += `<th class="week-head" colspan="7">WK${w+13}</th>`;
+  }
+  html += '</tr>';
+  // Row 3: Day numbers
+  html += '<tr>';
+  html += '<th></th><th></th><th></th><th></th>';
+  for(let d=1;d<=COL_DAYS;d++){
+    html += `<th class="day-head">${d}</th>`;
+  }
+  html += '</tr>';
+  html += '</thead><tbody>';
+
+  PROMOS.forEach(p=>{
+    html += `<tr class="row-hover">`;
+    html += `<td class="meta lv1">${p.tier}</td>`;
+    html += `<td class="meta" style="font-family:'IBM Plex Mono',monospace;font-size:9px">${p.barcode}</td>`;
+    html += `<td class="meta" style="max-width:140px;overflow:hidden;text-overflow:ellipsis" title="${p.name}">${p.name}</td>`;
+    html += `<td class="meta" style="font-size:9px">${p.theme}</td>`;
+    for(let d=1;d<=COL_DAYS;d++){
+      const active = d>=p.start && d<p.start+p.len;
+      const hi = active && p.color==='pink';
+      if(active){
+        html += `<td style="padding:2px"><span class="tl-bar ${hi?'tl-cell-active highlight':'tl-cell-active'}" title="${p.name} · Day ${d}"></span></td>`;
+      } else {
+        html += '<td></td>';
+      }
+    }
+    html += '</tr>';
+  });
+
+  html += '</tbody></table>';
+  document.getElementById('ganttWrap').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════
+//  BUILD PRICE TABLE
+// ══════════════════════════════════════════════════════
+function buildPriceTable(){
+  const months = ['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May'];
+  let html = '<table class="price-table"><thead><tr>';
+  html += '<th class="left">Tier</th><th class="left">Code</th><th class="left" style="min-width:130px">Material name</th><th class="left">Sub theme</th><th>Sell price</th>';
+  months.forEach(m=>{ html+=`<th>${m}</th>` });
+  html += '</tr></thead><tbody>';
+
+  PRICE_DATA.forEach(r=>{
+    html += '<tr>';
+    html += `<td class="meta">${r.tier}</td>`;
+    html += `<td class="meta" style="font-family:'IBM Plex Mono',monospace;font-size:9px">${r.barcode}</td>`;
+    html += `<td class="meta">${r.name}</td>`;
+    html += `<td class="meta">${r.theme}</td>`;
+    const avg = r.prices.filter(v=>v).reduce((a,b)=>a+b,0)/r.prices.filter(v=>v).length||0;
+    html += `<td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-size:9px">${avg?Math.round(avg):'—'}</td>`;
+    r.prices.forEach((v,i)=>{
+      if(v){
+        const cls = v>200?'pc-teal2':v>100?'pc-teal':v>50?'pc-blue':'pc-amber';
+        html += `<td><div class="price-cell ${cls}">${v}</div></td>`;
+      } else {
+        html += '<td></td>';
+      }
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('priceWrap').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════
+//  BUILD SALES TABLE
+// ══════════════════════════════════════════════════════
+function buildSalesTable(){
+  const weeks = ['WK5','WK6','WK7','WK8','WK9','WK10','WK11','WK12','WK13','WK14','WK15','WK16','WK17','WK18'];
+  let html = '<table class="sales-table"><thead><tr>';
+  html += '<th class="left">Tier</th><th class="left">Code</th><th class="left" style="min-width:130px">Material name</th><th class="left">Sub theme</th>';
+  weeks.forEach(w=>{ html+=`<th>${w}</th>` });
+  html += '</tr></thead><tbody>';
+
+  SALES_DATA.forEach(r=>{
+    html += '<tr>';
+    html += `<td class="meta">${r.tier}</td>`;
+    html += `<td class="meta" style="font-family:'IBM Plex Mono',monospace;font-size:9px">${r.barcode}</td>`;
+    html += `<td class="meta">${r.name}</td>`;
+    html += `<td class="meta">${r.theme}</td>`;
+    r.vals.forEach(v=>{
+      if(v){
+        html += `<td class="sales-num">${v.toLocaleString()}</td>`;
+      } else {
+        html += '<td></td>';
+      }
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('salesWrap').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════
+//  BUILD THEME TABLE
+// ══════════════════════════════════════════════════════
+function buildThemeTable(){
+  const badgeMap = {
+    'SPECIAL THEME':'badge-pink','7 DAY':'badge-blue',
+    'MAIL':'badge-teal','wagonek':'badge-amber','IN STORE':'badge-amber','Others':'badge-teal','Total':''
+  };
+  let html = '<table class="perf-table"><thead><tr>';
+  ['Theme','Sales','Sales/Day','Sales/Promo','#Promos','#Promo Diff LY','ASP','RSI','Latest'].forEach(h=>{
+    html += `<th class="${['Sales','Sales/Day','Sales/Promo','#Promos','ASP','RSI'].includes(h)?'r':''}">${h}</th>`;
+  });
+  html += '</tr></thead><tbody>';
+  THEME_PERF.forEach(r=>{
+    const isTotal = r.name==='Total';
+    html += `<tr>`;
+    html += `<td><span class="badge ${badgeMap[r.name]||''}">${r.name}</span></td>`;
+    html += `<td class="r">${r.sales}</td>`;
+    html += `<td class="r">${r.spd}</td>`;
+    html += `<td class="r">${r.spp}</td>`;
+    html += `<td class="r">${r.promos}</td>`;
+    html += `<td class="r">${r.diffLY}</td>`;
+    html += `<td class="r">${r.asp??'—'}</td>`;
+    html += `<td class="r">${r.rsi??'—'}</td>`;
+    html += `<td style="font-size:9px;white-space:nowrap">${r.last??'—'}</td>`;
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('themeTableWrap').innerHTML = html;
+}
+
+function buildPromoTable(){
+  const badgeMap = {'SPECIAL THEME':'badge-pink','7 DAY':'badge-blue','MAIL':'badge-teal','wagonek':'badge-amber','Total':''};
+  let html = '<table class="perf-table" style="font-size:10px"><thead><tr>';
+  ['Promotion name','Sub theme','Sales','Sales/Day','ASP','RSI'].forEach(h=>{
+    html += `<th class="${['Sales','Sales/Day','ASP','RSI'].includes(h)?'r':''}">${h}</th>`;
+  });
+  html += '</tr></thead><tbody>';
+  PROMO_PERF.forEach(r=>{
+    html += '<tr>';
+    html += `<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.name}">${r.name}</td>`;
+    html += `<td><span class="badge ${badgeMap[r.theme]||''}">${r.theme}</span></td>`;
+    html += `<td class="r">${r.sales}</td>`;
+    html += `<td class="r">${r.spd}</td>`;
+    html += `<td class="r">${r.asp}</td>`;
+    html += `<td class="r">${r.rsi}</td>`;
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('promoTableWrap').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════
+//  CHARTS (PAGE 2)
+// ══════════════════════════════════════════════════════
+Chart.defaults.font.family = "'IBM Plex Sans', sans-serif";
+Chart.defaults.font.size = 10;
+Chart.defaults.color = '#9aa0ae';
+
+let charts2 = {};
+function destroyChart(id){ if(charts2[id]){ charts2[id].destroy(); delete charts2[id]; } }
+
+function buildCharts(){
+  // C1: Sales TY (bar + line ASP)
+  destroyChart('c-salesTY');
+  charts2['c-salesTY'] = new Chart(document.getElementById('c-salesTY').getContext('2d'),{
+    data:{
+      labels:MONTHS,
+      datasets:[
+        {type:'bar', label:'Sales TY', data:MONTHLY_TY, backgroundColor:'#2563eb', borderRadius:3, yAxisID:'y', barThickness:16},
+        {type:'line',label:'ASP',      data:MONTHLY_ASP,borderColor:'#0d9488',pointBackgroundColor:'#0d9488',pointRadius:4,fill:false,tension:0.4,yAxisID:'y2'},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:true,
+      animation:{duration:600},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{
+        if(ctx.dataset.label==='Sales TY') return ` Sales: ${(ctx.parsed.y/1e6).toFixed(1)}M`;
+        return ` ASP: ฿${ctx.parsed.y}`;
+      }}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:9}}},
+        y:{position:'left',grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:9},callback:v=>(v/1e6).toFixed(0)+'M'},beginAtZero:true},
+        y2:{position:'right',grid:{display:false},ticks:{font:{size:9},callback:v=>v+'฿'},beginAtZero:false},
+      }
+    }
+  });
+
+  // C2: Sales by theme (area chart)
+  const themeMonths = [0,0.1,0.3,0.8,1.8,2.1,3.4,2.8,1.6,1.2,0.9,0.4];
+  destroyChart('c-salesTheme');
+  charts2['c-salesTheme'] = new Chart(document.getElementById('c-salesTheme').getContext('2d'),{
+    type:'line',
+    data:{
+      labels:MONTHS,
+      datasets:[
+        {label:'Special Theme',data:themeMonths.map(v=>v*0.35*1e6),backgroundColor:'rgba(214,58,122,0.25)',borderColor:'#d63a7a',fill:true,tension:0.4,pointRadius:3},
+        {label:'7 Day',        data:themeMonths.map(v=>v*0.28*1e6),backgroundColor:'rgba(37,99,235,0.2)', borderColor:'#2563eb',fill:true,tension:0.4,pointRadius:3},
+        {label:'Mail',         data:themeMonths.map(v=>v*0.18*1e6),backgroundColor:'rgba(13,148,136,0.2)',borderColor:'#0d9488',fill:true,tension:0.4,pointRadius:3},
+        {label:'In Store',     data:themeMonths.map(v=>v*0.12*1e6),backgroundColor:'rgba(124,58,237,0.15)',borderColor:'#7c3aed',fill:true,tension:0.4,pointRadius:3},
+        {label:'Other',        data:themeMonths.map(v=>v*0.07*1e6),backgroundColor:'rgba(217,119,6,0.2)', borderColor:'#d97706',fill:true,tension:0.4,pointRadius:3},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:true,
+      animation:{duration:600},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ${(ctx.parsed.y/1e6).toFixed(2)}M`}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:9}}},
+        y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:9},callback:v=>(v/1e6).toFixed(0)+'M'},beginAtZero:true},
+      }
+    }
+  });
+
+  // C3: Bubble chart
+  destroyChart('c-bubble');
+  charts2['c-bubble'] = new Chart(document.getElementById('c-bubble').getContext('2d'),{
+    type:'bubble',
+    data:{
+      datasets: BUBBLE_DATA.map(b=>({
+        label:b.label,
+        data:[{x:b.x, y:b.y, r:b.r}],
+        backgroundColor: b.color+'99',
+        borderColor: b.color,
+        borderWidth:1,
+      }))
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      animation:{duration:600},
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:ctx=>{
+          const d=ctx.raw;
+          return `${ctx.dataset.label} | ASP:฿${d.x} | SPD:${d.y.toLocaleString()}`;
+        }}}
+      },
+      scales:{
+        x:{title:{display:true,text:'ASP (฿)',font:{size:9}},grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:9}}},
+        y:{title:{display:true,text:'Sales/Day',font:{size:9}},grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:9},callback:v=>v>=1000?(v/1000).toFixed(0)+'K':v}},
+      }
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════
+//  INTERACTIONS
+// ══════════════════════════════════════════════════════
+function switchPage(idx){
+  document.querySelectorAll('.page').forEach((p,i)=>p.classList.toggle('active',i===idx));
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  if(idx===1) setTimeout(buildCharts,50);
+}
+
+function switchInnerTab(idx){
+  document.querySelectorAll('.inner-tab').forEach((t,i)=>t.classList.toggle('active',i===idx));
+  if(idx===0) buildPromoTable();
+  else {
+    document.getElementById('promoTableWrap').innerHTML = '<p style="font-size:11px;color:var(--text2);padding:12px 0">Select a promotion to view item-level detail.</p>';
+  }
+}
+
+function clearFilters(page){ /* reset all selects on that page */ }
+
+function updateKPIs(){
+  // Simulate KPI update on filter change
+}
+
+// ══════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════
+buildGantt();
+buildPriceTable();
+buildSalesTable();
+buildThemeTable();
+buildPromoTable();
+</script>
+</body>
+</html>

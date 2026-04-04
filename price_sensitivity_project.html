@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Product Price Sensitivity by Promotion Type · Jiranuwat N.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fafaf8;--bg-2:#f3f2ef;--bg-3:#eceae5;
+  --text:#1a1916;--text-2:#6b6a65;--text-3:#a09f9a;
+  --border:rgba(26,25,22,0.1);--border-2:rgba(26,25,22,0.18);--border-3:rgba(26,25,22,0.28);
+  --blue:#2a5a8a;--blue-dim:rgba(42,90,138,0.08);
+  --teal:#2a7a6e;--teal-dim:rgba(42,122,110,0.1);
+  --red:#b94040;--red-dim:rgba(185,64,64,0.08);
+  --amber:#a07830;--amber-dim:rgba(160,120,48,0.08);
+  --code-bg:#1e1d1a;--code-text:#e8e6e0;
+}
+[data-theme="dark"]{
+  --bg:#141412;--bg-2:#1e1d1a;--bg-3:#272623;
+  --text:#f0ede8;--text-2:#9b9a95;--text-3:#5e5d59;
+  --border:rgba(240,237,232,0.08);--border-2:rgba(240,237,232,0.14);--border-3:rgba(240,237,232,0.22);
+  --code-bg:#0d0d0b;--code-text:#e8e6e0;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.7;font-weight:400;transition:background .3s,color .3s}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--bg);border-bottom:0.5px solid var(--border);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:background .3s}
+.nav-inner{max-width:820px;margin:0 auto;padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between}
+.nav-back{font-size:13px;color:var(--text-2);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s}
+.nav-back:hover{color:var(--text)}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:17px;color:var(--text);text-decoration:none;letter-spacing:-0.3px}
+.theme-btn{width:32px;height:32px;border:0.5px solid var(--border-2);border-radius:50%;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-2);font-size:14px;transition:background .2s,color .2s}
+.theme-btn:hover{background:var(--bg-2);color:var(--text)}
+
+/* ── PAGE ── */
+.page{max-width:820px;margin:0 auto;padding:5rem 2rem 4rem}
+
+/* ── HERO ── */
+.proj-eyebrow{font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--text-3);margin-bottom:1rem;display:flex;align-items:center;gap:10px}
+.proj-eyebrow::before{content:'';display:inline-block;width:24px;height:0.5px;background:var(--text-3)}
+.proj-title{font-family:'DM Serif Display',serif;font-size:clamp(32px,5vw,52px);line-height:1.08;letter-spacing:-1.5px;margin-bottom:1.25rem}
+.proj-title em{font-style:italic;color:var(--text-2)}
+.proj-meta-row{display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:2.5rem;padding-bottom:2rem;border-bottom:0.5px solid var(--border)}
+.tag{font-size:11px;padding:4px 12px;border-radius:40px;border:0.5px solid var(--border-2);color:var(--text-2)}
+.tag.sql{border-color:var(--blue);color:var(--blue);background:var(--blue-dim)}
+.tag.teal{border-color:var(--teal);color:var(--teal);background:var(--teal-dim)}
+.tag.amber{border-color:var(--amber);color:var(--amber);background:var(--amber-dim)}
+
+/* ── SECTION RULE ── */
+.sec-rule{display:flex;align-items:center;gap:1rem;margin:2.5rem 0 1.5rem}
+.sec-rule-label{font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-3);white-space:nowrap}
+.sec-rule-line{flex:1;height:0.5px;background:var(--border)}
+
+/* ── PROSE ── */
+.prose{font-size:15px;font-weight:300;line-height:1.85;color:var(--text-2);margin-bottom:1.25rem}
+.prose strong{font-weight:500;color:var(--text)}
+
+/* ── INFO GRID ── */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;border:0.5px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:2rem}
+.info-cell{padding:1rem 1.25rem;background:var(--bg-2)}
+.info-cell-label{font-size:10px;font-weight:500;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-3);margin-bottom:0.35rem}
+.info-cell-val{font-size:14px;color:var(--text);line-height:1.5}
+
+/* ── RESULT CARDS ── */
+.result-row{display:flex;gap:1rem;margin:1.5rem 0}
+.result-card{flex:1;background:var(--bg-2);border-radius:10px;padding:1rem 1.25rem}
+.result-num{font-family:'DM Serif Display',serif;font-size:28px;color:var(--text);letter-spacing:-0.5px;margin-bottom:2px}
+.result-label{font-size:12px;color:var(--text-2);font-weight:300;line-height:1.4}
+
+/* ── OUTPUT SCHEMA ── */
+.schema-table{width:100%;border-collapse:collapse;font-size:14px;margin:1.25rem 0 1.75rem}
+.schema-table th{text-align:left;font-size:11px;font-weight:500;letter-spacing:0.5px;color:var(--text-3);padding:6px 12px;border-bottom:0.5px solid var(--border)}
+.schema-table td{padding:9px 12px;border-bottom:0.5px solid var(--border);vertical-align:top;font-weight:300;color:var(--text-2)}
+.schema-table td:first-child{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;color:var(--blue);white-space:nowrap}
+.schema-table td:nth-child(2){color:var(--text-3);font-size:12px;white-space:nowrap}
+.schema-table tr:last-child td{border-bottom:none}
+
+/* ── FORMULA BLOCK ── */
+.formula-block{
+  background:var(--bg-2);border:0.5px solid var(--border-2);border-radius:10px;
+  padding:1rem 1.25rem;margin:1rem 0 1.5rem;
+  font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.8;color:var(--text-2);
+}
+.formula-block .formula-label{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);margin-bottom:0.5rem}
+.formula-block .formula-line{color:var(--text)}
+.formula-block .formula-note{font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-3);margin-top:0.4rem}
+
+/* ── CODE BLOCK ── */
+.code-section{margin-bottom:2.5rem}
+.code-section-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:0.75rem}
+.code-section-num{font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-3)}
+.code-section-title{font-size:16px;font-weight:500;color:var(--text)}
+.code-section-desc{font-size:14px;font-weight:300;line-height:1.75;color:var(--text-2);margin-bottom:0.75rem}
+.code-wrap{background:var(--code-bg);border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.15)}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.code-lang{font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:#6b6a65}
+.copy-btn{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;padding:4px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.12);background:transparent;color:#9b9a95;cursor:pointer;transition:background .15s,color .15s}
+.copy-btn:hover{background:rgba(255,255,255,0.08);color:#f0ede8}
+.copy-btn.copied{color:#4aaa9e;border-color:#4aaa9e}
+pre{margin:0;padding:20px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.7;color:var(--code-text)}
+.kw{color:#c792ea}
+.fn{color:#82aaff}
+.str{color:#c3e88d}
+.cm{color:#546e7a;font-style:italic}
+.num{color:#f78c6c}
+.op{color:#89ddff}
+
+/* ── FLOW ── */
+.flow{display:flex;align-items:flex-start;flex-wrap:wrap;gap:0;margin:1.5rem 0}
+.flow-step{background:var(--bg-2);border:0.5px solid var(--border-2);border-radius:8px;padding:10px 16px;font-size:12px;font-weight:500;color:var(--text);white-space:nowrap}
+.flow-step .step-num{font-size:9px;color:var(--text-3);display:block;margin-bottom:2px;letter-spacing:0.5px;text-transform:uppercase}
+.flow-arrow{font-size:14px;color:var(--text-3);padding:0 8px;flex-shrink:0;margin-top:14px}
+
+/* ── BACK ── */
+.back-row{margin-top:3rem;padding-top:2rem;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.back-link{font-size:13px;font-weight:500;color:var(--text-2);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s}
+.back-link:hover{color:var(--text)}
+
+@media(max-width:600px){
+  .info-grid{grid-template-columns:1fr}
+  .result-row{flex-direction:column}
+  .flow{flex-direction:column;align-items:flex-start}
+  .flow-arrow{transform:rotate(90deg);margin-top:0;padding:4px 0}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-back" href="portfolio.html">← Back to portfolio</a>
+    <a class="nav-logo" href="portfolio.html">Jiranuwat N.</a>
+    <button class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">☾</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <p class="proj-eyebrow">Pricing Analytics · SQL · 2025–2026</p>
+  <h1 class="proj-title">Product Price Sensitivity<br><em>by Promotion Type</em></h1>
+  <div class="proj-meta-row">
+    <span class="tag sql">BigQuery SQL</span>
+    <span class="tag">Price Elasticity</span>
+    <span class="tag teal">Promotion Analytics</span>
+    <span class="tag amber">Product Intelligence</span>
+  </div>
+
+  <!-- DESCRIPTION -->
+  <p class="prose">
+    Promotions reduce price — but not every product responds the same way. A deep discount on a commodity SKU drives volume; the same discount on a premium SKU might simply erode margin without moving units. Without a systematic way to measure this, commercial teams are left guessing which promotions actually work and which just give revenue away.
+  </p>
+  <p class="prose">
+    This query builds a <strong>product-level price sensitivity view</strong> that compares each SKU's average daily sales and ASP during promotional periods against its own non-promotional baseline — across every promotion type it has participated in over the past 364 days. The result is a <strong>per-SKU, per-promotion-type elasticity score</strong> that quantifies how sales respond to price changes, enabling data-driven decisions on which promotions to run, extend, or retire.
+  </p>
+  <p class="prose">
+    The pipeline carefully handles two tricky edge cases: <strong>SKUs that have never had a normal period</strong> (always-on promotions / EDLP items) are excluded from the normal vs. promo comparison; and <strong>overlapping promotions on the same day</strong> are tracked and flagged so the baseline ASP is always the minimum active promotion price — preventing double-counting.
+  </p>
+
+  <!-- INFO GRID -->
+  <div class="info-grid">
+    <div class="info-cell">
+      <p class="info-cell-label">Role</p>
+      <p class="info-cell-val">Sole analyst — designed the comparison logic, built the pipeline, and delivered to the category team</p>
+    </div>
+    <div class="info-cell">
+      <p class="info-cell-label">Stack</p>
+      <p class="info-cell-val">BigQuery SQL · Google Cloud</p>
+    </div>
+    <div class="info-cell">
+      <p class="info-cell-label">Look-back window</p>
+      <p class="info-cell-val">364 days rolling — from the SKU's first sale date, not a fixed calendar anchor</p>
+    </div>
+    <div class="info-cell">
+      <p class="info-cell-label">Granularity</p>
+      <p class="info-cell-val">One row per SKU × promotion type — normal period vs. each promo theme side by side</p>
+    </div>
+  </div>
+
+  <!-- PIPELINE FLOW -->
+  <div class="sec-rule"><span class="sec-rule-label">Pipeline logic</span><div class="sec-rule-line"></div></div>
+
+  <div class="flow">
+    <div class="flow-step"><span class="step-num">Step 1</span>Filter active products<br>+ record first sale date</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><span class="step-num">Step 2</span>Flatten promotions<br>to daily grain</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><span class="step-num">Step 3</span>Aggregate daily<br>sales + ASP</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><span class="step-num">Step 4</span>Build full SKU ×<br>date spine</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><span class="step-num">Step 5</span>Tag each day:<br>normal or promo</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><span class="step-num">Step 6</span>Average by<br>period type</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><span class="step-num">Step 7</span>Self-join normal<br>vs. promo periods</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><span class="step-num">Step 8</span>Compute % sales lift,<br>% ASP change,<br>price elasticity</div>
+  </div>
+
+  <!-- OUTPUT SCHEMA -->
+  <div class="sec-rule"><span class="sec-rule-label">Output columns</span><div class="sec-rule-line"></div></div>
+
+  <table class="schema-table">
+    <thead><tr><th>Column</th><th>Type</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>barcode</td><td>STRING</td><td>SKU identifier</td></tr>
+      <tr><td>promotion_theme</td><td>STRING</td><td>Promotion type compared against the normal baseline (e.g. "7 DAY", "MAIL", "Others")</td></tr>
+      <tr><td>last_pro</td><td>DATE</td><td>Most recent date this SKU appeared in this promotion theme — useful for staleness checks</td></tr>
+      <tr><td>normal_sales</td><td>FLOAT</td><td>Avg. daily sales (excl. VAT) during non-promotional days</td></tr>
+      <tr><td>pro_sales</td><td>FLOAT</td><td>Avg. daily sales during promotional days for this theme</td></tr>
+      <tr><td>normal_asp</td><td>FLOAT</td><td>Avg. selling price during normal days</td></tr>
+      <tr><td>pro_asp</td><td>FLOAT</td><td>Avg. selling price during this promotion theme</td></tr>
+      <tr><td>normal_days</td><td>INT</td><td>Number of normal-period days in the window</td></tr>
+      <tr><td>pro_days</td><td>INT</td><td>Number of promotion days for this theme</td></tr>
+      <tr><td>pct_sales</td><td>FLOAT</td><td>% change in avg. daily sales: (pro_sales / normal_sales) − 1</td></tr>
+      <tr><td>pct_asp</td><td>FLOAT</td><td>% change in ASP: (pro_asp / normal_asp) − 1</td></tr>
+      <tr><td>price_elasticity</td><td>FLOAT</td><td>−(pct_sales / pct_asp) — negative = elastic (sales rise when price drops)</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ELASTICITY FORMULA -->
+  <div class="sec-rule"><span class="sec-rule-label">Elasticity formula</span><div class="sec-rule-line"></div></div>
+
+  <div class="formula-block">
+    <div class="formula-label">Price elasticity of demand</div>
+    <div class="formula-line">elasticity  =  −( % change in sales  ÷  % change in ASP )</div>
+    <div class="formula-line">            =  −( (pro_sales / normal_sales − 1)  ÷  (pro_asp / normal_asp − 1) )</div>
+    <div class="formula-note">A result of −2.5 means a 1% price decrease drives a 2.5% sales increase — a highly elastic SKU.</div>
+    <div class="formula-note">Values near 0 indicate the SKU is inelastic — promotions reduce margin without meaningfully lifting volume.</div>
+  </div>
+
+  <!-- RESULT CARDS -->
+  <div class="result-row">
+    <div class="result-card">
+      <p class="result-num">364d</p>
+      <p class="result-label">Rolling window — anchored to each SKU's first sale date, not a fixed calendar</p>
+    </div>
+    <div class="result-card">
+      <p class="result-num">1 row</p>
+      <p class="result-label">Per SKU × promotion theme — normal baseline vs. each promo type side by side</p>
+    </div>
+    <div class="result-card">
+      <p class="result-num">EDLP</p>
+      <p class="result-label">Always-on promo SKUs handled separately — self-join logic adapts when no normal period exists</td>
+    </div>
+  </div>
+
+  <!-- SQL SECTIONS -->
+  <div class="sec-rule"><span class="sec-rule-label">SQL walkthrough</span><div class="sec-rule-line"></div></div>
+  <p class="prose">The query is structured as a chain of CTEs. Each section below explains the logic before showing the code.</p>
+
+  <!-- 01: Variables + filters -->
+  <div class="code-section">
+    <div class="code-section-head">
+      <span class="code-section-num">01</span>
+      <span class="code-section-title">Variables, product, branch &amp; member filters</span>
+    </div>
+    <p class="code-section-desc">
+      Define the <strong>364-day rolling window</strong> anchored to today. Product master is filtered to active, sellable units only — inactive statuses like cancelled, discontinued, or clearance are excluded. Branch master excludes specific store formats. First sale date per material code is captured here to later trim the date spine to each SKU's actual commercial life.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">BigQuery SQL</span><button class="copy-btn" onclick="copyBlock(this,'s1')">Copy</button></div>
+      <pre id="s1"><span class="kw">WITH</span> _var <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    <span class="fn">DATE_SUB</span>(<span class="fn">CURRENT_DATE</span>(<span class="str">"Asia/Bangkok"</span>), <span class="kw">INTERVAL</span> <span class="num">364</span> <span class="kw">DAY</span>) <span class="kw">AS</span> std,
+    <span class="fn">CURRENT_DATE</span>(<span class="str">"Asia/Bangkok"</span>)                                  <span class="kw">AS</span> endd
+),
+
+<span class="cm">-- Active, sellable products only</span>
+<span class="cm">-- Capture first sale date per material for spine trimming later</span>
+_product <span class="kw">AS</span> (
+  <span class="kw">SELECT DISTINCT</span>
+    *,
+    <span class="fn">MIN</span>(first_sales_date) <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> material_code) <span class="kw">AS</span> fsd
+  <span class="kw">FROM</span> <span class="str">`[project].[dataset].product_master`</span>
+  <span class="kw">WHERE</span>
+    unit_code <span class="op">=</span> <span class="str">"ST"</span>
+    <span class="kw">AND</span> product_status <span class="kw">NOT IN</span> (
+      <span class="str">"C"</span>,<span class="str">"CD"</span>,<span class="str">"CP"</span>,<span class="str">"CP2"</span>,<span class="str">"PM"</span>,<span class="str">"TD"</span>,<span class="str">"OLC"</span>,<span class="str">"D"</span>,<span class="str">"PMT"</span>,<span class="str">"CPT"</span>,<span class="str">"CDT"</span>
+    )
+),
+
+_branch <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> *
+  <span class="kw">FROM</span> <span class="str">`[project].[dataset].branch_master`</span>
+  <span class="kw">WHERE</span> storetype <span class="kw">NOT IN</span> (<span class="str">"[Excluded Format]"</span>)
+),</pre>
+    </div>
+  </div>
+
+  <!-- 02: Promotion flattening -->
+  <div class="code-section">
+    <div class="code-section-head">
+      <span class="code-section-num">02</span>
+      <span class="code-section-title">Promotion flattening to daily grain</span>
+    </div>
+    <p class="code-section-desc">
+      Promotions are stored as date ranges (start → end). This step <strong>unnests each promotion into individual daily rows</strong> using <code>GENERATE_DATE_ARRAY</code>, so every day a product is on promotion becomes a single joinable record. Three important things happen here: promotion sub-themes are normalized into clean labels (e.g. anything ending in "MAIL" → "MAIL"); <strong>overlapping promotions on the same barcode-day are counted</strong>; and a <code>QUALIFY</code> filter keeps only the <strong>minimum price</strong> when multiple promotions apply on the same day — preventing artificially high ASP on promo days.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">BigQuery SQL</span><button class="copy-btn" onclick="copyBlock(this,'s2')">Copy</button></div>
+      <pre id="s2">_pro <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    promotion_id,
+    barcode,
+    doc_date,
+    promotion_price,
+    promotion_theme,
+    <span class="cm">-- How many distinct promo themes are active for this barcode on this day?</span>
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> promotion_theme)
+      <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> doc_date, barcode)              <span class="kw">AS</span> overlap,
+    <span class="cm">-- Count of short-cycle themes (used for campaign classification)</span>
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span>
+      <span class="kw">CASE WHEN</span> promotion_theme <span class="kw">IN</span> (
+        <span class="str">"[Theme A]"</span>,<span class="str">"[Theme B]"</span>,<span class="str">"[Theme C]"</span>,<span class="str">"7 DAY"</span>,<span class="str">"[Theme D]"</span>
+      ) <span class="kw">THEN</span> promotion_theme <span class="kw">END</span>)
+      <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> doc_date, barcode)              <span class="kw">AS</span> short_pro
+
+  <span class="kw">FROM</span> (
+    <span class="kw">SELECT DISTINCT</span>
+      promotion_id,
+      promotion_sub_theme,
+      barcode,
+      start_date,
+      end_date,
+      promotion_price,
+      <span class="fn">GENERATE_DATE_ARRAY</span>(start_date, end_date)          <span class="kw">AS</span> doc_date,
+      <span class="cm">-- Normalize sub-theme labels into clean promotion categories</span>
+      <span class="kw">CASE</span>
+        <span class="kw">WHEN</span> promotion_sub_theme <span class="kw">LIKE</span> <span class="str">"%MAIL"</span>      <span class="kw">THEN</span> <span class="str">"MAIL"</span>
+        <span class="kw">WHEN</span> promotion_sub_theme <span class="kw">LIKE</span> <span class="str">"%7 DAY"</span>     <span class="kw">THEN</span> <span class="str">"7 DAY"</span>
+        <span class="kw">WHEN</span> promotion_main_theme <span class="kw">LIKE</span> <span class="str">"Others"</span>    <span class="kw">THEN</span> <span class="str">"Others"</span>
+        <span class="kw">ELSE</span> promotion_sub_theme
+      <span class="kw">END AS</span> promotion_theme
+
+    <span class="kw">FROM</span> <span class="str">`[project].[dataset].promotion_master_daily`</span>
+    <span class="kw">WHERE</span>
+      all_store_flag <span class="op">=</span> <span class="str">"All Store"</span>
+      <span class="kw">AND</span> promotion_sub_theme <span class="kw">NOT IN</span> (
+        <span class="str">"[Excluded Theme A]"</span>,  <span class="cm">-- bias from low stock / exclusive price</span>
+        <span class="str">"[Excluded Theme B]"</span>,  <span class="cm">-- store format with incomplete data</span>
+        <span class="str">"[Excluded Theme C]"</span>   <span class="cm">-- statistical outlier</span>
+      )
+      <span class="kw">AND</span> barcode <span class="kw">IS NOT NULL</span>
+
+  ), <span class="fn">UNNEST</span>(doc_date) doc_date
+
+  <span class="kw">GROUP BY ALL</span>
+
+  <span class="cm">-- Keep only the minimum promotion price when multiple promos overlap on same day</span>
+  <span class="kw">QUALIFY</span> promotion_price <span class="op">=</span> <span class="fn">MIN</span>(promotion_price) <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> barcode, doc_date)
+),</pre>
+    </div>
+  </div>
+
+  <!-- 03: Transaction aggregation -->
+  <div class="code-section">
+    <div class="code-section-head">
+      <span class="code-section-num">03</span>
+      <span class="code-section-title">Transaction aggregation to daily sales + ASP</span>
+    </div>
+    <p class="code-section-desc">
+      Aggregate transactions to <strong>barcode × date level</strong>, computing total sales (excl. VAT) and average selling price. The join to product and branch master ensures only active products in eligible store formats are included. No customer join is needed here — this is a product-level, not a customer-level, analysis.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">BigQuery SQL</span><button class="copy-btn" onclick="copyBlock(this,'s3')">Copy</button></div>
+      <pre id="s3">_receipt <span class="kw">AS</span> (
+  <span class="kw">SELECT DISTINCT</span>
+    r.barcode,
+    r.doc_date,
+    <span class="fn">SUM</span>(sales_exc_vat)                                   <span class="kw">AS</span> sales,
+    <span class="fn">SUM</span>(sales_exc_vat <span class="op">+</span> sales_vat) <span class="op">/</span> <span class="fn">SUM</span>(sales_qty)      <span class="kw">AS</span> asp
+
+  <span class="kw">FROM</span> <span class="str">`[project].[dataset].transactions`</span> r
+  <span class="kw">INNER JOIN</span> _product p <span class="kw">ON</span> r.barcode      <span class="op">=</span> p.barcode
+  <span class="kw">INNER JOIN</span> _branch  b <span class="kw">ON</span> r.branch_code  <span class="op">=</span> b.branch_code
+
+  <span class="kw">WHERE</span>
+    r.doc_date <span class="kw">BETWEEN</span> (<span class="kw">SELECT</span> std  <span class="kw">FROM</span> _var) <span class="kw">AND</span> (<span class="kw">SELECT</span> endd <span class="kw">FROM</span> _var)
+    <span class="kw">AND</span> sales_qty     <span class="op">&lt;&gt;</span> <span class="num">0</span>
+    <span class="kw">AND</span> sales_exc_vat <span class="op">&lt;&gt;</span> <span class="num">0</span>
+
+  <span class="kw">GROUP BY ALL</span>
+),</pre>
+    </div>
+  </div>
+
+  <!-- 04: Date spine -->
+  <div class="code-section">
+    <div class="code-section-head">
+      <span class="code-section-num">04</span>
+      <span class="code-section-title">Full SKU × date spine</span>
+    </div>
+    <p class="code-section-desc">
+      A cross join between a pre-built date array and the product master generates a <strong>complete skeleton of every barcode × date combination</strong> in the window. This is critical — without it, days with zero sales would be invisible in the transaction table, causing normal-period averages to be inflated. The date spine ensures every day is accounted for, including zero-sales days.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">BigQuery SQL</span><button class="copy-btn" onclick="copyBlock(this,'s4')">Copy</button></div>
+      <pre id="s4">_id <span class="kw">AS</span> (
+  <span class="kw">SELECT DISTINCT</span>
+    barcode,
+    d.doc_date
+  <span class="kw">FROM</span> <span class="str">`[project].[dataset].date_array`</span> d
+  <span class="cm">-- Cross join: every product gets every date in the window</span>
+  <span class="kw">CROSS JOIN</span> _product p
+  <span class="kw">WHERE</span>
+    d.doc_date <span class="kw">BETWEEN</span> (<span class="kw">SELECT</span> std <span class="kw">FROM</span> _var) <span class="kw">AND</span> (<span class="kw">SELECT</span> endd <span class="kw">FROM</span> _var)
+),</pre>
+    </div>
+  </div>
+
+  <!-- 05: Period tagging -->
+  <div class="code-section">
+    <div class="code-section-head">
+      <span class="code-section-num">05</span>
+      <span class="code-section-title">Period tagging — normal vs. promotional</span>
+    </div>
+    <p class="code-section-desc">
+      Join the date spine to transactions and promotions. Each day is tagged as either <strong>"normal"</strong> (no active promotion) or <strong>"pro"</strong> (promotion active). The ASP fallback chain is important: if no transaction ASP exists, use the promotion price; if no promotion price, use the retail price. Days before a product's first sale date are excluded to avoid polluting averages with structural zero-sales periods.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">BigQuery SQL</span><button class="copy-btn" onclick="copyBlock(this,'s5')">Copy</button></div>
+      <pre id="s5">_prep <span class="kw">AS</span> (
+  <span class="kw">SELECT DISTINCT</span>
+    barcode,
+    doc_date,
+    fsd,
+    <span class="cm">-- Most recent date this barcode appeared in each promotion theme</span>
+    <span class="fn">MAX</span>(<span class="kw">CASE WHEN</span> promotion_id <span class="kw">IS NOT NULL THEN</span> doc_date <span class="kw">END</span>)
+      <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> barcode, promotion_theme)           <span class="kw">AS</span> last_pro,
+    <span class="cm">-- Tag: is this day a normal day or a promotion day?</span>
+    <span class="kw">CASE WHEN</span> promotion_id <span class="kw">IS NULL THEN</span> <span class="str">"normal"</span> <span class="kw">ELSE</span> <span class="str">"pro"</span> <span class="kw">END</span>  <span class="kw">AS</span> pro,
+    <span class="kw">CASE WHEN</span> promotion_id <span class="kw">IS NULL THEN</span> <span class="str">"normal"</span> <span class="kw">ELSE</span> promotion_theme <span class="kw">END AS</span> pro_name,
+    <span class="fn">IFNULL</span>(sales, <span class="num">0</span>)                                           <span class="kw">AS</span> sales,
+    <span class="cm">-- ASP fallback: transaction ASP → promotion price → retail price</span>
+    <span class="fn">IFNULL</span>(<span class="fn">IFNULL</span>(asp, promotion_price), retail_price)         <span class="kw">AS</span> asp
+
+  <span class="kw">FROM</span>       _id
+  <span class="kw">LEFT JOIN</span> _receipt <span class="kw">USING</span> (barcode, doc_date)
+  <span class="kw">LEFT JOIN</span> _pro     <span class="kw">USING</span> (barcode, doc_date)
+  <span class="kw">LEFT JOIN</span> _product <span class="kw">USING</span> (barcode)
+
+  <span class="cm">-- Only include days from the SKU's first sale onward</span>
+  <span class="kw">WHERE</span> doc_date <span class="op">&gt;=</span> fsd
+),</pre>
+    </div>
+  </div>
+
+  <!-- 06 + 07: Averaging + self-join -->
+  <div class="code-section">
+    <div class="code-section-head">
+      <span class="code-section-num">06 – 07</span>
+      <span class="code-section-title">Average by period type &amp; self-join</span>
+    </div>
+    <p class="code-section-desc">
+      Average daily sales and ASP are computed per barcode × period type. The <strong>self-join</strong> then aligns each SKU's normal-period averages against each of its promotion-theme averages in a single row. The join condition handles the EDLP edge case: if a SKU has only ever been on promotion (no normal period exists, <code>xx = 1</code>), the join uses a same-theme match instead of a normal vs. promo split.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">BigQuery SQL</span><button class="copy-btn" onclick="copyBlock(this,'s6')">Copy</button></div>
+      <pre id="s6">_a <span class="kw">AS</span> (
+  <span class="kw">SELECT DISTINCT</span>
+    barcode,
+    pro,
+    pro_name                                                  <span class="kw">AS</span> promotion_theme,
+    last_pro,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> doc_date)                                  <span class="kw">AS</span> days,
+    <span class="fn">AVG</span>(sales)                                                <span class="kw">AS</span> sales,
+    <span class="fn">AVG</span>(asp)                                                  <span class="kw">AS</span> asp,
+    <span class="cm">-- xx = 1 → SKU has only promo periods (EDLP / always-on)</span>
+    <span class="cm">-- xx = 2 → SKU has both normal and promo periods (standard case)</span>
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> pro) <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> barcode)          <span class="kw">AS</span> xx
+  <span class="kw">FROM</span> _prep
+  <span class="kw">GROUP BY ALL</span>
+),
+
+_final <span class="kw">AS</span> (
+  <span class="kw">SELECT DISTINCT</span>
+    a.barcode,
+    b.promotion_theme,
+    b.last_pro,
+    a.sales    <span class="kw">AS</span> normal_sales,
+    b.sales    <span class="kw">AS</span> pro_sales,
+    a.asp      <span class="kw">AS</span> normal_asp,
+    b.asp      <span class="kw">AS</span> pro_asp,
+    a.days     <span class="kw">AS</span> normal_days,
+    b.days     <span class="kw">AS</span> pro_days
+
+  <span class="kw">FROM</span> _a a
+  <span class="kw">INNER JOIN</span> _a b
+    <span class="kw">ON CASE</span>
+      <span class="cm">-- Standard: join normal rows to promo rows for the same SKU</span>
+      <span class="kw">WHEN</span> a.xx <span class="op">=</span> <span class="num">2</span> <span class="kw">THEN</span> a.barcode <span class="op">=</span> b.barcode
+      <span class="cm">-- EDLP: no normal period — compare promo theme to itself</span>
+      <span class="kw">WHEN</span> a.xx <span class="op">=</span> <span class="num">1</span> <span class="kw">THEN</span> a.barcode <span class="op">=</span> b.barcode <span class="kw">AND</span> a.promotion_theme <span class="op">=</span> b.promotion_theme
+    <span class="kw">END</span>
+
+  <span class="kw">WHERE</span>
+    <span class="kw">CASE</span>
+      <span class="kw">WHEN</span> a.xx <span class="op">=</span> <span class="num">2</span> <span class="kw">THEN</span> (a.pro <span class="op">=</span> <span class="str">"normal"</span> <span class="kw">AND</span> b.pro <span class="op">=</span> <span class="str">"pro"</span>)
+      <span class="kw">WHEN</span> a.xx <span class="op">=</span> <span class="num">1</span> <span class="kw">THEN TRUE</span>
+    <span class="kw">END</span>
+),</pre>
+    </div>
+  </div>
+
+  <!-- 08: Final output -->
+  <div class="code-section">
+    <div class="code-section-head">
+      <span class="code-section-num">08</span>
+      <span class="code-section-title">Final output — % lift &amp; price elasticity</span>
+    </div>
+    <p class="code-section-desc">
+      Compute the three key metrics. <code>SAFE_DIVIDE</code> is used throughout to handle zero denominators gracefully. The <strong>price elasticity sign is inverted</strong> (multiplied by −1) so that positive values indicate elastic products where price cuts drive volume — the more intuitive direction for commercial interpretation.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">BigQuery SQL</span><button class="copy-btn" onclick="copyBlock(this,'s7')">Copy</button></div>
+      <pre id="s7">_result <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    *,
+    <span class="cm">-- % change in avg. daily sales: positive = promo drove volume</span>
+    <span class="fn">SAFE_DIVIDE</span>(pro_sales, normal_sales) <span class="op">-</span> <span class="num">1</span>                  <span class="kw">AS</span> pct_sales,
+    <span class="cm">-- % change in ASP: typically negative (price went down on promo)</span>
+    <span class="fn">SAFE_DIVIDE</span>(pro_asp, normal_asp) <span class="op">-</span> <span class="num">1</span>                      <span class="kw">AS</span> pct_asp,
+    <span class="cm">-- Price elasticity: −(% sales change / % price change)</span>
+    <span class="cm">-- Positive = elastic (volume responds to price). Negative = inelastic.</span>
+    <span class="fn">SAFE_DIVIDE</span>(
+      <span class="fn">SAFE_DIVIDE</span>(pro_sales, normal_sales) <span class="op">-</span> <span class="num">1</span>,
+      <span class="fn">SAFE_DIVIDE</span>(pro_asp,   normal_asp)   <span class="op">-</span> <span class="num">1</span>
+    ) <span class="op">*</span> (<span class="op">-</span><span class="num">1</span>)                                                  <span class="kw">AS</span> price_elasticity
+
+  <span class="kw">FROM</span> _final
+)
+
+<span class="cm">-- Final select: drop internal join flags, order by SKU</span>
+<span class="kw">SELECT</span> * <span class="kw">EXCEPT</span> (pro_a, pro_b)
+<span class="kw">FROM</span>   _result
+<span class="kw">ORDER BY</span> barcode</pre>
+    </div>
+  </div>
+
+  <!-- BACK -->
+  <div class="back-row">
+    <a class="back-link" href="portfolio.html">← Back to all projects</a>
+    <span style="font-size:12px;color:var(--text-3)">© 2026 Jiranuwat Noonduang</span>
+  </div>
+
+</div>
+
+<script>
+const root = document.documentElement;
+const btn  = document.querySelector('.theme-btn');
+let dark = localStorage.getItem('theme')
+  ? localStorage.getItem('theme') === 'dark'
+  : window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+function applyTheme(a){
+  if(a){root.classList.add('t');setTimeout(()=>root.classList.remove('t'),350)}
+  dark ? root.setAttribute('data-theme','dark') : root.removeAttribute('data-theme');
+  btn.textContent = dark ? '☀' : '☾';
+  localStorage.setItem('theme', dark ? 'dark' : 'light');
+}
+function toggleTheme(){ dark=!dark; applyTheme(true); }
+applyTheme(false);
+
+function copyBlock(btn, id){
+  navigator.clipboard.writeText(document.getElementById(id).innerText).then(()=>{
+    btn.textContent='Copied!'; btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent='Copy'; btn.classList.remove('copied'); },2000);
+  });
+}
+</script>
+</body>
+</html>

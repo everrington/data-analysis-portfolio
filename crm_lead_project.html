@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SQL View for CRM Lead Generation — Jiranuwat N.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#fafaf8;--bg-2:#f3f2ef;--bg-3:#eceae5;
+  --text:#1a1916;--text-2:#6b6a65;--text-3:#a09f9a;
+  --border:rgba(26,25,22,0.1);--border-2:rgba(26,25,22,0.18);--border-3:rgba(26,25,22,0.28);
+  --accent:#c9a96e;--teal:#2a7a6e;--blue:#2a5a8a;--blue-dim:rgba(42,90,138,0.08);
+  --code-bg:#1e1d1a;--code-text:#e8e6e0;
+}
+[data-theme="dark"]{
+  --bg:#141412;--bg-2:#1e1d1a;--bg-3:#272623;
+  --text:#f0ede8;--text-2:#9b9a95;--text-3:#5e5d59;
+  --border:rgba(240,237,232,0.08);--border-2:rgba(240,237,232,0.14);--border-3:rgba(240,237,232,0.22);
+  --code-bg:#0d0d0b;--code-text:#e8e6e0;
+}
+
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);color:var(--text);
+  font-size:16px;line-height:1.7;font-weight:400;
+  transition:background .3s,color .3s;
+}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:var(--bg);border-bottom:0.5px solid var(--border);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  transition:background .3s;
+}
+.nav-inner{
+  max-width:820px;margin:0 auto;padding:0 2rem;
+  height:56px;display:flex;align-items:center;justify-content:space-between;
+}
+.nav-back{
+  font-size:13px;color:var(--text-2);text-decoration:none;
+  display:flex;align-items:center;gap:6px;transition:color .2s;
+}
+.nav-back:hover{color:var(--text)}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:17px;color:var(--text);text-decoration:none;letter-spacing:-0.3px}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.theme-btn{
+  width:32px;height:32px;border:0.5px solid var(--border-2);border-radius:50%;
+  background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:var(--text-2);font-size:14px;transition:background .2s,color .2s;
+}
+.theme-btn:hover{background:var(--bg-2);color:var(--text)}
+
+/* ── PAGE ── */
+.page{max-width:820px;margin:0 auto;padding:5rem 2rem 4rem}
+
+/* ── HERO ── */
+.proj-eyebrow{
+  font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;
+  color:var(--text-3);margin-bottom:1rem;
+  display:flex;align-items:center;gap:10px;
+}
+.proj-eyebrow::before{content:'';display:inline-block;width:24px;height:0.5px;background:var(--text-3)}
+.proj-title{
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(32px,5vw,52px);line-height:1.08;letter-spacing:-1.5px;
+  margin-bottom:1.25rem;
+}
+.proj-title em{font-style:italic;color:var(--text-2)}
+.proj-meta-row{
+  display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;
+  margin-bottom:2.5rem;padding-bottom:2rem;border-bottom:0.5px solid var(--border);
+}
+.tag{
+  font-size:11px;padding:4px 12px;border-radius:40px;
+  border:0.5px solid var(--border-2);color:var(--text-2);
+}
+.tag.sql{border-color:var(--blue);color:var(--blue);background:var(--blue-dim)}
+
+/* ── SECTION RULE ── */
+.sec-rule{display:flex;align-items:center;gap:1rem;margin:2.5rem 0 1.5rem}
+.sec-rule-label{font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-3);white-space:nowrap}
+.sec-rule-line{flex:1;height:0.5px;background:var(--border)}
+
+/* ── TEXT BLOCKS ── */
+.prose{font-size:15px;font-weight:300;line-height:1.85;color:var(--text-2);margin-bottom:1.25rem}
+.prose strong{font-weight:500;color:var(--text)}
+
+/* ── INFO GRID ── */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;border:0.5px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:2rem}
+.info-cell{padding:1rem 1.25rem;background:var(--bg-2)}
+.info-cell-label{font-size:10px;font-weight:500;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-3);margin-bottom:0.35rem}
+.info-cell-val{font-size:14px;color:var(--text);line-height:1.5}
+
+/* ── CODE BLOCK ── */
+.code-wrap{
+  background:var(--code-bg);border-radius:12px;overflow:hidden;
+  margin-bottom:1.5rem;box-shadow:0 4px 20px rgba(0,0,0,0.15);
+}
+.code-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.code-lang{font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:#6b6a65}
+.copy-btn{
+  font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;
+  padding:4px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.12);
+  background:transparent;color:#9b9a95;cursor:pointer;transition:background .15s,color .15s;
+}
+.copy-btn:hover{background:rgba(255,255,255,0.08);color:#f0ede8}
+.copy-btn.copied{color:#4aaa9e;border-color:#4aaa9e}
+pre{
+  margin:0;padding:20px;overflow-x:auto;
+  font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.7;
+  color:var(--code-text);
+}
+/* SQL syntax highlight */
+.kw{color:#c792ea}   /* keywords */
+.fn{color:#82aaff}   /* functions */
+.str{color:#c3e88d}  /* strings */
+.cm{color:#546e7a;font-style:italic} /* comments */
+.num{color:#f78c6c}  /* numbers */
+
+/* ── IMAGE BLOCK ── */
+.img-block{
+  border:0.5px solid var(--border);border-radius:12px;overflow:hidden;
+  margin-bottom:1.5rem;background:var(--bg-2);
+}
+.img-block img{width:100%;display:block}
+.img-caption{padding:10px 14px;font-size:12px;color:var(--text-3);border-top:0.5px solid var(--border)}
+
+/* ── IMAGE PLACEHOLDER ── */
+.img-placeholder{
+  border:2px dashed var(--border-2);border-radius:12px;
+  padding:2.5rem;text-align:center;margin-bottom:1.5rem;
+  background:var(--bg-2);cursor:pointer;transition:border-color .2s,background .2s;
+  position:relative;overflow:hidden;
+}
+.img-placeholder:hover{border-color:var(--border-3);background:var(--bg-3)}
+.img-placeholder input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.img-placeholder-icon{font-size:28px;margin-bottom:8px;color:var(--text-3)}
+.img-placeholder-text{font-size:13px;color:var(--text-3)}
+.img-placeholder-text strong{display:block;font-size:14px;font-weight:500;color:var(--text-2);margin-bottom:4px}
+
+/* ── FLOW DIAGRAM ── */
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:0;margin:1.5rem 0}
+.flow-step{
+  background:var(--bg-2);border:0.5px solid var(--border-2);border-radius:8px;
+  padding:10px 16px;font-size:12px;font-weight:500;color:var(--text);
+  white-space:nowrap;
+}
+.flow-step .step-num{font-size:9px;color:var(--text-3);display:block;margin-bottom:2px;letter-spacing:0.5px;text-transform:uppercase}
+.flow-arrow{font-size:14px;color:var(--text-3);padding:0 8px;flex-shrink:0}
+
+/* ── RESULT CARDS ── */
+.result-row{display:flex;gap:1rem;margin:1.5rem 0}
+.result-card{flex:1;background:var(--bg-2);border-radius:10px;padding:1rem 1.25rem}
+.result-num{font-family:'DM Serif Display',serif;font-size:28px;color:var(--text);letter-spacing:-0.5px;margin-bottom:2px}
+.result-label{font-size:12px;color:var(--text-2);font-weight:300;line-height:1.4}
+
+/* ── BACK LINK ── */
+.back-row{margin-top:3rem;padding-top:2rem;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.back-link{font-size:13px;font-weight:500;color:var(--text-2);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s}
+.back-link:hover{color:var(--text)}
+
+@media(max-width:600px){
+  .info-grid{grid-template-columns:1fr}
+  .result-row{flex-direction:column}
+  .flow{flex-direction:column;align-items:flex-start}
+  .flow-arrow{transform:rotate(90deg)}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a class="nav-back" href="portfolio.html">← Back to portfolio</a>
+    <a class="nav-logo" href="portfolio.html">Jiranuwat N.</a>
+    <div class="nav-right">
+      <button class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">☾</button>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- ── PROJECT HERO ── -->
+  <p class="proj-eyebrow">SQL · CRM Analytics · 2025–2026</p>
+  <h1 class="proj-title">SQL View for<br><em>CRM Lead Generation</em></h1>
+  <div class="proj-meta-row">
+    <span class="tag sql">BigQuery SQL</span>
+    <span class="tag">CRM</span>
+    <span class="tag">RFM Segmentation</span>
+    <span class="tag">Line OA</span>
+    <span class="tag">Customer Analytics</span>
+  </div>
+
+  <!-- ── OVERVIEW ── -->
+  <p class="prose">
+    Designed and implemented a production BigQuery SQL view to power CRM broadcast targeting for Line OA campaigns. The query builds an <strong>RFM-based segmentation pipeline</strong> — filtering reachable members, aggregating transaction history, scoring customers by recency and purchase frequency, and splitting the final audience into a broadcast lead group and a holdout control group for campaign measurement.
+  </p>
+  <p class="prose">
+    The output feeds directly into the campaign broadcast system, ensuring each message is sent only to customers with genuine repurchase potential — reducing broadcast waste and improving response rates.
+  </p>
+
+  <!-- ── PROJECT INFO ── -->
+  <div class="info-grid">
+    <div class="info-cell">
+      <p class="info-cell-label">Role</p>
+      <p class="info-cell-val">Sole analyst & query author — scoped logic, built pipeline, and delivered to CRM team</p>
+    </div>
+    <div class="info-cell">
+      <p class="info-cell-label">Stack</p>
+      <p class="info-cell-val">BigQuery SQL · Google Cloud · Line OA CRM</p>
+    </div>
+    <div class="info-cell">
+      <p class="info-cell-label">Target audience</p>
+      <p class="info-cell-val">Line OA reachable members who purchased target category within 30-day lookback window</p>
+    </div>
+    <div class="info-cell">
+      <p class="info-cell-label">Output</p>
+      <p class="info-cell-val">Broadcast lead list + holdout control group, segmented by lead warmth and basket range</p>
+    </div>
+  </div>
+
+  <!-- ── PIPELINE FLOW ── -->
+  <div class="sec-rule"><span class="sec-rule-label">Pipeline logic</span><div class="sec-rule-line"></div></div>
+
+  <div class="flow">
+    <div class="flow-step"><span class="step-num">Step 1</span>Filter products<br>by category & brand</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><span class="step-num">Step 2</span>Join reachable<br>Line OA members</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><span class="step-num">Step 3</span>Aggregate transactions<br>(30-day window)</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><span class="step-num">Step 4</span>Compute RFM scores<br>(recency, frequency, basket)</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><span class="step-num">Step 5</span>Segment into lead<br>warmth tiers (p20/p80)</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><span class="step-num">Step 6</span>Split broadcast leads<br>vs. control group</div>
+  </div>
+
+  <!-- ── KEY OUTCOMES ── -->
+  <div class="result-row">
+    <div class="result-card">
+      <p class="result-num">3</p>
+      <p class="result-label">Lead warmth tiers — Hot, Warm, Cold — based on recency percentiles</p>
+    </div>
+    <div class="result-card">
+      <p class="result-num">1/20</p>
+      <p class="result-label">Holdout control group split using NTILE(20) for campaign lift measurement</p>
+    </div>
+    <div class="result-card">
+      <p class="result-num">฿200+</p>
+      <p class="result-label">Max basket filter to target high-value repurchase potential customers</p>
+    </div>
+  </div>
+
+  <!-- ── SQL CODE ── -->
+  <div class="sec-rule"><span class="sec-rule-label">SQL</span><div class="sec-rule-line"></div></div>
+
+  <div class="code-wrap">
+    <div class="code-header">
+      <span class="code-lang">BigQuery SQL</span>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre id="sqlCode"><span class="cm">-- ============================================================</span>
+<span class="cm">--  CRM LEAD GENERATION — LINE BROADCAST TARGETING</span>
+<span class="cm">--  Goal : Identify and segment customers for Line OA broadcast</span>
+<span class="cm">--         based on purchase recency, frequency, and basket size</span>
+<span class="cm">-- ============================================================</span>
+
+<span class="cm">-- ── VARIABLES ─────────────────────────────────────────────</span>
+<span class="kw">WITH</span> _var <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    <span class="num">30</span>                           <span class="kw">AS</span> lookback_days,
+    <span class="fn">CURRENT_DATE</span>(<span class="str">"Asia/Bangkok"</span>) <span class="kw">AS</span> end_date
+),
+
+<span class="cm">-- ── PRODUCT FILTER ────────────────────────────────────────</span>
+_product <span class="kw">AS</span> (
+  <span class="kw">SELECT DISTINCT</span> *
+  <span class="kw">FROM</span> <span class="str">`[project].product_master`</span>
+  <span class="kw">WHERE</span> category_name <span class="kw">IN</span> (<span class="str">"SHAMPOO"</span>, <span class="str">"CONDITIONER"</span>)
+    <span class="kw">AND</span>   brand_name     = <span class="str">"[Target Brand]"</span>
+),
+
+<span class="cm">-- ── REACHABLE MEMBERS ─────────────────────────────────────</span>
+_customer <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> *
+  <span class="kw">FROM</span> <span class="str">`[project].member_master`</span>
+  <span class="kw">WHERE</span> is_line_oa_reachable <span class="kw">IS TRUE</span>
+),
+
+<span class="cm">-- ── BRANCH FILTER ─────────────────────────────────────────</span>
+_branch <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> *
+  <span class="kw">FROM</span> <span class="str">`[project].branch_master`</span>
+  <span class="kw">WHERE</span> storetype <span class="kw">NOT IN</span> (<span class="str">"[Excluded Format]"</span>)
+),
+
+<span class="cm">-- ── TRANSACTION AGGREGATION ───────────────────────────────</span>
+_receipt <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    r.customer_code,
+    c.member_no,
+    r.doc_date,
+    p.brand_name,
+    <span class="fn">SUM</span>(r.sales_exc_vat + r.sales_vat) <span class="kw">AS</span> basket_spend
+
+  <span class="kw">FROM</span> <span class="str">`[project].transactions`</span> r
+  <span class="kw">INNER JOIN</span> _product  p <span class="kw">ON</span> r.barcode      = p.barcode
+  <span class="kw">INNER JOIN</span> _branch   b <span class="kw">ON</span> r.branch_code  = b.branch_code
+  <span class="kw">INNER JOIN</span> _customer c <span class="kw">ON</span> r.customer_code = c.customer_code
+
+  <span class="kw">WHERE</span> r.doc_date <span class="kw">BETWEEN</span>
+          (<span class="kw">SELECT</span> end_date - lookback_days <span class="kw">FROM</span> _var)
+          <span class="kw">AND</span> (<span class="kw">SELECT</span> end_date <span class="kw">FROM</span> _var)
+    <span class="kw">AND</span> r.sales_qty     &lt;&gt; <span class="num">0</span>
+    <span class="kw">AND</span> r.sales_exc_vat &lt;&gt; <span class="num">0</span>
+
+  <span class="kw">GROUP BY ALL</span>
+),
+
+<span class="cm">-- ── RFM BASE ──────────────────────────────────────────────</span>
+_rfm_base <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    customer_code,
+    member_no,
+    <span class="fn">MIN</span>(doc_date)            <span class="kw">AS</span> first_purchase_date,
+    <span class="fn">MAX</span>(doc_date)            <span class="kw">AS</span> last_purchase_date,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> doc_date) <span class="kw">AS</span> frequency,
+    <span class="fn">AVG</span>(basket_spend)        <span class="kw">AS</span> avg_basket,
+    <span class="fn">MAX</span>(basket_spend)        <span class="kw">AS</span> max_basket
+  <span class="kw">FROM</span> _receipt
+  <span class="kw">GROUP BY ALL</span>
+),
+
+<span class="cm">-- ── INTERVAL + RECENCY ────────────────────────────────────</span>
+_rfm_scored <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    *,
+    <span class="fn">SAFE_DIVIDE</span>(
+      <span class="fn">DATE_DIFF</span>(last_purchase_date, first_purchase_date, DAY),
+      frequency - <span class="num">1</span>
+    )                                              <span class="kw">AS</span> avg_purchase_interval,
+    <span class="fn">DATE_DIFF</span>(
+      (<span class="kw">SELECT</span> end_date <span class="kw">FROM</span> _var), last_purchase_date, DAY
+    )                                              <span class="kw">AS</span> recency_days
+  <span class="kw">FROM</span> _rfm_base
+),
+
+<span class="cm">-- ── BASKET BANDING + PERCENTILES ──────────────────────────</span>
+_rfm_banded <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    *,
+    <span class="kw">CASE</span>
+      <span class="kw">WHEN</span> avg_basket &lt;=  <span class="num">50</span> <span class="kw">THEN</span> <span class="str">"฿1–50"</span>
+      <span class="kw">WHEN</span> avg_basket &lt;= <span class="num">100</span> <span class="kw">THEN</span> <span class="str">"฿51–100"</span>
+      <span class="kw">WHEN</span> avg_basket &lt;= <span class="num">150</span> <span class="kw">THEN</span> <span class="str">"฿101–150"</span>
+      <span class="kw">WHEN</span> avg_basket &lt;= <span class="num">200</span> <span class="kw">THEN</span> <span class="str">"฿151–200"</span>
+      <span class="kw">WHEN</span> avg_basket &lt;= <span class="num">250</span> <span class="kw">THEN</span> <span class="str">"฿201–250"</span>
+      <span class="kw">WHEN</span> avg_basket &lt;= <span class="num">300</span> <span class="kw">THEN</span> <span class="str">"฿251–300"</span>
+      <span class="kw">WHEN</span> avg_basket &gt;  <span class="num">300</span> <span class="kw">THEN</span> <span class="str">"฿300+"</span>
+      <span class="kw">ELSE</span> <span class="str">"—"</span>
+    <span class="kw">END AS</span> avg_basket_range,
+    <span class="kw">CASE</span>
+      <span class="kw">WHEN</span> max_basket &lt;=  <span class="num">50</span> <span class="kw">THEN</span> <span class="str">"฿1–50"</span>
+      <span class="kw">WHEN</span> max_basket &lt;= <span class="num">100</span> <span class="kw">THEN</span> <span class="str">"฿51–100"</span>
+      <span class="kw">WHEN</span> max_basket &lt;= <span class="num">200</span> <span class="kw">THEN</span> <span class="str">"฿151–200"</span>
+      <span class="kw">WHEN</span> max_basket &gt;  <span class="num">300</span> <span class="kw">THEN</span> <span class="str">"฿300+"</span>
+      <span class="kw">ELSE</span> <span class="str">"—"</span>
+    <span class="kw">END AS</span> max_basket_range,
+    <span class="fn">PERCENTILE_CONT</span>(avg_purchase_interval, <span class="num">0.2</span> <span class="kw">IGNORE NULLS</span>) <span class="kw">OVER</span> () <span class="kw">AS</span> pct_20,
+    <span class="fn">PERCENTILE_CONT</span>(avg_purchase_interval, <span class="num">0.5</span> <span class="kw">IGNORE NULLS</span>) <span class="kw">OVER</span> () <span class="kw">AS</span> pct_50,
+    <span class="fn">PERCENTILE_CONT</span>(avg_purchase_interval, <span class="num">0.8</span> <span class="kw">IGNORE NULLS</span>) <span class="kw">OVER</span> () <span class="kw">AS</span> pct_80
+  <span class="kw">FROM</span> _rfm_scored
+),
+
+<span class="cm">-- ── FREQUENCY LABEL ───────────────────────────────────────</span>
+_rfm_freq <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    *,
+    <span class="kw">CASE</span>
+      <span class="kw">WHEN</span> frequency = <span class="num">1</span>                          <span class="kw">THEN</span> <span class="str">"one-time"</span>
+      <span class="kw">WHEN</span> avg_purchase_interval &lt;= pct_20        <span class="kw">THEN</span> <span class="str">"q1 — frequent"</span>
+      <span class="kw">WHEN</span> avg_purchase_interval &lt;= pct_50        <span class="kw">THEN</span> <span class="str">"q2 — regular"</span>
+      <span class="kw">WHEN</span> avg_purchase_interval &lt;= pct_80        <span class="kw">THEN</span> <span class="str">"q3 — occasional"</span>
+      <span class="kw">WHEN</span> avg_purchase_interval &gt;  pct_80        <span class="kw">THEN</span> <span class="str">"q4 — infrequent"</span>
+      <span class="kw">ELSE</span> <span class="str">"—"</span>
+    <span class="kw">END AS</span> frequency_segment
+  <span class="kw">FROM</span> _rfm_banded
+),
+
+<span class="cm">-- ── RECENCY LEAD LABEL ────────────────────────────────────</span>
+_recency_labeled <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    *,
+    <span class="kw">CASE</span>
+      <span class="kw">WHEN</span> recency_days &lt;  pct_20                 <span class="kw">THEN</span> <span class="str">"Hot — recently bought (p0–20)"</span>
+      <span class="kw">WHEN</span> recency_days <span class="kw">BETWEEN</span> pct_20 <span class="kw">AND</span> pct_80 <span class="kw">THEN</span> <span class="str">"Warm — hot lead (p20–80)"</span>
+      <span class="kw">WHEN</span> recency_days &gt;  pct_80                 <span class="kw">THEN</span> <span class="str">"Cold — churn risk (p80–100)"</span>
+    <span class="kw">END AS</span> lead_warmth
+  <span class="kw">FROM</span> _rfm_freq
+),
+
+<span class="cm">-- ── CONTROL GROUP SPLIT ───────────────────────────────────</span>
+_segmented <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    * <span class="kw">EXCEPT</span> (lead_group),
+    <span class="kw">CASE</span>
+      <span class="kw">WHEN</span> lead_group = <span class="num">20</span> <span class="kw">THEN</span> <span class="str">"control group"</span>
+      <span class="kw">ELSE</span>                      <span class="str">"broadcast lead"</span>
+    <span class="kw">END AS</span> lead_group
+  <span class="kw">FROM</span> (
+    <span class="kw">SELECT</span>
+      *,
+      <span class="fn">NTILE</span>(<span class="num">20</span>) <span class="kw">OVER</span> (
+        <span class="kw">PARTITION BY</span> lead_warmth
+        <span class="kw">ORDER BY</span>     member_no
+      ) <span class="kw">AS</span> lead_group
+    <span class="kw">FROM</span> _recency_labeled
+    <span class="kw">WHERE</span> lead_warmth != <span class="str">"Hot — recently bought (p0–20)"</span>
+      <span class="kw">AND</span> max_basket   &gt; <span class="num">200</span>
+    <span class="kw">ORDER BY</span> customer_code
+  )
+)
+
+<span class="cm">-- ── FINAL OUTPUT ──────────────────────────────────────────</span>
+<span class="kw">SELECT</span>
+  lead_group,
+  lead_warmth,
+  max_basket_range,
+  <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> customer_code) <span class="kw">AS</span> customer_count
+<span class="kw">FROM</span> _segmented
+<span class="kw">GROUP BY ALL</span>
+<span class="kw">ORDER BY</span> lead_group, lead_warmth, max_basket_range</pre>
+  </div>
+
+  <!-- ── ADD IMAGE SECTION ── -->
+  <div class="sec-rule"><span class="sec-rule-label">Visuals</span><div class="sec-rule-line"></div></div>
+
+  <p class="prose" style="margin-bottom:1rem">Add screenshots, output previews, or diagrams below.</p>
+
+  <!-- Image placeholder 1 -->
+  <div class="img-placeholder" id="imgPh1" onclick="document.getElementById('imgInput1').click()">
+    <input type="file" id="imgInput1" accept="image/*" onchange="loadImage(this,'imgPh1','imgCaption1')" style="display:none"/>
+    <div class="img-placeholder-icon">🖼</div>
+    <div class="img-placeholder-text">
+      <strong>Click to upload image</strong>
+      e.g. output table, segment distribution chart, or pipeline diagram
+    </div>
+  </div>
+  <div id="imgCaption1" style="display:none" class="img-block"></div>
+
+  <!-- Image placeholder 2 -->
+  <div class="img-placeholder" id="imgPh2" onclick="document.getElementById('imgInput2').click()">
+    <input type="file" id="imgInput2" accept="image/*" onchange="loadImage(this,'imgPh2','imgCaption2')" style="display:none"/>
+    <div class="img-placeholder-icon">🖼</div>
+    <div class="img-placeholder-text">
+      <strong>Click to upload a second image</strong>
+      e.g. lead warmth breakdown or broadcast result
+    </div>
+  </div>
+  <div id="imgCaption2" style="display:none" class="img-block"></div>
+
+  <!-- ── NOTES SECTION ── -->
+  <div class="sec-rule"><span class="sec-rule-label">Notes</span><div class="sec-rule-line"></div></div>
+
+  <div id="notesBlock"
+    contenteditable="true"
+    style="
+      min-height:100px;padding:1rem 1.25rem;border-radius:10px;
+      border:0.5px dashed var(--border-2);background:var(--bg-2);
+      font-size:14px;font-weight:300;line-height:1.85;color:var(--text-2);
+      outline:none;margin-bottom:2rem;transition:border-color .2s;
+    "
+    onfocus="this.style.borderColor='var(--border-3)'"
+    onblur="this.style.borderColor='var(--border-2)'"
+  >Click here to add your own notes — observations, results, lessons learned, or anything you'd like to document about this project.</div>
+
+  <!-- BACK -->
+  <div class="back-row">
+    <a class="back-link" href="portfolio.html">← Back to all projects</a>
+    <span style="font-size:12px;color:var(--text-3)">© 2026 Jiranuwat Noonduang</span>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+// ── DARK MODE ──────────────────────────────────────────────
+const root = document.documentElement;
+const btn  = document.querySelector('.theme-btn');
+let dark = localStorage.getItem('theme')
+  ? localStorage.getItem('theme') === 'dark'
+  : window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+function applyTheme(animate){
+  if(animate){ root.classList.add('theme-transitioning'); setTimeout(()=>root.classList.remove('theme-transitioning'),350); }
+  dark ? root.setAttribute('data-theme','dark') : root.removeAttribute('data-theme');
+  btn.textContent = dark ? '☀' : '☾';
+  localStorage.setItem('theme', dark ? 'dark' : 'light');
+}
+function toggleTheme(){ dark=!dark; applyTheme(true); }
+applyTheme(false);
+
+// ── COPY CODE ─────────────────────────────────────────────
+function copyCode(btn){
+  const text = document.getElementById('sqlCode').innerText;
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent='Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── IMAGE UPLOAD ──────────────────────────────────────────
+function loadImage(input, phId, capId){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById(phId).style.display = 'none';
+    const cap = document.getElementById(capId);
+    cap.style.display = 'block';
+    cap.innerHTML = `
+      <img src="${e.target.result}" alt="Project image"/>
+      <div class="img-caption" contenteditable="true" style="outline:none">
+        Click to add a caption for this image…
+      </div>`;
+  };
+  reader.readAsDataURL(file);
+}
+</script>
+</body>
+</html>

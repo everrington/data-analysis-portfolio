@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <title>Jiranuwat Noonduang — Senior Data Analyst</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── RESET & BASE ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html.theme-transitioning *,
+    html.theme-transitioning *::before,
+    html.theme-transitioning *::after {
+      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease !important;
+    }
+
+    :root {
+      --bg:          #fafaf8;
+      --bg-2:        #f3f2ef;
+      --bg-3:        #eceae5;
+      --text:        #1a1916;
+      --text-2:      #6b6a65;
+      --text-3:      #a09f9a;
+      --border:      rgba(26,25,22,0.1);
+      --border-2:    rgba(26,25,22,0.18);
+      --border-3:    rgba(26,25,22,0.28);
+      --accent:      #c9a96e;
+      --accent-dim:  rgba(201,169,110,0.15);
+      --red:         #b94040;
+      --red-dim:     rgba(185,64,64,0.1);
+      --teal:        #2a7a6e;
+      --teal-dim:    rgba(42,122,110,0.1);
+      --blue:        #2a5a8a;
+      --blue-dim:    rgba(42,90,138,0.1);
+    }
+
+    [data-theme="dark"] {
+      --bg:          #141412;
+      --bg-2:        #1e1d1a;
+      --bg-3:        #272623;
+      --text:        #f0ede8;
+      --text-2:      #9b9a95;
+      --text-3:      #5e5d59;
+      --border:      rgba(240,237,232,0.08);
+      --border-2:    rgba(240,237,232,0.14);
+      --border-3:    rgba(240,237,232,0.22);
+      --accent:      #c9a96e;
+      --accent-dim:  rgba(201,169,110,0.12);
+      --red:         #d97070;
+      --red-dim:     rgba(217,112,112,0.1);
+      --teal:        #4aaa9e;
+      --teal-dim:    rgba(74,170,158,0.1);
+      --blue:        #6a9ece;
+      --blue-dim:    rgba(106,158,206,0.1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.7;
+      font-weight: 400;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* ── TYPOGRAPHY ───────────────────────────────────── */
+    .serif { font-family: 'DM Serif Display', serif; }
+
+    h1, h2, h3 { font-weight: 400; }
+
+    /* ── LAYOUT ───────────────────────────────────────── */
+    .container { max-width: 820px; margin: 0 auto; padding: 0 2rem; }
+
+    /* ── NAV ──────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 0.5px solid var(--border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: background 0.3s;
+    }
+    .nav-inner {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 17px;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.3px;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.75rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 13px;
+      color: var(--text-2);
+      text-decoration: none;
+      letter-spacing: 0.2px;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-right { display: flex; align-items: center; gap: 1.25rem; }
+    .theme-btn {
+      width: 32px; height: 32px;
+      border: 0.5px solid var(--border-2);
+      border-radius: 50%;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-2);
+      font-size: 14px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .theme-btn:hover { background: var(--bg-2); color: var(--text); }
+    .nav-cta {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 7px 16px;
+      border: 0.5px solid var(--border-3);
+      border-radius: 40px;
+      color: var(--text);
+      text-decoration: none;
+      transition: background 0.2s;
+      letter-spacing: 0.2px;
+    }
+    .nav-cta:hover { background: var(--bg-2); }
+
+    /* ── HERO ─────────────────────────────────────────── */
+    .hero {
+      padding: 9rem 0 5rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+    .hero-eyebrow {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 24px; height: 0.5px;
+      background: var(--text-3);
+    }
+    .hero-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(44px, 7vw, 68px);
+      line-height: 1.04;
+      letter-spacing: -2px;
+      margin-bottom: 1.5rem;
+    }
+    .hero-name em {
+      font-style: italic;
+      color: var(--text-2);
+    }
+    .hero-body {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2.5rem;
+      align-items: end;
+    }
+    .hero-desc {
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 1.8;
+      color: var(--text-2);
+      max-width: 440px;
+    }
+    .hero-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    .pill {
+      font-size: 11px;
+      font-weight: 400;
+      padding: 5px 13px;
+      border-radius: 40px;
+      border: 0.5px solid var(--border-2);
+      color: var(--text-2);
+      white-space: nowrap;
+    }
+    .pill.active {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      font-size: 13px;
+      font-weight: 500;
+      padding: 11px 22px;
+      border-radius: 40px;
+      border: 0.5px solid var(--border-3);
+      color: var(--text);
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s;
+      background: transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: inherit;
+    }
+    .btn:hover { background: var(--bg-2); }
+    .btn-primary {
+      background: var(--text);
+      color: var(--bg);
+      border-color: var(--text);
+    }
+    .btn-primary:hover { opacity: 0.88; background: var(--text); }
+
+    /* ── SECTION COMMON ───────────────────────────────── */
+    .section { padding: 4rem 0; border-bottom: 0.5px solid var(--border); }
+    .section:last-child { border-bottom: none; }
+
+    .sec-head {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .sec-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-3);
+      white-space: nowrap;
+    }
+    .sec-rule {
+      flex: 1;
+      height: 0.5px;
+      background: var(--border);
+    }
+
+    /* ── ABOUT ────────────────────────────────────────── */
+    .about-bio {
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 1.85;
+      color: var(--text-2);
+      margin-bottom: 2rem;
+      max-width: 640px;
+    }
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .about-cell {
+      padding: 1.25rem 1.5rem;
+      background: var(--bg-2);
+    }
+    .about-cell:nth-child(1) { border-radius: 12px 0 0 0; }
+    .about-cell:nth-child(2) { border-radius: 0 12px 0 0; }
+    .about-cell:nth-child(3) { border-radius: 0 0 0 12px; }
+    .about-cell:nth-child(4) { border-radius: 0 0 12px 0; }
+    .about-cell-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 0.4rem;
+    }
+    .about-cell-val {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .about-cell-sub {
+      font-size: 12px;
+      color: var(--text-2);
+      margin-top: 2px;
+    }
+
+    /* ── SKILLS ───────────────────────────────────────── */
+    .skills-groups { display: flex; flex-direction: column; gap: 1.5rem; }
+    .skill-group-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-3);
+      margin-bottom: 0.6rem;
+      letter-spacing: 0.5px;
+    }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+    .skill-tag {
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 40px;
+      border: 0.5px solid var(--border-2);
+      color: var(--text-2);
+      background: transparent;
+    }
+    .skill-tag.hi {
+      border-color: var(--border-3);
+      color: var(--text);
+      background: var(--bg-2);
+      font-weight: 500;
+    }
+
+    /* ── PROJECT CARDS ────────────────────────────────── */
+    .projects-grid { display: flex; flex-direction: column; gap: 1px; }
+
+    .project-card {
+      border: 0.5px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem 2rem;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      position: relative;
+      margin-bottom: 0.75rem;
+    }
+    .project-card:hover {
+      border-color: var(--border-3);
+      background: var(--bg-2);
+    }
+
+    .project-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.6rem;
+    }
+    .project-type-badge {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 40px;
+      border: 0.5px solid var(--border-2);
+      color: var(--text-3);
+    }
+    .project-type-badge.dashboard { border-color: var(--teal); color: var(--teal); background: var(--teal-dim); }
+    .project-type-badge.sql { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
+    .project-type-badge.campaign { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+    .project-type-badge.pipeline { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+
+    .project-year { font-size: 12px; color: var(--text-3); }
+
+    .project-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 24px;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      margin-bottom: 0.6rem;
+    }
+    .project-desc {
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--text-2);
+      margin-bottom: 1rem;
+      max-width: 580px;
+    }
+    .project-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .project-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .project-tag {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 40px;
+      border: 0.5px solid var(--border);
+      color: var(--text-3);
+    }
+    .project-arrow {
+      font-size: 18px;
+      color: var(--text-3);
+      transform: translateY(2px);
+      transition: transform 0.2s, color 0.2s;
+      flex-shrink: 0;
+      margin-left: 1rem;
+    }
+    .project-card:hover .project-arrow { transform: translate(3px,-3px); color: var(--text); }
+
+    /* COMING SOON CARD */
+    .project-card.coming-soon {
+      border-style: dashed;
+      opacity: 0.65;
+      cursor: default;
+    }
+    .project-card.coming-soon:hover { background: transparent; border-color: var(--border); }
+    .cs-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-top: 0.5rem;
+    }
+
+    /* ── CASE STUDY EXPAND ────────────────────────────── */
+    .case-details {
+      display: none;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 0.5px solid var(--border);
+    }
+    .case-details.open { display: block; }
+
+    .case-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .case-block { }
+    .case-block-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 0.4rem;
+    }
+    .case-block-text {
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text-2);
+    }
+
+    .timeline { margin: 1.25rem 0; }
+    .tl-item {
+      display: flex;
+      gap: 1rem;
+      padding-bottom: 1rem;
+      position: relative;
+    }
+    .tl-item:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 20px;
+      bottom: 0;
+      width: 0.5px;
+      background: var(--border-2);
+    }
+    .tl-dot {
+      width: 15px; height: 15px;
+      border-radius: 50%;
+      border: 0.5px solid var(--border-3);
+      background: var(--bg);
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+    .tl-dot.done { background: var(--teal); border-color: var(--teal); }
+    .tl-content { }
+    .tl-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+    .tl-desc { font-size: 13px; font-weight: 300; color: var(--text-2); line-height: 1.6; }
+
+    .result-row {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.25rem;
+    }
+    .result-card {
+      flex: 1;
+      background: var(--bg-2);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+    }
+    .result-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      color: var(--text);
+      letter-spacing: -0.5px;
+      margin-bottom: 2px;
+    }
+    .result-label {
+      font-size: 12px;
+      color: var(--text-2);
+      font-weight: 300;
+      line-height: 1.4;
+    }
+
+    /* ── CONTACT ──────────────────────────────────────── */
+    .contact-section { border-bottom: none; }
+    .contact-heading {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(32px, 5vw, 48px);
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+    .contact-heading em { font-style: italic; color: var(--text-2); }
+    .contact-sub {
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.8;
+      color: var(--text-2);
+      max-width: 500px;
+      margin-bottom: 2rem;
+    }
+    .contact-links { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0.75rem 1.25rem;
+      border: 0.5px solid var(--border-2);
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text-2);
+      font-size: 13px;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .contact-item:hover { background: var(--bg-2); color: var(--text); border-color: var(--border-3); }
+    .contact-item-icon { font-size: 15px; }
+
+    /* ── FOOTER ───────────────────────────────────────── */
+    footer {
+      padding: 2rem;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-3);
+      border-top: 0.5px solid var(--border);
+    }
+
+    /* ── RESPONSIVE ───────────────────────────────────── */
+    @media (max-width: 600px) {
+      .hero-body { grid-template-columns: 1fr; }
+      .hero-meta { flex-direction: row; flex-wrap: wrap; align-items: flex-start; }
+      .about-grid { grid-template-columns: 1fr; }
+      .about-cell:nth-child(1) { border-radius: 12px 12px 0 0; }
+      .about-cell:nth-child(2) { border-radius: 0; }
+      .about-cell:nth-child(3) { border-radius: 0; }
+      .about-cell:nth-child(4) { border-radius: 0 0 12px 12px; }
+      .case-grid { grid-template-columns: 1fr; }
+      .result-row { flex-direction: column; }
+      .nav-links { display: none; }
+      .project-card { padding: 1.25rem 1.25rem; }
+    }
+
+    /* ── SCROLL FADE IN ───────────────────────────────── */
+  </style>
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-logo" href="#">Jiranuwat N.</a>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <div class="nav-right">
+        <button class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">☾</button>
+        <a class="nav-cta" href="#contact">Get in touch →</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="container">
+    <section class="hero">
+      <p class="hero-eyebrow">Senior Data Analyst · Digital & AI</p>
+      <h1 class="hero-name serif">
+        Data that<br><em>drives decisions.</em>
+      </h1>
+      <div class="hero-body">
+        <div>
+          <p class="hero-desc">
+            Retail FMCG analyst specializing in customer intelligence, BI tooling, and AI-powered analytics. I turn complex transactional data into clear strategic direction — from pipeline architecture to executive dashboards.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#projects">View my work →</a>
+            <a class="btn" href="#contact">Contact me</a>
+          </div>
+        </div>
+        <div class="hero-meta">
+          <span class="pill active">Open to opportunities</span>
+          <span class="pill">Bangkok, Thailand</span>
+          <span class="pill">FMCG · Retail</span>
+          <span class="pill">BI · SQL · AI</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="section">
+      <div class="sec-head">
+        <span class="sec-label">About me</span>
+        <div class="sec-rule"></div>
+      </div>
+      <p class="about-bio">
+        I'm a Data Analyst at CJ More, one of Thailand's leading retail FMCG chains. My work spans BigQuery SQL pipelines, Power BI dashboards, and behavioral scoring models — all designed to help commercial teams make faster, better decisions. Before retail analytics, I worked as a Digital Marketing Analyst, which gives me a dual lens: statistical rigor and customer-centric thinking.
+      </p>
+      <div class="about-grid">
+        <div class="about-cell">
+          <p class="about-cell-label">Current role</p>
+          <p class="about-cell-val">Data Analyst / Business Strategy</p>
+          <p class="about-cell-sub">CJ More · Bangkok · July 2024 – present</p>
+        </div>
+        <div class="about-cell">
+          <p class="about-cell-label">Focus areas</p>
+          <p class="about-cell-val">Retail analytics, BI development, campaign intelligence, customer behavior modeling</p>
+        </div>
+        <div class="about-cell">
+          <p class="about-cell-label">Previous role</p>
+          <p class="about-cell-val">Digital Marketing Analyst</p>
+          <p class="about-cell-sub">PhysicsBlueprint.com</p>
+        </div>
+        <div class="about-cell">
+          <p class="about-cell-label">Working style</p>
+          <p class="about-cell-val">Methodical, stakeholder-first, bias for code readable by the whole team</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills" class="section">
+      <div class="sec-head">
+        <span class="sec-label">Skills &amp; tools</span>
+        <div class="sec-rule"></div>
+      </div>
+      <div class="skills-groups">
+        <div>
+          <p class="skill-group-label">Data &amp; Analytics</p>
+          <div class="skill-tags">
+            <span class="skill-tag hi">BigQuery SQL</span>
+            <span class="skill-tag hi">Power BI</span>
+            <span class="skill-tag hi">DAX</span>
+            <span class="skill-tag">Python</span>
+            <span class="skill-tag">Google Colab</span>
+            <span class="skill-tag">Regex / NLP</span>
+            <span class="skill-tag">Data modeling</span>
+            <span class="skill-tag">Looker Studio</span>
+          </div>
+        </div>
+        <div>
+          <p class="skill-group-label">Retail &amp; Business Intelligence</p>
+          <div class="skill-tags">
+            <span class="skill-tag hi">Same-store sales (SSSG)</span>
+            <span class="skill-tag hi">RFM analysis</span>
+            <span class="skill-tag">Customer cohort analysis</span>
+            <span class="skill-tag">Basket analysis</span>
+            <span class="skill-tag">Promo effectiveness</span>
+            <span class="skill-tag">Churn modeling</span>
+            <span class="skill-tag">SKU health tracking</span>
+            <span class="skill-tag">Category diagnostics</span>
+          </div>
+        </div>
+        <div>
+          <p class="skill-group-label">AI &amp; Advanced Tooling</p>
+          <div class="skill-tags">
+            <span class="skill-tag">Behavioral intent scoring</span>
+            <span class="skill-tag">AI-assisted pipeline design</span>
+            <span class="skill-tag">Agentic workflows / MCP</span>
+            <span class="skill-tag">Prompt engineering</span>
+          </div>
+        </div>
+        <div>
+          <p class="skill-group-label">Strategy &amp; Communication</p>
+          <div class="skill-tags">
+            <span class="skill-tag">Digital marketing analytics</span>
+            <span class="skill-tag">Campaign performance</span>
+            <span class="skill-tag">Category strategy</span>
+            <span class="skill-tag">Executive reporting</span>
+            <span class="skill-tag">Supplier negotiation briefs</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects" class="section">
+      <div class="sec-head">
+        <span class="sec-label">Projects &amp; case studies</span>
+        <div class="sec-rule"></div>
+      </div>
+      <div class="projects-grid">
+
+        <!-- PROJECT: CRM LEAD GENERATION SQL -->
+        <a class="project-card" href="crm_lead_project.html">
+          <div class="project-card-top">
+            <span class="project-type-badge sql">SQL</span>
+            <span class="project-year">2025 – 2026</span>
+          </div>
+          <h3 class="project-title serif">SQL View for CRM Lead Generation</h3>
+          <p class="project-desc">Engineered a BigQuery SQL pipeline to power Line OA broadcast targeting — filtering reachable members, aggregating 30-day purchase history, and applying RFM-based segmentation with percentile thresholds to classify customers by recency warmth and basket value, then splitting output into broadcast leads and a holdout control group for campaign lift measurement.</p>
+          <div class="project-footer">
+            <div class="project-tags">
+              <span class="project-tag">BigQuery SQL</span>
+              <span class="project-tag">RFM Segmentation</span>
+              <span class="project-tag">CRM</span>
+              <span class="project-tag">Line OA</span>
+              <span class="project-tag">Customer Analytics</span>
+            </div>
+            <span class="project-arrow">↗</span>
+          </div>
+        </a>
+
+        <!-- PROJECT: PRICE SENSITIVITY -->
+        <a class="project-card" href="price_sensitivity_project.html">
+          <div class="project-card-top">
+            <span class="project-type-badge sql">SQL</span>
+            <span class="project-year">2025 – 2026</span>
+          </div>
+          <h3 class="project-title serif">Product Price Sensitivity by Promotion Type</h3>
+          <p class="project-desc">Built a BigQuery SQL view that computes price elasticity of demand at the SKU × promotion-type level — comparing each product's average daily sales and ASP during promotional periods against its own 364-day non-promotional baseline, with careful handling of overlapping promotions and always-on EDLP SKUs.</p>
+          <div class="project-footer">
+            <div class="project-tags">
+              <span class="project-tag">BigQuery SQL</span>
+              <span class="project-tag">Price Elasticity</span>
+              <span class="project-tag">Promotion Analytics</span>
+              <span class="project-tag">Product Intelligence</span>
+            </div>
+            <span class="project-arrow">↗</span>
+          </div>
+        </a>
+        <a class="project-card" href="top_spender_project.html">
+          <div class="project-card-top">
+            <span class="project-type-badge campaign">Campaign Analytics</span>
+            <span class="project-year">2026</span>
+          </div>
+          <h3 class="project-title serif">Top Spender — Shop Unlimited</h3>
+          <p class="project-desc">Designed a real-time campaign tracking dashboard for a top-spender loyalty program — featuring a live leaderboard of cumulative customer spend, daily basket, sales, customer, and trip metrics, regional spend distribution, brand-level new-customer acquisition rates, and top branch and product drill-downs.</p>
+          <div class="project-footer">
+            <div class="project-tags">
+              <span class="project-tag">Power BI</span>
+              <span class="project-tag">DAX</span>
+              <span class="project-tag">SQL</span>
+              <span class="project-tag">Customer analytics</span>
+            </div>
+            <span class="project-arrow">↗</span>
+          </div>
+        </a>
+
+        <!-- PROJECT: PROMOTION OVERVIEW DASHBOARD -->
+        <div class="project-card" style="cursor:default">
+          <div class="project-card-top">
+            <span class="project-type-badge dashboard">Dashboard</span>
+            <span class="project-year">2025 – 2026</span>
+          </div>
+          <h3 class="project-title serif">Promotion Overview Dashboard</h3>
+          <p class="project-desc">Built a centralized promotion intelligence hub from fragmented data, allowing stakeholders to seamlessly visualize pricing and schedules, reduce campaign overlaps, and improve quota allocation using historical insights.</p>
+          <div class="project-footer">
+            <div class="project-tags">
+              <span class="project-tag">Power BI</span>
+              <span class="project-tag">DAX</span>
+              <span class="project-tag">SQL</span>
+            </div>
+            <a href="promotion_dashboard.html" target="_blank" class="btn" style="font-size:12px;padding:8px 18px;border-radius:40px;text-decoration:none;">View Dashboard →</a>
+          </div>
+        </div>
+
+        <!-- PROJECT: MARKET OVERVIEW DASHBOARD -->
+        <div class="project-card" style="cursor:default">
+          <div class="project-card-top">
+            <span class="project-type-badge dashboard">Dashboard</span>
+            <span class="project-year">2025 – 2026</span>
+          </div>
+          <h3 class="project-title serif">Market Overview Dashboard</h3>
+          <p class="project-desc">Developed a self-service dashboard using NielsenIQ retail index data, empowering stakeholders to monitor market dynamics across segments and categories, evaluate competitive positioning in Thailand, and uncover market gaps to drive strategic decisions.</p>
+          <div class="project-footer">
+            <div class="project-tags">
+              <span class="project-tag">Power BI</span>
+              <span class="project-tag">DAX</span>
+              <span class="project-tag">SQL</span>
+            </div>
+            <a href="retail_index_dashboard.html" target="_blank" class="btn" style="font-size:12px;padding:8px 18px;border-radius:40px;text-decoration:none;">View Dashboard →</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="section contact-section">
+      <div class="sec-head">
+        <span class="sec-label">Contact</span>
+        <div class="sec-rule"></div>
+      </div>
+      <h2 class="contact-heading serif">Let's build<br><em>something great.</em></h2>
+      <p class="contact-sub">
+        Open to Senior Data Analyst roles in retail, FMCG, or digital commerce — particularly those involving BI tooling, AI adoption, and data strategy. Based in Bangkok; open to hybrid arrangements.
+      </p>
+      <div class="contact-links">
+        <a class="contact-item" href="mailto:your@email.com">
+          <span class="contact-item-icon">✉</span>
+          your@email.com
+        </a>
+        <a class="contact-item" href="https://linkedin.com/in/yourprofile" target="_blank">
+          <span class="contact-item-icon">in</span>
+          LinkedIn
+        </a>
+        <a class="contact-item" href="https://github.com/yourusername" target="_blank">
+          <span class="contact-item-icon">⌥</span>
+          GitHub
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 Jiranuwat Noonduang · Bangkok, Thailand</p>
+  </footer>
+
+  <script>
+    // Force fresh reload when coming back via browser back button (kills bfcache)
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted) window.location.reload();
+    });
+
+    // ── DARK MODE ──────────────────────────────────────────
+    const root = document.documentElement;
+    const btn = document.querySelector('.theme-btn');
+
+    // Read saved preference, fall back to system preference
+    let dark = localStorage.getItem('theme')
+      ? localStorage.getItem('theme') === 'dark'
+      : window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    function applyTheme(animate) {
+      if (animate) {
+        root.classList.add('theme-transitioning');
+        setTimeout(() => root.classList.remove('theme-transitioning'), 350);
+      }
+      if (dark) {
+        root.setAttribute('data-theme', 'dark');
+        btn.textContent = '☀';
+      } else {
+        root.removeAttribute('data-theme');
+        btn.textContent = '☾';
+      }
+      localStorage.setItem('theme', dark ? 'dark' : 'light');
+    }
+
+    function toggleTheme() {
+      dark = !dark;
+      applyTheme(true);
+    }
+
+    applyTheme(false);
+
+    // ── CASE STUDY EXPAND ──────────────────────────────────
+    function toggleCase(card) {
+      if (card.classList.contains('coming-soon')) return;
+      const det = card.querySelector('.case-details');
+      if (!det) return;
+      const isOpen = det.classList.contains('open');
+      document.querySelectorAll('.case-details.open').forEach(d => d.classList.remove('open'));
+      if (!isOpen) det.classList.add('open');
+    }
+
+    // ── NAV HIGHLIGHT ──────────────────────────────────────
+    const sections = document.querySelectorAll('section[id]');
+    const links = document.querySelectorAll('.nav-links a');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(s => {
+        if (window.scrollY >= s.offsetTop - 80) current = s.id;
+      });
+      links.forEach(a => {
+        a.style.color = a.getAttribute('href') === '#' + current ? 'var(--text)' : '';
+      });
+    });
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Retail Index – Overall Market</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f2f5;
+  --surface:#ffffff;
+  --surface2:#f7f8fa;
+  --border:#dde1e8;
+  --text:#1a1d23;
+  --text2:#5a6070;
+  --text3:#9aa0ae;
+  --blue:#2563eb;
+  --blue-light:#dbeafe;
+  --pink:#e4478a;
+  --pink-light:#fce7f3;
+  --orange:#f97316;
+  --orange-light:#fff7ed;
+  --teal:#0d9488;
+  --teal-light:#ccfbf1;
+  --purple:#7c3aed;
+  --purple-light:#ede9fe;
+  --accent1:#2563eb;
+  --accent2:#e4478a;
+  --accent3:#f59e0b;
+  --accent4:#10b981;
+  --shadow:0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.1);
+}
+body{
+  font-family:'IBM Plex Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  font-size:12px;
+  min-height:100vh;
+}
+/* ── HEADER ── */
+.header{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:10px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;top:0;z-index:50;
+  box-shadow:var(--shadow);
+}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-mark{
+  width:30px;height:30px;
+  background:var(--blue);
+  border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:600;font-size:13px;letter-spacing:-0.5px;
+}
+.logo-text{font-size:11px;font-weight:500;color:var(--text2);letter-spacing:0.3px}
+.header-title{font-size:16px;font-weight:600;color:var(--text);letter-spacing:-0.3px}
+.header-right{display:flex;align-items:center;gap:16px}
+.header-date{text-align:right}
+.header-date .month{font-size:18px;font-weight:600;color:var(--blue);letter-spacing:-0.5px}
+.header-date .label{font-size:10px;color:var(--text3);margin-top:1px}
+.year-select{
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:11px;font-weight:500;
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:5px 10px;
+  background:var(--surface2);
+  color:var(--text);
+  cursor:pointer;
+  appearance:none;
+  padding-right:24px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a6070'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 8px center;
+}
+
+/* ── FILTER PANEL ── */
+.filter-panel{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:10px 20px;
+}
+.filter-row{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;margin-bottom:8px}
+.filter-row:last-child{margin-bottom:0}
+.filter-group{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:6px 10px;
+  min-width:130px;
+  flex:1;
+  max-width:200px;
+}
+.filter-group.blue-header{
+  background:var(--blue-light);
+  border-color:var(--blue);
+}
+.filter-group.pink-header{
+  background:var(--pink-light);
+  border-color:var(--pink);
+}
+.fg-title{
+  font-size:10px;font-weight:600;
+  letter-spacing:0.5px;text-transform:uppercase;
+  color:var(--text2);
+  margin-bottom:4px;
+  display:flex;align-items:center;gap:4px;
+}
+.fg-title.blue{color:var(--blue)}
+.fg-title.pink{color:var(--pink)}
+.fg-label{font-size:10px;color:var(--text3);margin-bottom:1px}
+.fg-select{
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:11px;font-weight:500;
+  border:none;background:transparent;
+  color:var(--text);width:100%;
+  cursor:pointer;padding:0;
+  appearance:none;
+}
+.fg-select:focus{outline:none}
+.filter-separator{
+  width:1px;background:var(--border);
+  align-self:stretch;margin:0 4px;
+  flex-shrink:0;
+}
+.markets-row{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 20px;
+  background:var(--surface2);
+  border-bottom:1px solid var(--border);
+}
+.markets-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap}
+.markets-select{
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:11px;font-weight:500;
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:5px 24px 5px 10px;
+  background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a6070'/%3E%3C/svg%3E") no-repeat right 8px center;
+  color:var(--text);
+  cursor:pointer;
+  appearance:none;
+  max-width:280px;
+}
+
+/* ── DEFINITION BARS ── */
+.def-section{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:10px 20px;
+}
+.def-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+}
+.def-card{
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:8px 10px;
+  background:var(--surface2);
+  overflow:hidden;
+}
+.def-title{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);margin-bottom:6px}
+.def-items{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+.def-dot{
+  display:inline-flex;align-items:center;gap:3px;
+  font-size:9px;font-weight:500;color:var(--text2);
+}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.def-bar-track{height:6px;border-radius:3px;background:var(--border);display:flex;overflow:hidden}
+.def-bar-seg{height:100%;transition:width 0.5s ease}
+
+/* ── CHARTS SECTION ── */
+.charts-section{padding:16px 20px}
+.section-title{
+  font-size:11px;font-weight:600;
+  text-transform:uppercase;letter-spacing:0.8px;
+  color:var(--text3);margin-bottom:12px;
+  display:flex;align-items:center;gap:8px;
+}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.charts-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+.chart-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px 14px 10px;
+  box-shadow:var(--shadow);
+  position:relative;
+  transition:box-shadow 0.2s,border-color 0.2s;
+}
+.chart-card:hover{
+  box-shadow:var(--shadow-md);
+  border-color:#c0c8d8;
+}
+.chart-card-title{
+  font-size:11px;font-weight:600;
+  color:var(--text);
+  margin-bottom:2px;
+  letter-spacing:-0.2px;
+}
+.chart-card-sub{
+  font-size:9px;color:var(--text3);
+  margin-bottom:10px;
+  font-family:'IBM Plex Mono',monospace;
+}
+.chart-legend{
+  display:flex;flex-wrap:wrap;gap:6px;
+  margin-bottom:8px;
+}
+.legend-item{
+  display:flex;align-items:center;gap:3px;
+  font-size:9px;color:var(--text2);
+}
+.legend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+canvas{display:block;width:100%!important}
+
+/* ── TOOLTIP STYLE ── */
+.chart-tooltip{
+  position:absolute;
+  background:rgba(26,29,35,0.92);
+  color:#fff;
+  border-radius:6px;
+  padding:6px 10px;
+  font-size:10px;
+  pointer-events:none;
+  white-space:nowrap;
+  z-index:100;
+  display:none;
+}
+
+/* ── KPI STRIP ── */
+.kpi-strip{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:10px;margin-bottom:14px;
+}
+.kpi-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px 14px;
+  box-shadow:var(--shadow);
+}
+.kpi-label{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);margin-bottom:4px}
+.kpi-value{font-size:20px;font-weight:600;color:var(--text);letter-spacing:-1px;font-family:'IBM Plex Mono',monospace}
+.kpi-delta{font-size:10px;margin-top:3px;font-weight:500}
+.kpi-delta.up{color:var(--teal)}
+.kpi-delta.down{color:#ef4444}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .charts-grid{grid-template-columns:repeat(2,1fr)}
+  .def-grid{grid-template-columns:repeat(2,1fr)}
+  .kpi-strip{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .charts-grid{grid-template-columns:1fr}
+  .def-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="logo">
+    <div class="logo-mark">RI</div>
+    <div>
+      <div class="logo-text">RETAIL INDEX</div>
+    </div>
+  </div>
+  <div class="header-title">Overall Market</div>
+  <div class="header-right">
+    <div class="header-date">
+      <div class="month" id="monthLabel">Feb-26</div>
+      <div class="label">Retail Index · Latest data</div>
+    </div>
+    <select class="year-select" onchange="updateYear(this.value)">
+      <option value="2026" selected>Year: 2026</option>
+      <option value="2025">Year: 2025</option>
+      <option value="2024">Year: 2024</option>
+    </select>
+  </div>
+</header>
+
+<!-- FILTER PANEL -->
+<div class="filter-panel">
+  <div class="filter-row">
+    <!-- Market Filter -->
+    <div class="filter-group blue-header">
+      <div class="fg-title blue">Market Filter</div>
+      <div class="fg-label">Manufacturer</div>
+      <select class="fg-select" onchange="applyFilter()"><option>All</option><option>Company A</option><option>Company B</option><option>Company C</option></select>
+    </div>
+    <div class="filter-group">
+      <div class="fg-label">Category, Segment</div>
+      <select class="fg-select" onchange="applyFilter()"><option>PERSONAL CARE</option><option>SKINCARE</option><option>HAIRCARE</option></select>
+      <div class="fg-label" style="margin-top:4px">Sub-segment</div>
+      <select class="fg-select" onchange="applyFilter()"><option>All</option><option>Premium</option><option>Mass</option></select>
+    </div>
+    <div class="filter-group">
+      <div class="fg-label">Brand</div>
+      <select class="fg-select" onchange="applyFilter()"><option>All</option><option>Brand Alpha</option><option>Brand Beta</option><option>Brand Gamma</option></select>
+      <div class="fg-label" style="margin-top:4px">Item, Barcode</div>
+      <select class="fg-select" onchange="applyFilter()"><option>All</option></select>
+    </div>
+    <div class="filter-separator"></div>
+    <!-- CJ Filter -->
+    <div class="filter-group pink-header">
+      <div class="fg-title pink">CJ Filter</div>
+      <div class="fg-label">Vendor name, Vendor code</div>
+      <select class="fg-select" onchange="applyFilter()"><option>All</option><option>Vendor X</option><option>Vendor Y</option></select>
+    </div>
+    <div class="filter-group">
+      <div class="fg-label">Division name, Division Id</div>
+      <select class="fg-select" onchange="applyFilter()"><option>All</option><option>Division 01</option><option>Division 02</option></select>
+      <div class="fg-label" style="margin-top:4px">Category, Subcategory</div>
+      <select class="fg-select" onchange="applyFilter()"><option>All</option><option>Skincare</option><option>Cleansing</option></select>
+    </div>
+    <div class="filter-group">
+      <div class="fg-label">Brand name, Brand code</div>
+      <select class="fg-select" onchange="applyFilter()"><option>All</option><option>Brand Alpha</option><option>Brand Beta</option></select>
+      <div class="fg-label" style="margin-top:4px">Packtype</div>
+      <select class="fg-select" onchange="applyFilter()"><option>All</option><option>Bottle</option><option>Sachet</option><option>Tube</option></select>
+    </div>
+    <div class="filter-separator"></div>
+    <!-- Status / Price -->
+    <div class="filter-group">
+      <div class="fg-label">Status</div>
+      <select class="fg-select" onchange="applyFilter()"><option>All</option><option>Active</option><option>Inactive</option></select>
+      <div class="fg-label" style="margin-top:4px">OEM</div>
+      <select class="fg-select" onchange="applyFilter()"><option>All</option><option>Yes</option><option>No</option></select>
+    </div>
+    <div class="filter-group">
+      <div class="fg-label">Product group</div>
+      <select class="fg-select" onchange="applyFilter()"><option>All</option><option>Group A</option><option>Group B</option></select>
+      <div class="fg-label" style="margin-top:4px">Retail price range</div>
+      <select class="fg-select" onchange="applyFilter()"><option>All</option><option>&lt; 100</option><option>100–300</option><option>&gt; 300</option></select>
+    </div>
+    <div class="filter-group">
+      <div class="fg-label">Tier product</div>
+      <select class="fg-select" onchange="applyFilter()"><option>All</option><option>Tier 1</option><option>Tier 2</option><option>Tier 3</option></select>
+      <div class="fg-label" style="margin-top:4px">Unit code</div>
+      <select class="fg-select" onchange="applyFilter()"><option>All</option><option>EA</option><option>PCS</option></select>
+    </div>
+  </div>
+</div>
+
+<!-- MARKETS ROW -->
+<div class="markets-row">
+  <span class="markets-label">Markets</span>
+  <select class="markets-select" onchange="applyFilter()">
+    <option>TOTAL MARKET + MODERN TRADE</option>
+    <option>MODERN TRADE ONLY</option>
+    <option>TRADITIONAL TRADE ONLY</option>
+    <option>CONVENIENCE STORES</option>
+  </select>
+</div>
+
+<!-- DEFINITION BARS -->
+<div class="def-section">
+  <div class="def-grid">
+    <!-- Market Category Definition -->
+    <div class="def-card">
+      <div class="def-title">Market's Category Definition</div>
+      <div class="def-items">
+        <span class="def-dot"><span class="dot" style="background:#2563eb"></span>PERSONAL CARE</span>
+        <span class="def-dot"><span class="dot" style="background:#e4478a"></span>SKINCARE</span>
+        <span class="def-dot"><span class="dot" style="background:#10b981"></span>HAIRCARE</span>
+        <span class="def-dot"><span class="dot" style="background:#f59e0b"></span>OTHER</span>
+      </div>
+      <div class="def-bar-track">
+        <div class="def-bar-seg" style="width:68%;background:#2563eb"></div>
+        <div class="def-bar-seg" style="width:18%;background:#e4478a"></div>
+        <div class="def-bar-seg" style="width:10%;background:#10b981"></div>
+        <div class="def-bar-seg" style="width:4%;background:#f59e0b"></div>
+      </div>
+    </div>
+    <!-- CJ Category Definition -->
+    <div class="def-card">
+      <div class="def-title">CJ's Category Definition</div>
+      <div class="def-items">
+        <span class="def-dot"><span class="dot" style="background:#2563eb"></span>CJ CAT</span>
+        <span class="def-dot"><span class="dot" style="background:#e4478a"></span>CONDITIONER</span>
+        <span class="def-dot"><span class="dot" style="background:#10b981"></span>HAIR COLOR</span>
+        <span class="def-dot"><span class="dot" style="background:#f59e0b"></span>HERBAL</span>
+      </div>
+      <div class="def-bar-track">
+        <div class="def-bar-seg" style="width:26%;background:#2563eb"></div>
+        <div class="def-bar-seg" style="width:33%;background:#e4478a"></div>
+        <div class="def-bar-seg" style="width:29%;background:#10b981"></div>
+        <div class="def-bar-seg" style="width:12%;background:#f59e0b"></div>
+      </div>
+    </div>
+    <!-- Market Segment Definition -->
+    <div class="def-card">
+      <div class="def-title">Market's Segment Definition (Subcategory)</div>
+      <div class="def-items">
+        <span class="def-dot"><span class="dot" style="background:#2563eb"></span>SEG A</span>
+        <span class="def-dot"><span class="dot" style="background:#e4478a"></span>SEG B</span>
+        <span class="def-dot"><span class="dot" style="background:#10b981"></span>SEG C</span>
+        <span class="def-dot"><span class="dot" style="background:#6b7280"></span>OTHER</span>
+      </div>
+      <div class="def-bar-track">
+        <div class="def-bar-seg" style="width:34%;background:#2563eb"></div>
+        <div class="def-bar-seg" style="width:38%;background:#e4478a"></div>
+        <div class="def-bar-seg" style="width:19%;background:#10b981"></div>
+        <div class="def-bar-seg" style="width:9%;background:#6b7280"></div>
+      </div>
+    </div>
+    <!-- CJ Subcategory Definition -->
+    <div class="def-card">
+      <div class="def-title">CJ's Subcategory Definition</div>
+      <div class="def-items">
+        <span class="def-dot"><span class="dot" style="background:#2563eb"></span>ANTI-DDF</span>
+        <span class="def-dot"><span class="dot" style="background:#e4478a"></span>BEAUTY</span>
+        <span class="def-dot"><span class="dot" style="background:#10b981"></span>BASIC CARE</span>
+        <span class="def-dot"><span class="dot" style="background:#f59e0b"></span>CJ 1US</span>
+      </div>
+      <div class="def-bar-track">
+        <div class="def-bar-seg" style="width:29%;background:#2563eb"></div>
+        <div class="def-bar-seg" style="width:41%;background:#e4478a"></div>
+        <div class="def-bar-seg" style="width:22%;background:#10b981"></div>
+        <div class="def-bar-seg" style="width:8%;background:#f59e0b"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHARTS -->
+<div class="charts-section">
+  <div class="section-title">Performance by Product Segment</div>
+
+  <!-- KPI STRIP -->
+  <div class="kpi-strip">
+    <div class="kpi-card">
+      <div class="kpi-label">Total Market Value</div>
+      <div class="kpi-value" id="kpiMV">XXX M</div>
+      <div class="kpi-delta up" id="kpiMVd">▲ +X.X% vs LY</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">CJ Market Share</div>
+      <div class="kpi-value" id="kpiShare">XX%</div>
+      <div class="kpi-delta up" id="kpiShared">▲ +X.Xpp vs LY</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Market Growth</div>
+      <div class="kpi-value" id="kpiGrowth">+X%</div>
+      <div class="kpi-delta down" id="kpiGrowthl">▼ Segment B declining</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">CJ Penetration (LY)</div>
+      <div class="kpi-value" id="kpiPen">XX%</div>
+      <div class="kpi-delta up" id="kpiPend">▲ +X.Xpp YoY</div>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+
+    <!-- Chart 1: Market Value -->
+    <div class="chart-card">
+      <div class="chart-card-title">Market Value</div>
+      <div class="chart-card-sub">TOTAL MARKET + MODERN TRADE</div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#2563eb"></span>TY</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#93c5fd"></span>LY</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#e4478a"></span>Target</span>
+      </div>
+      <canvas id="c1" height="160"></canvas>
+    </div>
+
+    <!-- Chart 2: Market Value by Channel -->
+    <div class="chart-card">
+      <div class="chart-card-title">Market Value by Channel</div>
+      <div class="chart-card-sub">CONVENIENCE</div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#e4478a"></span>Seg A</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#2563eb"></span>Seg B</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>Seg C</span>
+      </div>
+      <canvas id="c2" height="160"></canvas>
+    </div>
+
+    <!-- Chart 3: %Share CJ to Total Market -->
+    <div class="chart-card">
+      <div class="chart-card-title">%Share CJ to Total Market</div>
+      <div class="chart-card-sub">BY SEGMENT</div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#e4478a"></span>% Share</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#fda4af"></span>Target</span>
+      </div>
+      <canvas id="c3" height="160"></canvas>
+    </div>
+
+    <!-- Chart 4: %Market Growth -->
+    <div class="chart-card">
+      <div class="chart-card-title">%Market Growth</div>
+      <div class="chart-card-sub">VS LAST YEAR · BY SEGMENT</div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#2563eb"></span>Growth %</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#e4478a"></span>Target</span>
+      </div>
+      <canvas id="c4" height="160"></canvas>
+    </div>
+
+    <!-- Chart 5: Market Share over Time -->
+    <div class="chart-card">
+      <div class="chart-card-title">Market Share</div>
+      <div class="chart-card-sub">TREND BY YEAR · ALL SEGMENTS</div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#2563eb"></span>Seg A</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#e4478a"></span>Seg B</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#10b981"></span>Seg C</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>Other</span>
+      </div>
+      <canvas id="c5" height="160"></canvas>
+    </div>
+
+    <!-- Chart 6: %Share CJ Penetration -->
+    <div class="chart-card">
+      <div class="chart-card-title">%Share CJ to Total Market LY</div>
+      <div class="chart-card-sub">PENETRATION BY SEGMENT</div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#e4478a"></span>% Penetration</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#fda4af"></span>Market avg</span>
+      </div>
+      <canvas id="c6" height="160"></canvas>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── SHARED CONFIG ──────────────────────────────────────
+Chart.defaults.font.family = "'IBM Plex Sans', sans-serif";
+Chart.defaults.font.size = 10;
+Chart.defaults.color = '#9aa0ae';
+Chart.defaults.plugins.legend.display = false;
+
+const SEGS = ['Seg A','Seg B','Seg C'];
+const CHANNELS = ['Conv.','Super/Hyper','Total CJ','Superm.','Trad. Trade'];
+const YEARS = ['2023','2024','2025','2026'];
+
+// ── ANONYMIZED DATA ────────────────────────────────────
+function getData(year){
+  const seed = parseInt(year) - 2023;
+  const jitter = (base, range) => base + (seed * range * 0.15) + (Math.random()*range*0.1 - range*0.05);
+
+  return {
+    // Chart 1: Market Value (TY, LY, Target per segment)
+    mv: {
+      ty:     SEGS.map((_,i) => jitter([320,95,210][i], 30)),
+      ly:     SEGS.map((_,i) => jitter([280,110,190][i], 20)),
+      target: SEGS.map((_,i) => jitter([340,100,220][i], 15)),
+    },
+    // Chart 2: Market Value by Channel (stacked)
+    mvc: {
+      segA:  CHANNELS.map((_,i) => jitter([80,200,150,120,50][i], 20)),
+      segB:  CHANNELS.map((_,i) => jitter([30,60,40,50,20][i], 10)),
+      segC:  CHANNELS.map((_,i) => jitter([50,120,90,70,30][i], 15)),
+    },
+    // Chart 3: % Share CJ
+    share: {
+      pct:    SEGS.map((_,i) => jitter([10.5, 9.8, 11.2][i], 1.5)),
+      target: SEGS.map(() => jitter(10.5, 0.5)),
+    },
+    // Chart 4: % Market Growth
+    growth: {
+      pct:    SEGS.map((_,i) => jitter([4.2, -1.8, 6.1][i], 2)),
+      target: SEGS.map(() => 3.5),
+    },
+    // Chart 5: Market share stacked bar by year
+    mshare: {
+      segA:  YEARS.map((_,i) => 34 + i*1.2),
+      segB:  YEARS.map((_,i) => 28 - i*0.8),
+      segC:  YEARS.map((_,i) => 25 + i*0.4),
+      other: YEARS.map((_,i) => 13 - i*0.8),
+    },
+    // Chart 6: Penetration
+    pen: {
+      pct:    SEGS.map((_,i) => jitter([14.2, 8.6, 12.1][i], 2)),
+      avg:    SEGS.map(() => jitter(11.5, 0.5)),
+    }
+  };
+}
+
+// ── CHART INSTANCES ────────────────────────────────────
+let charts = {};
+
+function mkBar(id, labels, datasets, opts={}){
+  const ctx = document.getElementById(id).getContext('2d');
+  if(charts[id]) charts[id].destroy();
+  charts[id] = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      animation: { duration: 600, easing: 'easeOutQuart' },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const v = ctx.parsed.y;
+              return ` ${ctx.dataset.label}: ${opts.pct ? v.toFixed(1)+'%' : 'Index '+Math.round(v)}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { grid:{display:false}, ticks:{font:{size:9}} },
+        y: {
+          grid:{ color:'rgba(0,0,0,0.05)', drawBorder:false },
+          ticks:{
+            font:{size:9},
+            callback: v => opts.pct ? v.toFixed(0)+'%' : v
+          },
+          stacked: opts.stacked || false,
+          beginAtZero: true,
+        },
+        ...( opts.stacked ? {x:{stacked:true}} : {} )
+      },
+      ...opts.extra
+    }
+  });
+  return charts[id];
+}
+
+function mkHBar(id, labels, datasets, opts={}){
+  const ctx = document.getElementById(id).getContext('2d');
+  if(charts[id]) charts[id].destroy();
+  charts[id] = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: true,
+      animation: { duration: 600 },
+      plugins: { legend:{ display:false }, tooltip:{
+        callbacks:{ label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.x.toFixed(1)}%` }
+      }},
+      scales: {
+        x: {
+          grid:{ color:'rgba(0,0,0,0.05)' },
+          ticks:{ font:{size:9}, callback: v => v+'%' },
+          stacked: opts.stacked||false,
+          beginAtZero:true, max: opts.max||100,
+        },
+        y: { grid:{display:false}, ticks:{font:{size:9}}, stacked: opts.stacked||false },
+      }
+    }
+  });
+}
+
+function renderCharts(year){
+  const d = getData(year);
+
+  // C1 - Market Value grouped bar
+  mkBar('c1', SEGS, [
+    { label:'TY', data: d.mv.ty, backgroundColor:'#2563eb', borderRadius:3, barThickness:16 },
+    { label:'LY', data: d.mv.ly, backgroundColor:'#93c5fd', borderRadius:3, barThickness:16 },
+    { label:'Target', data: d.mv.target, backgroundColor:'#e4478a', type:'line',
+      borderColor:'#e4478a', pointBackgroundColor:'#e4478a', pointRadius:5,
+      pointHoverRadius:7, fill:false, tension:0, order:-1 }
+  ]);
+
+  // C2 - By Channel grouped
+  mkBar('c2', CHANNELS, [
+    { label:'Seg A', data: d.mvc.segA, backgroundColor:'#e4478a', borderRadius:3, barThickness:12 },
+    { label:'Seg B', data: d.mvc.segB, backgroundColor:'#2563eb', borderRadius:3, barThickness:12 },
+    { label:'Seg C', data: d.mvc.segC, backgroundColor:'#f59e0b', borderRadius:3, barThickness:12 },
+  ]);
+
+  // C3 - % Share bar + line target
+  mkBar('c3', SEGS, [
+    { label:'% Share', data: d.share.pct, backgroundColor:'#e4478a', borderRadius:3, barThickness:28 },
+    { label:'Target', data: d.share.target, backgroundColor:'transparent', type:'line',
+      borderColor:'#fda4af', pointBackgroundColor:'#fda4af', pointRadius:6,
+      pointHoverRadius:8, fill:false, tension:0, order:-1, borderDash:[4,3] }
+  ], { pct:true });
+
+  // C4 - % Growth
+  mkBar('c4', SEGS, [
+    { label:'Growth %',
+      data: d.growth.pct,
+      backgroundColor: d.growth.pct.map(v => v>=0 ? '#2563eb' : '#ef4444'),
+      borderRadius:3, barThickness:28
+    },
+    { label:'Target', data: d.growth.target, type:'line',
+      borderColor:'#e4478a', pointBackgroundColor:'#e4478a', pointRadius:5,
+      pointHoverRadius:7, fill:false, tension:0, order:-1, borderDash:[4,3] }
+  ], { pct:true });
+
+  // C5 - Market Share stacked horizontal
+  mkHBar('c5', YEARS, [
+    { label:'Seg A', data: d.mshare.segA, backgroundColor:'#2563eb', barThickness:18 },
+    { label:'Seg B', data: d.mshare.segB, backgroundColor:'#e4478a', barThickness:18 },
+    { label:'Seg C', data: d.mshare.segC, backgroundColor:'#10b981', barThickness:18 },
+    { label:'Other', data: d.mshare.other, backgroundColor:'#f59e0b', barThickness:18 },
+  ], { stacked:true, max:100 });
+
+  // C6 - Penetration
+  mkBar('c6', SEGS, [
+    { label:'% Penetration', data: d.pen.pct, backgroundColor:'#e4478a', borderRadius:3, barThickness:28 },
+    { label:'Market avg', data: d.pen.avg, type:'line',
+      borderColor:'#fda4af', pointBackgroundColor:'#fda4af', pointRadius:6,
+      pointHoverRadius:8, fill:false, tension:0, order:-1, borderDash:[4,3] }
+  ], { pct:true });
+}
+
+// ── FILTER / YEAR UPDATE ───────────────────────────────
+let currentYear = 2026;
+
+function updateYear(y){
+  currentYear = parseInt(y);
+  document.getElementById('monthLabel').textContent = 'Feb-' + String(currentYear).slice(2);
+  renderCharts(currentYear);
+}
+
+function applyFilter(){
+  // Slight random variation to simulate filter effect
+  renderCharts(currentYear);
+}
+
+// ── INIT ───────────────────────────────────────────────
+renderCharts(currentYear);
+</script>
+</body>
+</html>
