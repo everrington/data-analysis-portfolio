@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mock Test Physics A-Level Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0a1a4e;
+  --navy2:#0d2060;
+  --blue:#1a3a9e;
+  --accent:#f5a623;
+  --accent2:#ffd166;
+  --green:#06b96a;
+  --red:#e84545;
+  --cyan:#4fc3f7;
+  --surface:#ffffff;
+  --surface2:#f0f4ff;
+  --border:#dde3f5;
+  --text:#1a1d2e;
+  --text2:#4a5080;
+  --text3:#8890b0;
+  --shadow:0 2px 12px rgba(10,26,78,0.12);
+  --r:12px;
+}
+body{
+  font-family:'IBM Plex Sans Thai','IBM Plex Sans',sans-serif;
+  background:var(--navy);
+  color:var(--surface);
+  font-size:13px;
+  min-height:100vh;
+}
+
+/* ── HEADER ── */
+.header{
+  background:var(--navy2);
+  border-bottom:2px solid var(--accent);
+  padding:10px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.header-title{
+  font-size:17px;font-weight:700;
+  color:var(--accent);
+  letter-spacing:0.5px;
+  text-transform:uppercase;
+  font-family:'IBM Plex Sans',sans-serif;
+}
+.header-meta{font-size:11px;color:var(--cyan);margin-top:2px}
+.brand{
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:11px;font-weight:700;
+  color:var(--accent);
+  text-align:right;
+  letter-spacing:1px;
+}
+
+/* ── STUDENT BAR ── */
+.student-bar{
+  background:rgba(255,255,255,0.06);
+  border-bottom:1px solid rgba(255,255,255,0.1);
+  padding:8px 20px;
+  display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+}
+.sb-label{font-size:11px;color:var(--text3)}
+.sb-val{font-size:13px;font-weight:600;color:#fff;border-bottom:1px solid var(--accent);min-width:140px}
+.sb-num{font-size:13px;font-weight:700;color:var(--accent);margin-left:4px}
+
+/* ── PAGE TABS ── */
+.page-tabs{
+  display:flex;gap:0;
+  background:rgba(0,0,0,0.3);
+  border-bottom:1px solid rgba(255,255,255,0.1);
+  padding:0 20px;
+}
+.tab-btn{
+  font-family:'IBM Plex Sans Thai','IBM Plex Sans',sans-serif;
+  font-size:12px;font-weight:500;
+  padding:10px 18px;
+  border:none;background:transparent;color:rgba(255,255,255,0.5);
+  cursor:pointer;border-bottom:3px solid transparent;
+  transition:color .2s,border-color .2s;white-space:nowrap;
+}
+.tab-btn.active{color:#fff;border-bottom-color:var(--accent)}
+.tab-btn:hover:not(.active){color:rgba(255,255,255,0.8)}
+
+/* ── PAGE ── */
+.page{display:none;padding:16px 20px 24px}
+.page.active{display:block}
+
+/* ── SCORE BANNER (PAGE 1) ── */
+.score-banner{
+  display:grid;grid-template-columns:auto 1fr 1fr 1fr;
+  gap:10px;align-items:center;margin-bottom:14px;
+}
+.score-main{
+  background:var(--accent);
+  border-radius:var(--r);
+  padding:12px 18px;
+  min-width:120px;
+}
+.score-main-label{font-size:10px;font-weight:600;color:rgba(0,0,0,0.6);text-transform:uppercase;letter-spacing:0.5px}
+.score-main-val{font-size:36px;font-weight:800;color:#000;line-height:1;letter-spacing:-1px}
+.score-main-sub{font-size:11px;color:rgba(0,0,0,0.6);margin-top:3px}
+.score-pill{
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:var(--r);
+  padding:10px 14px;text-align:center;
+}
+.score-pill-label{font-size:10px;color:rgba(255,255,255,0.55);margin-bottom:3px}
+.score-pill-val{font-size:18px;font-weight:700;color:#fff}
+.score-pill-val.red{color:#ff6b6b}
+.score-pill-val.green{color:#51cf66}
+.score-pill-val.cyan{color:var(--cyan)}
+
+/* ── SCORE TABLE ── */
+.score-table-wrap{overflow-x:auto;border-radius:var(--r);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1)}
+.score-table{border-collapse:collapse;width:100%;font-size:12px}
+.score-table th{
+  padding:8px 12px;text-align:left;font-size:10px;font-weight:600;
+  text-transform:uppercase;letter-spacing:0.5px;
+  color:rgba(255,255,255,0.6);
+  background:rgba(255,255,255,0.08);border-bottom:1px solid rgba(255,255,255,0.1);
+}
+.score-table th.c{text-align:center}
+.score-table td{padding:7px 12px;border-bottom:1px solid rgba(255,255,255,0.06);vertical-align:middle}
+.score-table td.c{text-align:center}
+.score-table tr:last-child td{border-bottom:none}
+.score-table tr:hover td{background:rgba(255,255,255,0.04)}
+.score-zero{color:rgba(255,255,255,0.35)}
+.score-hit{
+  font-weight:700;color:#fff;
+  background:var(--blue);
+  border-radius:4px;padding:2px 8px;
+  display:inline-block;
+}
+.row-num{color:rgba(255,255,255,0.4);font-size:11px}
+.topic-badge{
+  font-size:10px;padding:2px 8px;border-radius:20px;
+  background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);
+}
+
+/* ── PAGE 2 GROUP CARDS ── */
+.groups-header{
+  text-align:center;padding:10px 0 16px;
+  font-size:18px;font-weight:700;color:var(--accent);
+  letter-spacing:0.5px;
+}
+.groups-grid{display:flex;flex-direction:column;gap:12px}
+
+.group-card{
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:var(--r);
+  padding:14px 16px;
+}
+.group-card-head{
+  display:flex;align-items:center;gap:10px;margin-bottom:12px;
+}
+.group-icon{font-size:20px}
+.group-name{font-size:15px;font-weight:700;color:#fff}
+.group-score-big{
+  font-size:24px;font-weight:800;color:var(--accent);
+  margin-left:auto;line-height:1;
+}
+.group-score-label{font-size:10px;color:rgba(255,255,255,0.5);text-align:right}
+
+.group-sub-table{border-collapse:collapse;width:100%;font-size:11px}
+.group-sub-table th{
+  padding:5px 8px;font-size:10px;font-weight:600;
+  color:rgba(255,255,255,0.5);border-bottom:1px solid rgba(255,255,255,0.08);
+  text-align:left;
+}
+.group-sub-table th.r{text-align:right}
+.group-sub-table td{padding:5px 8px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.group-sub-table td.r{text-align:right;font-family:'IBM Plex Sans',monospace}
+.group-sub-table tr:last-child td{border-bottom:none}
+
+.pct-bar-track{height:6px;border-radius:3px;background:rgba(255,255,255,0.1);overflow:hidden;margin-top:2px}
+.pct-bar-fill{height:100%;border-radius:3px;transition:width .6s}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ── PAGE 3 ── */
+.analytics-grid{display:grid;grid-template-columns:1fr;gap:14px}
+.a-card{
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:var(--r);padding:14px;
+}
+.a-card-title{
+  font-size:11px;font-weight:600;color:rgba(255,255,255,0.6);
+  text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;
+  display:flex;align-items:center;gap:6px;
+}
+.a-card-title::before{content:'';width:3px;height:12px;background:var(--accent);border-radius:2px;flex-shrink:0}
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kpi-card{
+  background:rgba(255,255,255,0.08);border-radius:10px;
+  padding:12px;text-align:center;
+}
+.kpi-val{font-size:26px;font-weight:800;color:#fff;letter-spacing:-1px;font-family:'IBM Plex Sans',sans-serif}
+.kpi-label{font-size:10px;color:rgba(255,255,255,0.55);margin-top:3px}
+.chart-wrap{position:relative;height:200px}
+.chart-wrap-tall{position:relative;height:240px}
+.percentile-bar-wrap{padding:4px 0}
+.pct-label-row{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.5);margin-bottom:4px}
+.pct-track{height:18px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;position:relative;margin-bottom:6px}
+.pct-track-fill{height:100%;background:var(--blue);border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:10px;font-weight:600;color:#fff;white-space:nowrap}
+.pct-marker{
+  position:absolute;top:0;height:100%;width:2px;background:var(--accent);
+}
+.pct-marker-label{font-size:9px;color:var(--accent);font-weight:600;position:absolute;top:-14px}
+
+/* ── NAV BUTTONS ── */
+.nav-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 20px;
+  background:rgba(0,0,0,0.25);
+  border-top:1px solid rgba(255,255,255,0.08);
+}
+.nav-btn{
+  font-family:'IBM Plex Sans Thai','IBM Plex Sans',sans-serif;
+  font-size:13px;font-weight:600;
+  padding:9px 24px;border-radius:40px;border:none;cursor:pointer;
+  transition:opacity .2s;
+}
+.nav-btn.back{background:rgba(255,255,255,0.1);color:#fff}
+.nav-btn.next{background:var(--accent);color:#000}
+.nav-btn:hover{opacity:.85}
+.nav-btn:disabled{opacity:.3;cursor:default}
+.brand-footer{
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:11px;font-weight:700;color:var(--accent);
+  text-align:center;letter-spacing:1px;line-height:1.3;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="header-title">Mock Test Physics A-Level</div>
+    <div class="header-meta">Student Performance Report</div>
+  </div>
+  <div class="brand">PHYSICS<br>BLUEPRINT</div>
+</div>
+
+<!-- STUDENT BAR -->
+<div class="student-bar">
+  <span class="sb-label">ชื่อ – นามสกุล</span>
+  <span class="sb-val">Man Tester</span>
+  <span class="sb-label">ชุดที่</span>
+  <span class="sb-num">2</span>
+</div>
+
+<!-- PAGE TABS -->
+<div class="page-tabs">
+  <button class="tab-btn active" onclick="switchPage(0)">📋 คะแนนรายข้อ</button>
+  <button class="tab-btn" onclick="switchPage(1)">📊 คะแนนฟิสิกส์ 5 กลุ่ม</button>
+  <button class="tab-btn" onclick="switchPage(2)">📈 วิเคราะห์คะแนน</button>
+</div>
+
+<!-- ══ PAGE 1: SCORE TABLE ══ -->
+<div class="page active" id="page0">
+  <!-- Score Banner -->
+  <div class="score-banner">
+    <div class="score-main">
+      <div class="score-main-label">คะแนนที่ได้</div>
+      <div class="score-main-val">15</div>
+      <div class="score-main-sub">ตอนที่ 1: <b>15</b> &nbsp; ตอนที่ 2: <b>0</b></div>
+    </div>
+    <div class="score-pill">
+      <div class="score-pill-label">ข้อยาก</div>
+      <div class="score-pill-val red">0/14</div>
+    </div>
+    <div class="score-pill">
+      <div class="score-pill-label">ข้อกลางๆ</div>
+      <div class="score-pill-val cyan">12/65</div>
+    </div>
+    <div class="score-pill">
+      <div class="score-pill-label">ข้อง่าย</div>
+      <div class="score-pill-val green">3/21</div>
+    </div>
+  </div>
+
+  <!-- Score Table -->
+  <div class="score-table-wrap">
+    <table class="score-table">
+      <thead>
+        <tr>
+          <th style="width:36px" class="c">ข้อ</th>
+          <th>บท</th>
+          <th>เนื้อหา</th>
+          <th class="c" style="width:70px">คะแนน</th>
+        </tr>
+      </thead>
+      <tbody id="scoreTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ PAGE 2: GROUP SCORES ══ -->
+<div class="page" id="page1">
+  <div class="groups-header">คะแนนฟิสิกส์ 5 กลุ่ม 🚀</div>
+  <div class="groups-grid">
+
+    <!-- กลศาสตร์ -->
+    <div class="group-card">
+      <div class="group-card-head">
+        <span class="group-icon">⚙️</span>
+        <span class="group-name">กลศาสตร์</span>
+        <div style="margin-left:auto;text-align:right">
+          <div class="group-score-big">3/29</div>
+          <div class="group-score-label">คะแนน</div>
+        </div>
+      </div>
+      <table class="group-sub-table">
+        <thead><tr><th>บท</th><th class="r">คะแนน</th><th class="r">%คะแนน</th><th style="width:100px"></th></tr></thead>
+        <tbody>
+          <tr><td>การระชาดิสและพัฒนาการทางฟิสิกส์</td><td class="r">0/3</td><td class="r">0%</td><td><div class="pct-bar-track"><div class="pct-bar-fill" style="width:0%;background:#4fc3f7"></div></div></td></tr>
+          <tr><td>การเคลื่อนที่แนวตรง</td><td class="r">0/3</td><td class="r">0%</td><td><div class="pct-bar-track"><div class="pct-bar-fill" style="width:0%;background:#4fc3f7"></div></div></td></tr>
+          <tr><td>สมดุลกล</td><td class="r">0/5</td><td class="r">0%</td><td><div class="pct-bar-track"><div class="pct-bar-fill" style="width:0%;background:#4fc3f7"></div></div></td></tr>
+          <tr><td>งานและพลังงาน</td><td class="r">0/3</td><td class="r">0%</td><td><div class="pct-bar-track"><div class="pct-bar-fill" style="width:0%;background:#4fc3f7"></div></div></td></tr>
+          <tr><td>แรงดลและกฎการเคลื่อนที่</td><td class="r">0/6</td><td class="r">0%</td><td><div class="pct-bar-track"><div class="pct-bar-fill" style="width:0%;background:#4fc3f7"></div></div></td></tr>
+          <tr><td>โมเมนตัมและการชน</td><td class="r">0/3</td><td class="r">0%</td><td><div class="pct-bar-track"><div class="pct-bar-fill" style="width:0%;background:#4fc3f7"></div></div></td></tr>
+          <tr><td>การเคลื่อนที่แบบวงกลม</td><td class="r" style="color:var(--accent);font-weight:700">3/3</td><td class="r" style="color:var(--green)">100%</td><td><div class="pct-bar-track"><div class="pct-bar-fill" style="width:100%;background:#51cf66"></div></div></td></tr>
+          <tr><td>การเคลื่อนที่แบบอาร์มอนิกอย่างง่าย</td><td class="r">0/3</td><td class="r">0%</td><td><div class="pct-bar-track"><div class="pct-bar-fill" style="width:0%;background:#4fc3f7"></div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- คลื่นกล + ไฟฟ้า (2 col) -->
+    <div class="two-col">
+
+      <div class="group-card">
+        <div class="group-card-head">
+          <span class="group-icon">🌊</span>
+          <span class="group-name">คลื่นกล และแสง</span>
+          <div style="margin-left:auto;text-align:right">
+            <div class="group-score-big">3/20</div>
+            <div class="group-score-label">คะแนน</div>
+          </div>
+        </div>
+        <table class="group-sub-table">
+          <thead><tr><th>บท</th><th class="r">คะแนน</th><th class="r">%</th></tr></thead>
+          <tbody>
+            <tr><td>แสงเชิงรังสี</td><td class="r">0/3</td><td class="r">0%</td></tr>
+            <tr><td>เสียง</td><td class="r">0/5</td><td class="r">0%</td></tr>
+            <tr><td>คลื่น</td><td class="r" style="color:var(--accent);font-weight:700">3/6</td><td class="r" style="color:var(--accent)">50%</td></tr>
+            <tr><td>แสงเชิงรังสี</td><td class="r">0/6</td><td class="r">0%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="group-card">
+        <div class="group-card-head">
+          <span class="group-icon">⚡</span>
+          <span class="group-name">ไฟฟ้า แม่เหล็ก และคลื่นแม่เหล็กไฟฟ้า</span>
+          <div style="margin-left:auto;text-align:right">
+            <div class="group-score-big">3/23</div>
+            <div class="group-score-label">คะแนน</div>
+          </div>
+        </div>
+        <table class="group-sub-table">
+          <thead><tr><th>บท</th><th class="r">คะแนน</th><th class="r">%</th></tr></thead>
+          <tbody>
+            <tr><td>คลื่นแม่เหล็กไฟฟ้า</td><td class="r">0/3</td><td class="r">0%</td></tr>
+            <tr><td>ไฟฟ้าสถิต</td><td class="r">0/8</td><td class="r">0%</td></tr>
+            <tr><td>ไฟฟ้ากระแส</td><td class="r">0/6</td><td class="r">0%</td></tr>
+            <tr><td>แม่เหล็กและไฟฟ้า</td><td class="r" style="color:var(--accent);font-weight:700">3/6</td><td class="r" style="color:var(--accent)">50%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- อุณหพลศาสตร์ -->
+    <div class="group-card">
+      <div class="group-card-head">
+        <span class="group-icon">🔥</span>
+        <span class="group-name">อุณหพลศาสตร์ และสมบัติเชิงกลของสาร</span>
+        <div style="margin-left:auto;text-align:right">
+          <div class="group-score-big" style="color:var(--green)">6/14</div>
+          <div class="group-score-label">คะแนน</div>
+        </div>
+      </div>
+      <table class="group-sub-table">
+        <thead><tr><th>บท</th><th class="r">คะแนน</th><th class="r">%คะแนน</th><th style="width:120px"></th></tr></thead>
+        <tbody>
+          <tr><td>ความร้อนและแก๊ส</td><td class="r" style="color:var(--green);font-weight:700">6/6</td><td class="r" style="color:var(--green)">100%</td><td><div class="pct-bar-track"><div class="pct-bar-fill" style="width:100%;background:#51cf66"></div></div></td></tr>
+          <tr><td>ของแข็งและของไหล</td><td class="r">0/8</td><td class="r">0%</td><td><div class="pct-bar-track"><div class="pct-bar-fill" style="width:0%"></div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ฟิสิกส์แผนใหม่ -->
+    <div class="group-card">
+      <div class="group-card-head">
+        <span class="group-icon">🔭</span>
+        <span class="group-name">ฟิสิกส์แผนใหม่</span>
+        <div style="margin-left:auto;text-align:right">
+          <div class="group-score-big" style="color:#ff6b6b">0/14</div>
+          <div class="group-score-label">คะแนน</div>
+        </div>
+      </div>
+      <table class="group-sub-table">
+        <thead><tr><th>บท</th><th class="r">คะแนน</th><th class="r">%คะแนน</th><th style="width:120px"></th></tr></thead>
+        <tbody>
+          <tr><td>ฟิสิกส์อะตอม</td><td class="r score-zero">0/6</td><td class="r score-zero">0%</td><td><div class="pct-bar-track"><div class="pct-bar-fill" style="width:0%"></div></div></td></tr>
+          <tr><td>ฟิสิกส์นิวเคลียร์และฟิสิกส์อนุภาค</td><td class="r score-zero">0/8</td><td class="r score-zero">0%</td><td><div class="pct-bar-track"><div class="pct-bar-fill" style="width:0%"></div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ PAGE 3: ANALYTICS ══ -->
+<div class="page" id="page2">
+  <div class="analytics-grid">
+
+    <!-- KPI Cards -->
+    <div class="a-card">
+      <div class="a-card-title">ภาพรวมคะแนน</div>
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-val">15</div>
+          <div class="kpi-label">คะแนน</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-val" style="color:var(--cyan)">4.5%</div>
+          <div class="kpi-label">เป็นร้อยละในกลุ่ม</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-val" style="color:var(--accent2)">244</div>
+          <div class="kpi-label">จำนวนคนทำข้อสอบ</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bar Chart: Score distribution -->
+    <div class="a-card">
+      <div class="a-card-title">จำนวนคนในแต่ละช่วงคะแนน</div>
+      <div class="chart-wrap"><canvas id="cBar"></canvas></div>
+    </div>
+
+    <!-- Percentile bar -->
+    <div class="a-card">
+      <div class="a-card-title">Percentile</div>
+      <div class="percentile-bar-wrap">
+        <div class="pct-label-row"><span>0%</span><span>20%</span><span>40%</span><span>60%</span><span>80%</span><span>100%</span></div>
+        <div class="pct-track">
+          <div class="pct-track-fill" style="width:4.5%">
+            <span style="color:rgba(255,255,255,0.7)">Man Tester</span>
+          </div>
+          <div class="pct-marker" style="left:4.5%">
+            <div class="pct-marker-label">4.5%</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:6px">
+          คะแนนของคุณสูงกว่า <b style="color:var(--accent)">4.5%</b> ของผู้เข้าสอบทั้งหมด (244 คน)
+        </div>
+      </div>
+    </div>
+
+    <!-- Radar Chart -->
+    <div class="a-card">
+      <div class="a-card-title">วิเคราะห์ตามกลุ่มวิชา (Radar)</div>
+      <div class="chart-wrap-tall"><canvas id="cRadar"></canvas></div>
+      <div style="display:flex;gap:16px;margin-top:8px;font-size:10px">
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:3px;background:var(--accent);display:inline-block;border-radius:2px"></span>คะแนนของฉัน</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:3px;background:var(--cyan);display:inline-block;border-radius:2px"></span>คะแนนสูงสุดกลุ่ม</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- NAV BUTTONS -->
+<div class="nav-row">
+  <button class="nav-btn back" id="btnBack" onclick="goBack()" disabled>← ย้อนกลับ</button>
+  <div class="brand-footer">PHYSICS<br>BLUEPRINT</div>
+  <button class="nav-btn next" id="btnNext" onclick="goNext()">ถัดไป →</button>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────
+const ROWS = [
+  {n:1, ch:'การระชาดิสและพัฒนาการทางฟิสิกส์', topic:'หน่วย', score:0},
+  {n:2, ch:'การเคลื่อนที่แนวตรง', topic:'ตกสรี', score:0},
+  {n:3, ch:'แรงดลและกฎการเคลื่อนที่', topic:'เวกเตอร์', score:0},
+  {n:4, ch:'แรงดลและกฎการเคลื่อนที่', topic:'กล้องซ้อมกล้อง', score:0},
+  {n:5, ch:'งานและพลังงาน', topic:'กฎอนุรักษ์พลังงาน', score:0},
+  {n:6, ch:'โมเมนตัมและการชน', topic:'การชน 2 มิติ', score:0},
+  {n:7, ch:'การเคลื่อนที่แบบวงกลม', topic:'โปรเจกไทล์ วงกลม', score:3},
+  {n:8, ch:'การเคลื่อนที่แบบอาร์มอนิกอย่างง่าย', topic:'สมการเทรียบเนดา', score:0},
+  {n:9, ch:'คลื่น', topic:'อัตราเร็วคลื่น จุดเฟส', score:3},
+  {n:10, ch:'คลื่น', topic:'คลื่นหัวในสายอีเล็ก', score:0},
+  {n:11, ch:'แสงเชิงรังสี', topic:'สลิตสลิตเดี่ยว', score:0},
+  {n:12, ch:'แสงเชิงรังสี', topic:'ลักรัง ลักปากกบ', score:0},
+  {n:13, ch:'แสงเชิงรังสี', topic:'การสะท้อนของแสง', score:0},
+  {n:14, ch:'ไฟฟ้าสถิต', topic:'อิเล็กโทรสไตล', score:0},
+  {n:15, ch:'ไฟฟ้ากระแส', topic:'วิดาราห้วงจรไฟฟ้า', score:0},
+  {n:16, ch:'ไฟฟ้ากระแส', topic:'วิดาราห้วงจรไฟฟ้า', score:0},
+  {n:17, ch:'แม่เหล็กและไฟฟ้า', topic:'แรกกระทำรู่จิตสนามแม่เหล็ก', score:3},
+  {n:18, ch:'แม่เหล็กและไฟฟ้า', topic:'กระแสไฟฟ้าเหนี่ยวนำ', score:0},
+  {n:19, ch:'แม่เหล็กและไฟฟ้า', topic:'โหมาร์เหนซ์', score:0},
+  {n:20, ch:'ความร้อนและแก๊ส', topic:'กฎข้อที่ 1 ของเทอร์โมไดนาศิกส์', score:3},
+  {n:21, ch:'ความร้อนและแก๊ส', topic:'กฎรวมแก๊ส', score:3},
+  {n:22, ch:'ของแข็งและของไหล', topic:'กฎข้อปาสกาล', score:0},
+  {n:23, ch:'ฟิสิกส์อะตอม', topic:'ปรากฏการณ์โฟโต้อิเล็กทริก', score:0},
+  {n:24, ch:'ฟิสิกส์อะตอม', topic:'ความยาวคลื่นของคอมป์ตอน', score:0},
+  {n:25, ch:'ฟิสิกส์นิวเคลียร์และฟิสิกส์อนุภาค', topic:'เสถียรภาพการซิวเล็กอนุภาค', score:0},
+  {n:26, ch:'สมดุลกล', topic:'สมการการทรงตัว', score:0},
+  {n:27, ch:'เสียง', topic:'อัตราเร็วเสียง', score:0},
+  {n:28, ch:'ไฟฟ้าสถิต', topic:'งานในการเคลื่อนประจุ', score:0},
+  {n:29, ch:'ของแข็งและของไหล', topic:'สมการแบร์นูลลี', score:0},
+  {n:30, ch:'ฟิสิกส์นิวเคลียร์และฟิสิกส์อนุภาค', topic:'กัมมันตภาพ', score:0},
+];
+
+// Build score table
+const tbody = document.getElementById('scoreTableBody');
+ROWS.forEach(r => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="c row-num">${r.n}</td>
+    <td>${r.ch}</td>
+    <td><span class="topic-badge">${r.topic}</span></td>
+    <td class="c">${r.score > 0
+      ? `<span class="score-hit">+${r.score}</span>`
+      : `<span class="score-zero">0</span>`
+    }</td>`;
+  tbody.appendChild(tr);
+});
+
+// ── PAGE NAVIGATION ────────────────────────────────────────
+let currentPage = 0;
+const TOTAL = 3;
+
+function switchPage(idx) {
+  document.querySelectorAll('.page').forEach((p,i) => p.classList.toggle('active', i === idx));
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i === idx));
+  currentPage = idx;
+  document.getElementById('btnBack').disabled = idx === 0;
+  document.getElementById('btnNext').disabled = idx === TOTAL - 1;
+  if (idx === 2) buildCharts();
+}
+function goBack() { if (currentPage > 0) switchPage(currentPage - 1); }
+function goNext() { if (currentPage < TOTAL - 1) switchPage(currentPage + 1); }
+
+// ── CHARTS ────────────────────────────────────────────────
+Chart.defaults.color = 'rgba(255,255,255,0.6)';
+Chart.defaults.font.family = "'IBM Plex Sans', sans-serif";
+Chart.defaults.font.size = 10;
+let chartsBuilt = false;
+
+function buildCharts() {
+  if (chartsBuilt) return;
+  chartsBuilt = true;
+
+  // Bar chart: distribution
+  new Chart(document.getElementById('cBar'), {
+    type: 'bar',
+    data: {
+      labels: ['0-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91-100'],
+      datasets: [{
+        label: 'จำนวนคน',
+        data: [3, 18, 28, 38, 46, 42, 34, 20, 12, 3],
+        backgroundColor: ctx => {
+          const i = ctx.dataIndex;
+          return i === 1 ? '#f5a623' : '#4fc3f7';
+        },
+        borderRadius: 4,
+        barThickness: 'flex',
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: {
+        label: ctx => ` ${ctx.parsed.y} คน`
+      }}},
+      scales: {
+        x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.5)' } },
+        y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: 'rgba(255,255,255,0.5)' }, beginAtZero: true },
+      }
+    }
+  });
+
+  // Radar chart
+  new Chart(document.getElementById('cRadar'), {
+    type: 'radar',
+    data: {
+      labels: ['กลศาสตร์','คลื่นกล\nและแสง','ไฟฟ้า','อุณหพล-\nศาสตร์','ฟิสิกส์\nแผนใหม่'],
+      datasets: [
+        {
+          label: 'คะแนนของฉัน',
+          data: [10, 15, 13, 43, 0],
+          borderColor: '#f5a623',
+          backgroundColor: 'rgba(245,166,35,0.15)',
+          pointBackgroundColor: '#f5a623',
+          pointRadius: 4,
+          borderWidth: 2,
+        },
+        {
+          label: 'คะแนนสูงสุดกลุ่ม',
+          data: [70, 60, 65, 80, 55],
+          borderColor: '#4fc3f7',
+          backgroundColor: 'rgba(79,195,247,0.08)',
+          pointBackgroundColor: '#4fc3f7',
+          pointRadius: 4,
+          borderWidth: 2,
+          borderDash: [4, 3],
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        r: {
+          min: 0, max: 100,
+          grid: { color: 'rgba(255,255,255,0.1)' },
+          angleLines: { color: 'rgba(255,255,255,0.1)' },
+          pointLabels: { color: 'rgba(255,255,255,0.7)', font: { size: 10 } },
+          ticks: { display: false },
+        }
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>
