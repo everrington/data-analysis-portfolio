@@ -744,7 +744,7 @@
             <span class="project-type-badge dashboard">Dashboard</span>
             <span class="project-year">2024</span>
           </div>
-          <h3 class="project-title serif">Mock Test Physics A-Level Dashboard</h3>
+          <h3 class="project-title serif">Mock Test Physics TPAT3 Dashboard</h3>
           <p class="project-desc">Built a 3-page Looker Studio report for Physics Blueprint that turns raw exam scores into personalized student insights — item-by-item score breakdown, performance across 5 physics topic groups, cohort percentile ranking, and a radar chart overlaying each student's topic profile against the group maximum.</p>
           <div class="project-footer">
             <div class="project-tags">
@@ -845,9 +845,9 @@
         Open to Data Analyst roles in retail, FMCG, or any related field — particularly those involving Customer Analysis, BI tooling, AI adoption, and data strategy. Based in Bangkok or Hatyai; open to hybrid arrangements.
       </p>
       <div class="contact-links">
-        <a class="contact-item" href="/cdn-cgi/l/email-protection#3c485d5159125f594e7c5b515d5550125f5351">
+        <a class="contact-item" href="#" id="emailLink">
           <span class="contact-item-icon">✉</span>
-          <span class="__cf_email__" data-cfemail="fc889d9199d29f998ebc9b919d9590d29f9391">[email&#160;protected]</span>
+          <span id="emailText">tame.cer at gmail.com</span>
         </a>
         <a class="contact-item" href="https://linkedin.com/in/jiranuwat-noonduang" target="_blank">
           <span class="contact-item-icon">in</span>
@@ -867,14 +867,26 @@
   </footer>
 
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  <script>
+    // Reconstruct email to avoid Cloudflare obfuscation
+    (function() {
+      var u = 'tame.cer';
+      var d = 'gmail.com';
+      var e = u + '@' + d;
+      var link = document.getElementById('emailLink');
+      var text = document.getElementById('emailText');
+      if (link) link.href = 'mailto:' + e;
+      if (text) text.textContent = e;
+    })();
+
+    // Reload on bfcache restore
     window.addEventListener('pageshow', function(e) {
       if (e.persisted) window.location.reload();
     });
 
+    // Dark mode
     var root = document.documentElement;
     var btn  = document.querySelector('.theme-btn');
-
     var savedTheme = localStorage.getItem('theme');
     var dark = savedTheme ? (savedTheme === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
 
@@ -896,17 +908,30 @@
 
     applyTheme();
 
+    // Case study expand
     function toggleCase(card) {
       if (card.classList.contains('coming-soon')) return;
       var det = card.querySelector('.case-details');
       if (!det) return;
       var isOpen = det.classList.contains('open');
-      document.querySelectorAll('.case-details.open').forEach(function(d) { d.classList.remove('open'); });
+      document.querySelectorAll('.case-details.open').forEach(function(d) {
+        d.classList.remove('open');
+      });
       if (!isOpen) det.classList.add('open');
     }
 
+    // Nav highlight on scroll
     var sections = document.querySelectorAll('section[id]');
     var links    = document.querySelectorAll('.nav-links a');
     window.addEventListener('scroll', function() {
       var current = '';
       sections.forEach(function(s) {
+        if (window.scrollY >= s.offsetTop - 80) current = s.id;
+      });
+      links.forEach(function(a) {
+        a.style.color = a.getAttribute('href') === '#' + current ? 'var(--text)' : '';
+      });
+    });
+  </script>
+</body>
+</html>
