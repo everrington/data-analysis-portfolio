@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Stock OOS Dashboard — Category B</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f5f5;--surface:#fff;--surface2:#fafafa;
+  --border:#e0e0e0;--border2:#ccc;
+  --text:#1a1a1a;--text2:#555;--text3:#999;
+  --pink:#e91e8c;--pink-l:#fce4f1;
+  --blue:#1565c0;--blue-l:#e3f2fd;
+  --green:#2e7d32;--green-l:#e8f5e9;
+  --amber:#e65100;--amber-l:#fff3e0;
+  --red:#c62828;--red-l:#ffebee;
+  --shadow:0 1px 3px rgba(0,0,0,0.1);
+}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);font-size:11px}
+
+/* HEADER */
+.hdr{background:var(--pink);padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
+.hdr-title{font-size:18px;font-weight:700;color:#fff;letter-spacing:-0.3px}
+.hdr-right{text-align:right;color:rgba(255,255,255,0.9);font-size:10px;line-height:1.6}
+.hdr-date{font-size:13px;font-weight:700;color:#fff}
+
+/* FILTER PANEL */
+.filter-panel{background:var(--surface);border-bottom:1px solid var(--border);padding:8px 16px}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:6px}
+.filter-row:last-child{margin-bottom:0}
+.fg-head{
+  background:var(--pink);color:#fff;font-size:10px;font-weight:700;
+  padding:4px 12px;border-radius:4px;letter-spacing:0.5px;
+  align-self:center;white-space:nowrap;
+}
+.fg-head.blue{background:var(--blue)}
+.fg{display:flex;flex-direction:column;gap:2px;min-width:100px;flex:1;max-width:160px}
+.fg-label{font-size:9px;color:var(--text3);letter-spacing:0.3px}
+select.fgs{
+  font-family:'IBM Plex Sans',sans-serif;font-size:10px;
+  border:1px solid var(--border2);border-radius:4px;
+  padding:3px 6px;background:var(--surface2);color:var(--text);
+  cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23999'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 6px center;padding-right:18px;
+}
+.clear-btn{font-family:'IBM Plex Sans',sans-serif;font-size:10px;padding:4px 12px;border:1px solid var(--border2);border-radius:4px;background:var(--surface2);cursor:pointer;white-space:nowrap;align-self:flex-end}
+.filter-divider{width:1px;background:var(--border2);align-self:stretch;flex-shrink:0}
+
+/* CONTENT */
+.content{padding:10px 16px;display:flex;flex-direction:column;gap:10px}
+
+/* SECTION LABEL */
+.sec-label{font-size:10px;font-weight:600;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px}
+
+/* OOS TIMELINE */
+.timeline-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px;box-shadow:var(--shadow)}
+.chart-wrap{position:relative;height:200px}
+
+/* SUMMARY TABLES */
+.tables-row{display:grid;grid-template-columns:1fr 1.5fr 1.5fr;gap:10px}
+.table-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px;box-shadow:var(--shadow)}
+.dt{border-collapse:collapse;width:100%;font-size:10px}
+.dt th{padding:4px 6px;text-align:left;font-size:9px;font-weight:600;color:var(--text2);border-bottom:1px solid var(--border);background:var(--surface2);text-transform:uppercase;letter-spacing:0.3px;white-space:nowrap}
+.dt th.r{text-align:right}
+.dt td{padding:4px 6px;border-bottom:1px solid var(--border);vertical-align:middle}
+.dt td.r{text-align:right;font-family:'IBM Plex Mono',monospace;font-size:9px}
+.dt tr:last-child td{font-weight:600;background:var(--surface2)}
+.dt tr:hover:not(:last-child) td{background:#fce4f1}
+.pct-hi{color:var(--red);font-weight:600}
+
+/* PRODUCT + WARNING TABLES */
+.bottom-row{display:grid;grid-template-columns:1.4fr 1fr;gap:10px}
+.warn-card{background:var(--surface);border:2px solid var(--pink);border-radius:6px;padding:10px;box-shadow:var(--shadow)}
+.warn-title{font-size:11px;font-weight:700;color:var(--pink);margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.badge{display:inline-block;font-size:8px;font-weight:700;padding:1px 6px;border-radius:3px;text-transform:uppercase}
+.b-a{background:#e8f5e9;color:#2e7d32}
+.b-t1{background:#e3f2fd;color:#1565c0}
+.b-t2{background:#fff3e0;color:#e65100}
+.b-t3{background:#fce4f1;color:#c2185b}
+.b-op{background:#f3e5f5;color:#7b1fa2}
+.oos-hi{background:var(--pink-l);color:var(--pink);font-weight:700;border-radius:3px;padding:1px 5px}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div>
+    <div class="hdr-title">Category B — Recent 2-Week Stock</div>
+    <div style="font-size:10px;color:rgba(255,255,255,0.85);margin-top:2px">Out-of-Stock Monitoring Dashboard</div>
+  </div>
+  <div class="hdr-right">
+    <div>Latest Data &nbsp;&nbsp; Current POG</div>
+    <div class="hdr-date" id="hdDate">03-Apr-26 &nbsp;&nbsp; Apr-26</div>
+  </div>
+</div>
+
+<!-- FILTER PANEL -->
+<div class="filter-panel">
+  <div class="filter-row">
+    <span class="fg-head">Branch Filter</span>
+    <div class="fg"><span class="fg-label">Branch model</span><select class="fgs"><option>All</option><option>Standard</option><option>Express</option></select></div>
+    <div class="fg"><span class="fg-label">Store cluster</span><select class="fgs"><option>All</option><option>Cluster A</option><option>Cluster B</option></select></div>
+    <div class="fg"><span class="fg-label">Region, Province</span><select class="fgs"><option>All</option><option>Central</option><option>North</option><option>South</option></select></div>
+    <div class="fg"><span class="fg-label">Storetype</span><select class="fgs"><option>All</option><option>DC</option><option>Standard</option></select></div>
+    <div class="fg"><span class="fg-label">WF / NWF</span><select class="fgs"><option>All</option><option>WF</option><option>NWF</option></select></div>
+    <div class="fg"><span class="fg-label">Branch</span><select class="fgs"><option>All</option></select></div>
+    <div class="fg"><span class="fg-label">Branch status</span><select class="fgs"><option>All</option><option>Open</option></select></div>
+    <div class="fg"><span class="fg-label">Opening date</span><select class="fgs"><option>All</option></select></div>
+    <div class="filter-divider"></div>
+    <span class="fg-head blue">Product Filter</span>
+    <div class="fg"><span class="fg-label">Vendor name, code</span><select class="fgs"><option>All</option><option>Vendor A</option><option>Vendor B</option></select></div>
+    <div class="fg"><span class="fg-label">Division name, ID</span><select class="fgs"><option>CATEGORY B</option><option>All</option></select></div>
+    <div class="fg"><span class="fg-label">Brand name, code</span><select class="fgs"><option>All</option><option>Brand X</option><option>Brand Y</option></select></div>
+    <div class="fg"><span class="fg-label">Category, Subcategory</span><select class="fgs" id="fCat" onchange="updateCharts()"><option>SEGMENT A</option><option>SEGMENT B</option><option>All</option></select></div>
+    <div class="fg"><span class="fg-label">Packtype</span><select class="fgs"><option>All</option></select></div>
+    <div class="fg"><span class="fg-label">Status</span><select class="fgs"><option>All</option><option>Active</option></select></div>
+    <div class="fg"><span class="fg-label">OEM</span><select class="fgs"><option>All</option><option>Yes</option><option>No</option></select></div>
+    <div class="fg"><span class="fg-label">Product group</span><select class="fgs"><option>All</option></select></div>
+    <div class="fg"><span class="fg-label">Tier</span><select class="fgs"><option>All</option><option>T1</option><option>T2</option><option>T3</option></select></div>
+    <button class="clear-btn" onclick="updateCharts()">Clear all slicers</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- OOS TIMELINE -->
+  <div class="timeline-card">
+    <div class="sec-label">OOS Timeline — %Store OOS by Material (2-week rolling)</div>
+    <div class="chart-wrap"><canvas id="cTimeline"></canvas></div>
+  </div>
+
+  <!-- CATEGORY / SUPPLIER / BRAND TABLES -->
+  <div class="tables-row">
+    <div class="table-card">
+      <div class="sec-label">Category</div>
+      <table class="dt" id="catTable">
+        <thead><tr><th>Division name</th><th class="r">%Store OOS</th><th class="r">POG store</th><th class="r">Store OOS</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="table-card">
+      <div class="sec-label">Supplier</div>
+      <table class="dt" id="supTable">
+        <thead><tr><th>Vendor name</th><th class="r">%OOS</th><th class="r">POG</th><th class="r">OOS</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="table-card">
+      <div class="sec-label">Brand</div>
+      <table class="dt" id="brandTable">
+        <thead><tr><th>Brand name</th><th class="r">%OOS</th><th class="r">POG</th><th class="r">OOS</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PRODUCT + WARNING -->
+  <div class="bottom-row">
+    <div class="table-card">
+      <div class="sec-label">Product</div>
+      <div style="overflow-x:auto">
+        <table class="dt" id="prodTable">
+          <thead><tr><th>Material name</th><th>Status</th><th>Tier</th><th class="r">%Store OOS</th><th class="r">POG store</th><th class="r">Store OOS</th><th class="r">Stock QTY</th><th class="r">DC1</th><th class="r">DC2</th><th class="r">L</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="warn-card">
+      <div class="warn-title">⚠ Warning Product</div>
+      <table class="dt" id="warnTable">
+        <thead><tr><th>Material name</th><th>Cat.</th><th>Status</th><th>Tier</th><th class="r">%OOS</th><th class="r">POG</th><th class="r">OOS</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+Chart.defaults.font.family = "'IBM Plex Sans',sans-serif";
+Chart.defaults.font.size = 9;
+Chart.defaults.color = '#777';
+
+// ── DATA ─────────────────────────────────────────────────
+const DATES = ['Mar 20','Mar 21','Mar 22','Mar 23','Mar 24','Mar 25','Mar 26','Mar 27','Mar 28','Mar 29','Mar 30','Mar 31','Apr 01','Apr 02','Apr 03'];
+const MATERIALS = [
+  {name:'SKU Alpha 25g',    color:'#e91e8c'},
+  {name:'SKU Beta 25g',     color:'#9c27b0'},
+  {name:'SKU Gamma 28g',    color:'#3f51b5'},
+  {name:'SKU Delta 12g',    color:'#0097a7'},
+  {name:'SKU Epsilon 27ml', color:'#f57c00'},
+  {name:'SKU Zeta 28g',     color:'#558b2f'},
+  {name:'SKU Eta 25ml',     color:'#c62828'},
+  {name:'SKU Theta 12g',    color:'#37474f'},
+];
+
+function genTimeline(seed) {
+  return MATERIALS.map((m,i) => ({
+    label: m.name,
+    data: DATES.map((_,d) => +(10 + Math.sin(d*0.5+i+seed)*8 + Math.random()*4).toFixed(1)),
+    borderColor: m.color,
+    backgroundColor: m.color + '22',
+    fill: true, tension: 0.4, pointRadius: 0, borderWidth: 1.5,
+  }));
+}
+
+const CAT_DATA = [
+  {name:'CATEGORY B', sub:'SEGMENT A', pct:'2%', pog:2022, oos:38},
+  {name:'',           sub:'SEGMENT B', pct:'2%', pog:2022, oos:38},
+  {name:'Total',      sub:'',          pct:'2%', pog:2022, oos:38},
+];
+const SUP_DATA = [
+  {name:'Vendor Alpha Co.',   pct:'4%', pog:2012, oos:79},
+  {name:'Vendor Beta Ltd.',   pct:'3%', pog:1985, oos:52},
+  {name:'Vendor Gamma Co.',   pct:'2%', pog:2010, oos:40},
+  {name:'Vendor Delta Corp.', pct:'2%', pog:2022, oos:38},
+  {name:'Vendor Epsilon Inc.',pct:'2%', pog:2010, oos:38},
+  {name:'Vendor Zeta Co.',    pct:'2%', pog:1993, oos:38},
+  {name:'Vendor Eta Ltd.',    pct:'2%', pog:1998, oos:38},
+  {name:'Vendor Theta Co.',   pct:'2%', pog:2009, oos:38},
+  {name:'Vendor Iota Corp.',  pct:'2%', pog:2010, oos:38},
+  {name:'Vendor Kappa Ltd.',  pct:'2%', pog:2021, oos:38},
+  {name:'Total',              pct:'2%', pog:2022, oos:38},
+];
+const BRAND_DATA = [
+  {name:'BRAND APEX',    pct:'10%',oos:1130, pog:114},
+  {name:'BRAND NOVA',    pct:'4%', oos:2012, pog:79},
+  {name:'BRAND CREST',   pct:'3%', oos:2008, pog:63},
+  {name:'BRAND AURA',    pct:'2%', oos:1985, pog:46},
+  {name:'BRAND FLUX',    pct:'4%', oos:1130, pog:44},
+  {name:'BRAND PRIME',   pct:'2%', oos:2008, pog:43},
+  {name:'BRAND CORE',    pct:'2%', oos:2010, pog:42},
+  {name:'BRAND EDGE',    pct:'2%', oos:2010, pog:41},
+  {name:'BRAND VISTA',   pct:'2%', oos:1981, pog:38},
+  {name:'BRAND ZENITH',  pct:'2%', oos:2010, pog:38},
+  {name:'BRAND PEAK',    pct:'2%', oos:2021, pog:38},
+  {name:'Total',         pct:'2%', oos:2022, pog:38},
+];
+const PROD_DATA = [
+  {name:'SKU Alpha 25g',     st:'A', tier:'T4', pct:'41%', pog:1130, oos:463, qty:3550,  dc1:80,  dc2:30, l:20},
+  {name:'SKU Beta 25g',      st:'A', tier:'T4', pct:'30%', pog:540,  oos:164, qty:null,   dc1:3,   dc2:0,  l:0},
+  {name:'SKU Gamma 28g',     st:'CP',tier:'T3', pct:'25%', pog:1130, oos:277, qty:4849,  dc1:12,  dc2:0,  l:0},
+  {name:'SKU Delta 12g',     st:'A', tier:'T1', pct:'23%', pog:2078, oos:459, qty:20431, dc1:300, dc2:250,l:20},
+  {name:'SKU Epsilon 27ml',  st:'A', tier:'T1', pct:'22%', pog:1130, oos:248, qty:22521, dc1:2840,dc2:480,l:0},
+  {name:'SKU Zeta 28g',      st:'A', tier:'T2', pct:'22%', pog:2078, oos:439, qty:25410, dc1:10,  dc2:20, l:20},
+  {name:'SKU Eta 50g',       st:'A', tier:'T1', pct:'70%', pog:1130, oos:220, qty:5782,  dc1:30,  dc2:20, l:20},
+  {name:'SKU Theta 27ml',    st:'A', tier:'T2', pct:'30%', pog:2010, oos:596, qty:9769,  dc1:2513,dc2:1514,l:8},
+  {name:'SKU Iota 25g',      st:'A', tier:'T2', pct:'72%', pog:2070, oos:235, qty:9223,  dc1:958, dc2:815,l:8},
+  {name:'Total',             st:'A', tier:'',   pct:'2%',  pog:2022, oos:3,   qty:null,  dc1:null,dc2:null,l:0},
+];
+const WARN_DATA = [
+  {name:'SKU Alpha 25g',   cat:'SEG A', st:'A', tier:'T1', pct:'24%', pog:2010, oos:477},
+  {name:'SKU Gamma 28g',   cat:'SEG A', st:'A', tier:'T1', pct:'23%', pog:2018, oos:459},
+  {name:'SKU Beta 25g',    cat:'SEG A', st:'A', tier:'T1', pct:'22%', pog:2018, oos:419},
+  {name:'SKU Delta 12g',   cat:'SEG B', st:'A', tier:'T1', pct:'8%',  pog:2018, oos:160},
+];
+
+// ── RENDER TABLES ─────────────────────────────────────────
+function tierBadge(t) {
+  const cls = t==='T1'?'b-t1':t==='T2'?'b-t2':t==='T3'?'b-t3':t==='T4'?'b-op':'';
+  return t ? `<span class="badge ${cls}">${t}</span>` : '';
+}
+function stBadge(s) { return s ? `<span class="badge b-a">${s}</span>` : ''; }
+function fmtNum(n) { return n!=null ? n.toLocaleString() : '—'; }
+
+function buildTables() {
+  // Cat table
+  let h='';
+  CAT_DATA.forEach(r => {
+    h+=`<tr><td>${r.name}<br><span style="color:var(--text3);font-size:9px">${r.sub}</span></td><td class="r ${+r.pct>5?'pct-hi':''}">${r.pct}</td><td class="r">${r.pog.toLocaleString()}</td><td class="r">${r.oos}</td></tr>`;
+  });
+  document.querySelector('#catTable tbody').innerHTML = h;
+
+  // Supplier
+  h='';
+  SUP_DATA.forEach(r => {
+    h+=`<tr><td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.name}</td><td class="r">${r.pct}</td><td class="r">${r.pog.toLocaleString()}</td><td class="r">${r.oos}</td></tr>`;
+  });
+  document.querySelector('#supTable tbody').innerHTML = h;
+
+  // Brand
+  h='';
+  BRAND_DATA.forEach(r => {
+    const hi = parseInt(r.pct) >= 5;
+    h+=`<tr><td>${r.name}</td><td class="r ${hi?'pct-hi':''}">${r.pct}</td><td class="r">${r.oos.toLocaleString()}</td><td class="r">${r.pog}</td></tr>`;
+  });
+  document.querySelector('#brandTable tbody').innerHTML = h;
+
+  // Product
+  h='';
+  PROD_DATA.forEach(r => {
+    const hi = parseInt(r.pct) >= 20;
+    h+=`<tr>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.name}">${r.name}</td>
+      <td>${stBadge(r.st)}</td><td>${tierBadge(r.tier)}</td>
+      <td class="r"><span class="${hi?'oos-hi':''}">${r.pct}</span></td>
+      <td class="r">${r.pog.toLocaleString()}</td><td class="r">${r.oos}</td>
+      <td class="r">${fmtNum(r.qty)}</td><td class="r">${fmtNum(r.dc1)}</td>
+      <td class="r">${fmtNum(r.dc2)}</td><td class="r">${r.l}</td>
+    </tr>`;
+  });
+  document.querySelector('#prodTable tbody').innerHTML = h;
+
+  // Warning
+  h='';
+  WARN_DATA.forEach(r => {
+    h+=`<tr>
+      <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.name}</td>
+      <td>${r.cat}</td><td>${stBadge(r.st)}</td><td>${tierBadge(r.tier)}</td>
+      <td class="r pct-hi">${r.pct}</td><td class="r">${r.pog.toLocaleString()}</td><td class="r">${r.oos}</td>
+    </tr>`;
+  });
+  document.querySelector('#warnTable tbody').innerHTML = h;
+}
+
+// ── TIMELINE CHART ────────────────────────────────────────
+let timelineChart = null;
+function buildTimeline(seed=0) {
+  if (timelineChart) { timelineChart.destroy(); }
+  timelineChart = new Chart(document.getElementById('cTimeline'), {
+    type: 'line',
+    data: { labels: DATES, datasets: genTimeline(seed) },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      animation: { duration: 500 },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          display: true, position: 'right',
+          labels: { font: { size: 8 }, boxWidth: 10, padding: 6,
+            generateLabels: chart => chart.data.datasets.map((d,i) => ({
+              text: d.label, fillStyle: d.borderColor,
+              strokeStyle: d.borderColor, lineWidth: 1, index: i,
+              hidden: !chart.isDatasetVisible(i),
+            }))
+          }
+        },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}%` } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 8 }, maxRotation: 0 } },
+        y: {
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: { font: { size: 8 }, callback: v => v + '%' },
+          title: { display: true, text: '%Store OOS', font: { size: 8 } },
+          min: 0, max: 45,
+        }
+      }
+    }
+  });
+}
+
+function updateCharts() { buildTimeline(Math.random() * 5); buildTables(); }
+buildTimeline();
+buildTables();
+</script>
+</body>
+</html>

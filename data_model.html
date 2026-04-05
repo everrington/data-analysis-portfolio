@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Data Model — Stock Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans',sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:12px;min-height:100vh;padding:24px}
+.canvas{position:relative;min-height:540px;width:100%}
+
+/* TABLE CARDS */
+.tbl{
+  position:absolute;background:#fff;border:1px solid #d0d0d0;
+  border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);
+  width:175px;user-select:none;cursor:move;
+  transition:box-shadow .15s;
+}
+.tbl:hover{box-shadow:0 4px 16px rgba(0,0,0,0.18)}
+.tbl-head{
+  padding:6px 10px;font-size:11px;font-weight:600;
+  border-bottom:1px solid #e0e0e0;display:flex;align-items:center;gap:6px;
+}
+.tbl-head .icon{font-size:12px}
+.tbl.fact .tbl-head{background:#1565c0;color:#fff;border-color:#1565c0}
+.tbl.dim  .tbl-head{background:#fff;color:#333;border-top:3px solid #e91e8c}
+.tbl.meas .tbl-head{background:#fff;color:#333;border-top:3px solid #ff9800}
+.tbl-body{padding:4px 0}
+.tbl-row{
+  padding:3px 10px;font-size:10px;display:flex;align-items:center;gap:6px;
+  border-bottom:1px solid #f5f5f5;color:#333;
+}
+.tbl-row:last-child{border-bottom:none}
+.tbl-row .ftype{font-family:'IBM Plex Mono',monospace;font-size:8px;color:#999;margin-left:auto}
+.tbl-row .ficon{font-size:10px;color:#1565c0;flex-shrink:0}
+.tbl-row .ficon.sum{color:#2e7d32}
+.tbl-row .ficon.meas{color:#ff9800}
+.sep{height:1px;background:#eee;margin:2px 0}
+.collapse-btn{padding:3px 10px;font-size:9px;color:#e91e8c;cursor:pointer;text-align:center;border-top:1px solid #f0f0f0}
+
+/* SVG CONNECTOR LAYER */
+svg.connectors{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.conn-line{stroke:#aaa;stroke-width:1.5;fill:none;stroke-dasharray:none}
+.conn-line.many{stroke-dasharray:4,3}
+.conn-label{font-size:9px;fill:#999;font-family:'IBM Plex Sans',sans-serif}
+
+/* LEGEND */
+.legend{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:10px;color:#555}
+.leg-box{width:12px;height:12px;border-radius:2px}
+.leg-line{width:24px;height:2px}
+</style>
+</head>
+<body>
+
+<div class="legend">
+  <div class="leg-item"><div class="leg-box" style="background:#1565c0"></div>Fact table</div>
+  <div class="leg-item"><div class="leg-box" style="background:#e91e8c;width:12px;height:3px;border-radius:0;margin-top:5px"></div>Dimension table</div>
+  <div class="leg-item"><div class="leg-box" style="background:#ff9800;width:12px;height:3px;border-radius:0;margin-top:5px"></div>Measure table</div>
+  <div class="leg-item"><div class="leg-line" style="background:#aaa"></div>One-to-many relationship</div>
+  <div class="leg-item"><div class="leg-line" style="background:#aaa;background:repeating-linear-gradient(90deg,#aaa 0,#aaa 4px,transparent 4px,transparent 7px)"></div>Many-to-many</div>
+</div>
+
+<div class="canvas" id="canvas">
+  <svg class="connectors" id="svg"></svg>
+
+  <!-- DIM_Date -->
+  <div class="tbl dim" id="t-date" style="left:20px;top:30px">
+    <div class="tbl-head"><span class="icon">📅</span>DIM_Date</div>
+    <div class="tbl-body">
+      <div class="tbl-row"><span class="ficon">🔑</span>date<span class="ftype">DATE</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>day<span class="ftype">INT</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>month<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>month_no<span class="ftype">INT</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>month_year<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>quarter<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>quarter_no<span class="ftype">INT</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>year<span class="ftype">INT</span></div>
+    </div>
+  </div>
+
+  <!-- DIM_Branch -->
+  <div class="tbl dim" id="t-branch" style="left:220px;top:20px">
+    <div class="tbl-head"><span class="icon">🏪</span>DIM_Branch</div>
+    <div class="tbl-body">
+      <div class="tbl-row"><span class="ficon">🔑</span>branch_code<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>branch_name<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>branch_model<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>branch_status<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>store_cluster<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>dc<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>region<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>province<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>storetype<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>wf_nwf<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>opening_date<span class="ftype">DATE</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>close_date<span class="ftype">DATE</span></div>
+    </div>
+  </div>
+
+  <!-- DIM_Assortment -->
+  <div class="tbl dim" id="t-assort" style="left:450px;top:20px">
+    <div class="tbl-head"><span class="icon">📦</span>DIM_Assortment</div>
+    <div class="tbl-body">
+      <div class="tbl-row"><span class="ficon">🔑</span>branch_code<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">🔑</span>material_code<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>assort_flag<span class="ftype">BOOL</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>index_instore<span class="ftype">INT</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>pog_on_month<span class="ftype">INT</span></div>
+    </div>
+  </div>
+
+  <!-- DIM_Product -->
+  <div class="tbl dim" id="t-product" style="left:660px;top:20px">
+    <div class="tbl-head"><span class="icon">🏷</span>DIM_Product</div>
+    <div class="tbl-body">
+      <div class="tbl-row"><span class="ficon">🔑</span>material_code<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>material_name<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>brand_code<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>brand_name<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>category<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>subcategory<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>division_id<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>division_name<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>vendor_code<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>vendor_name<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>packtype_group<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>product_group<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>product_status<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>oem<span class="ftype">BOOL</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>tier_product<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>first_sales_date<span class="ftype">DATE</span></div>
+    </div>
+  </div>
+
+  <!-- FACT_Balances -->
+  <div class="tbl fact" id="t-fact" style="left:360px;top:310px">
+    <div class="tbl-head"><span class="icon">📊</span>FACT_Balances</div>
+    <div class="tbl-body">
+      <div class="tbl-row"><span class="ficon">🔑</span>branch_code<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">🔑</span>doc_date<span class="ftype">DATE</span></div>
+      <div class="tbl-row"><span class="ficon">🔑</span>material_code<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>index_<span class="ftype">STRING</span></div>
+      <div class="tbl-row"><span class="ficon sum">∑</span>stock_qty<span class="ftype">FLOAT</span></div>
+      <div class="tbl-row"><span class="ficon sum">∑</span>stock_value<span class="ftype">FLOAT</span></div>
+      <div class="tbl-row"><span class="ficon">📋</span>store_located<span class="ftype">STRING</span></div>
+    </div>
+  </div>
+
+  <!-- Measure -->
+  <div class="tbl meas" id="t-meas" style="left:680px;top:310px">
+    <div class="tbl-head"><span class="icon">📐</span>Measure</div>
+    <div class="tbl-body">
+      <div class="tbl-row"><span class="ficon meas">⚡</span>#Store<span class="ftype">DAX</span></div>
+      <div class="tbl-row"><span class="ficon meas">⚡</span>%Store OOS<span class="ftype">DAX</span></div>
+      <div class="tbl-row"><span class="ficon meas">⚡</span>Current POG<span class="ftype">DAX</span></div>
+      <div class="tbl-row"><span class="ficon meas">⚡</span>Current Stock QTY<span class="ftype">DAX</span></div>
+      <div class="tbl-row"><span class="ficon meas">⚡</span>Current Stock Value<span class="ftype">DAX</span></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Draw SVG relationship lines between table anchors
+const svg = document.getElementById('svg');
+
+function getCenter(el) {
+  const r = el.getBoundingClientRect();
+  const cr = document.getElementById('canvas').getBoundingClientRect();
+  return {
+    x: r.left - cr.left + r.width / 2,
+    y: r.top  - cr.top  + r.height / 2,
+    left: r.left - cr.left,
+    right: r.right - cr.left,
+    top: r.top - cr.top,
+    bottom: r.bottom - cr.top,
+  };
+}
+
+function drawLine(fromEl, toEl, fromSide='right', toSide='left', label='1', label2='*', dashed=false) {
+  const f = getCenter(fromEl);
+  const t = getCenter(toEl);
+  const x1 = fromSide === 'right' ? f.right : fromSide === 'left' ? f.left : f.x;
+  const y1 = fromSide === 'bottom' ? f.bottom : fromSide === 'top' ? f.top : f.y;
+  const x2 = toSide === 'left' ? t.left : toSide === 'right' ? t.right : t.x;
+  const y2 = toSide === 'bottom' ? t.bottom : toSide === 'top' ? t.top : t.y;
+
+  const mx = (x1 + x2) / 2;
+  const path = `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+
+  const el = document.createElementNS('http://www.w3.org/2000/svg','path');
+  el.setAttribute('d', path);
+  el.setAttribute('class', 'conn-line' + (dashed?' many':''));
+  svg.appendChild(el);
+
+  // Labels
+  [
+    {x: x1 + (fromSide==='right'?6:-6), y: y1 - 4, t: label},
+    {x: x2 + (toSide==='left'?-10:6),  y: y2 - 4, t: label2},
+  ].forEach(lb => {
+    const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+    txt.setAttribute('x', lb.x);
+    txt.setAttribute('y', lb.y);
+    txt.setAttribute('class','conn-label');
+    txt.textContent = lb.t;
+    svg.appendChild(txt);
+  });
+}
+
+function drawAll() {
+  svg.innerHTML = '';
+  const date   = document.getElementById('t-date');
+  const branch = document.getElementById('t-branch');
+  const assort = document.getElementById('t-assort');
+  const product= document.getElementById('t-product');
+  const fact   = document.getElementById('t-fact');
+  const meas   = document.getElementById('t-meas');
+
+  // DIM_Date (1) → FACT (*)
+  drawLine(date, fact, 'bottom', 'left', '1', '*');
+  // DIM_Branch (1) → FACT (*)
+  drawLine(branch, fact, 'bottom', 'top', '1', '*');
+  // DIM_Branch (1) → DIM_Assortment (*)
+  drawLine(branch, assort, 'right', 'left', '1', '*');
+  // DIM_Assortment (*) → FACT (*)
+  drawLine(assort, fact, 'bottom', 'top', '*', '*', true);
+  // DIM_Product (1) → FACT (*)
+  drawLine(product, fact, 'bottom', 'right', '1', '*');
+  // FACT → Measure
+  drawLine(fact, meas, 'right', 'left', '', '');
+}
+
+// Drag support
+let dragging = null, ox = 0, oy = 0;
+document.querySelectorAll('.tbl').forEach(el => {
+  el.addEventListener('mousedown', e => {
+    dragging = el;
+    const r = el.getBoundingClientRect();
+    ox = e.clientX - r.left;
+    oy = e.clientY - r.top;
+    e.preventDefault();
+  });
+});
+document.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  const cr = document.getElementById('canvas').getBoundingClientRect();
+  dragging.style.left = (e.clientX - cr.left - ox) + 'px';
+  dragging.style.top  = (e.clientY - cr.top  - oy) + 'px';
+  drawAll();
+});
+document.addEventListener('mouseup', () => { dragging = null; });
+
+setTimeout(drawAll, 100);
+window.addEventListener('resize', drawAll);
+</script>
+</body>
+</html>
