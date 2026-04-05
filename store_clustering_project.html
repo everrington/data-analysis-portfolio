@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Store Clustering — Premium Shampoo · Jiranuwat N.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fafaf8;--bg-2:#f3f2ef;--bg-3:#eceae5;
+  --text:#1a1916;--text-2:#6b6a65;--text-3:#a09f9a;
+  --border:rgba(26,25,22,0.1);--border-2:rgba(26,25,22,0.18);--border-3:rgba(26,25,22,0.28);
+  --blue:#2a5a8a;--blue-dim:rgba(42,90,138,0.08);
+  --teal:#2a7a6e;--teal-dim:rgba(42,122,110,0.1);
+  --amber:#8a5a10;--amber-dim:rgba(138,90,16,0.08);
+  --red:#b04040;--red-dim:rgba(176,64,64,0.08);
+  --purple:#6040a0;--purple-dim:rgba(96,64,160,0.08);
+  --code-bg:#1e1d1a;--code-text:#e8e6e0;
+}
+[data-theme="dark"]{
+  --bg:#141412;--bg-2:#1e1d1a;--bg-3:#272623;
+  --text:#f0ede8;--text-2:#9b9a95;--text-3:#5e5d59;
+  --border:rgba(240,237,232,0.08);--border-2:rgba(240,237,232,0.14);--border-3:rgba(240,237,232,0.22);
+  --code-bg:#0d0d0b;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.7;transition:background .3s,color .3s}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--bg);border-bottom:0.5px solid var(--border);backdrop-filter:blur(12px);transition:background .3s}
+.nav-inner{max-width:820px;margin:0 auto;padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between}
+.nav-back{font-size:13px;color:var(--text-2);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s}
+.nav-back:hover{color:var(--text)}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:17px;color:var(--text);text-decoration:none}
+.theme-btn{width:32px;height:32px;border:0.5px solid var(--border-2);border-radius:50%;background:transparent;cursor:pointer;color:var(--text-2);font-size:14px;transition:background .2s}
+.theme-btn:hover{background:var(--bg-2)}
+
+.page{max-width:820px;margin:0 auto;padding:5rem 2rem 4rem}
+
+/* HERO */
+.proj-eyebrow{font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--text-3);margin-bottom:1rem;display:flex;align-items:center;gap:10px}
+.proj-eyebrow::before{content:'';display:inline-block;width:24px;height:0.5px;background:var(--text-3)}
+.proj-title{font-family:'DM Serif Display',serif;font-size:clamp(30px,5vw,50px);line-height:1.08;letter-spacing:-1.5px;margin-bottom:1.25rem}
+.proj-title em{font-style:italic;color:var(--text-2)}
+.proj-meta-row{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:2.5rem;padding-bottom:2rem;border-bottom:0.5px solid var(--border)}
+.tag{font-size:11px;padding:4px 12px;border-radius:40px;border:0.5px solid var(--border-2);color:var(--text-2)}
+.tag.blue{border-color:var(--blue);color:var(--blue);background:var(--blue-dim)}
+.tag.teal{border-color:var(--teal);color:var(--teal);background:var(--teal-dim)}
+.tag.amber{border-color:var(--amber);color:var(--amber);background:var(--amber-dim)}
+
+/* SECTION RULE */
+.sec-rule{display:flex;align-items:center;gap:1rem;margin:2.5rem 0 1.5rem}
+.sec-rule-label{font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-3);white-space:nowrap}
+.sec-rule-line{flex:1;height:0.5px;background:var(--border)}
+
+/* PROSE */
+.prose{font-size:15px;font-weight:300;line-height:1.85;color:var(--text-2);margin-bottom:1.25rem}
+.prose strong{font-weight:500;color:var(--text)}
+
+/* INFO GRID */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;border:0.5px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:2rem}
+.info-cell{padding:1rem 1.25rem;background:var(--bg-2)}
+.info-label{font-size:10px;font-weight:500;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-3);margin-bottom:.35rem}
+.info-val{font-size:14px;color:var(--text);line-height:1.5}
+
+/* RESULT CARDS */
+.result-row{display:flex;gap:1rem;margin:1.5rem 0}
+.result-card{flex:1;background:var(--bg-2);border-radius:10px;padding:1rem 1.25rem}
+.result-num{font-family:'DM Serif Display',serif;font-size:26px;color:var(--text);letter-spacing:-0.5px;margin-bottom:2px}
+.result-label{font-size:12px;color:var(--text-2);font-weight:300;line-height:1.4}
+
+/* ── LOGIC DIAGRAM ── */
+.diagram{margin:1.5rem 0 2rem}
+
+/* Inputs row */
+.diag-inputs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:0}
+.diag-input{
+  border:0.5px solid var(--border-2);border-radius:10px;padding:12px 14px;
+  background:var(--bg-2);
+}
+.diag-input-label{font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-3);margin-bottom:5px}
+.diag-input-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px}
+.diag-input-sub{font-size:11px;font-weight:300;color:var(--text-2);line-height:1.5}
+.diag-input-badge{display:inline-block;font-size:9px;font-weight:500;padding:2px 8px;border-radius:20px;margin-top:6px}
+.b-blue{background:var(--blue-dim);color:var(--blue)}
+.b-teal{background:var(--teal-dim);color:var(--teal)}
+.b-amber{background:var(--amber-dim);color:var(--amber)}
+.b-red{background:var(--red-dim);color:var(--red)}
+.b-purple{background:var(--purple-dim);color:var(--purple)}
+
+/* Down arrows */
+.diag-arrows{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:4px 0}
+.diag-arrow-cell{display:flex;justify-content:center;font-size:18px;color:var(--text-3)}
+
+/* Metric boxes */
+.diag-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:0}
+.diag-metric{
+  border:0.5px solid var(--border-2);border-radius:10px;padding:12px 14px;
+  background:var(--bg);position:relative;
+}
+.diag-metric-num{font-size:10px;font-weight:700;letter-spacing:1px;color:var(--text-3);margin-bottom:4px}
+.diag-metric-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px}
+.diag-metric-formula{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--teal);
+  background:var(--teal-dim);border-radius:4px;padding:3px 7px;margin-top:6px;display:inline-block;
+}
+.diag-metric-weight{
+  font-size:10px;font-weight:600;color:var(--amber);margin-top:5px;
+}
+
+/* Combine arrow */
+.diag-combine{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 0;font-size:12px;color:var(--text-2)}
+.diag-combine-line{flex:1;height:0.5px;background:var(--border-2)}
+.diag-combine-center{
+  background:var(--bg-2);border:0.5px solid var(--border-2);
+  border-radius:8px;padding:8px 16px;font-size:12px;font-weight:500;color:var(--text);
+  white-space:nowrap;
+}
+
+/* Score box */
+.diag-score{
+  border:0.5px solid var(--amber);border-radius:10px;padding:14px 16px;
+  background:var(--amber-dim);margin-bottom:0;
+}
+.diag-score-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}
+.diag-score-formula{
+  font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--amber);
+  line-height:1.6;
+}
+.diag-score-sub{font-size:12px;font-weight:300;color:var(--text-2);margin-top:6px}
+
+/* Output box */
+.diag-output{
+  border:0.5px solid var(--blue);border-radius:10px;padding:14px 16px;
+  background:var(--blue-dim);
+}
+.diag-output-title{font-size:13px;font-weight:500;color:var(--blue);margin-bottom:4px}
+.diag-output-sub{font-size:12px;font-weight:300;color:var(--text-2);line-height:1.65}
+
+/* CODE */
+.code-section{margin-bottom:2.5rem}
+.cs-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:.75rem}
+.cs-num{font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-3)}
+.cs-title{font-size:16px;font-weight:500;color:var(--text)}
+.cs-desc{font-size:14px;font-weight:300;line-height:1.75;color:var(--text-2);margin-bottom:.75rem}
+.code-wrap{background:var(--code-bg);border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.15)}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.code-lang{font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:#6b6a65}
+.copy-btn{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;padding:4px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.12);background:transparent;color:#9b9a95;cursor:pointer;transition:background .15s,color .15s}
+.copy-btn:hover{background:rgba(255,255,255,0.08);color:#f0ede8}
+.copy-btn.copied{color:#4aaa9e;border-color:#4aaa9e}
+pre{margin:0;padding:20px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.7;color:#e8e6e0}
+.kw{color:#c792ea}.fn{color:#82aaff}.str{color:#c3e88d}.cm{color:#546e7a;font-style:italic}.num{color:#f78c6c}.op{color:#89ddff}
+
+/* BACK */
+.back-row{margin-top:3rem;padding-top:2rem;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.back-link{font-size:13px;font-weight:500;color:var(--text-2);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s}
+.back-link:hover{color:var(--text)}
+
+@media(max-width:600px){
+  .info-grid{grid-template-columns:1fr}
+  .result-row{flex-direction:column}
+  .diag-inputs,.diag-metrics,.diag-arrows{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-back" href="index.html">← Back to portfolio</a>
+    <a class="nav-logo" href="index.html">Jiranuwat N.</a>
+    <button class="theme-btn" onclick="toggleTheme()">☾</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <p class="proj-eyebrow">Retail Strategy · SQL · Customer Analytics · 2025–2026</p>
+  <h1 class="proj-title">Store Clustering to Unlock<br><em>Premium Shampoo Opportunities</em></h1>
+  <div class="proj-meta-row">
+    <span class="tag blue">BigQuery SQL</span>
+    <span class="tag teal">Retail Strategy</span>
+    <span class="tag amber">Customer Analytics</span>
+  </div>
+
+  <p class="prose">
+    Not every store is equally ready for premium products. Placing high-priced SKUs in the wrong store wastes shelf space and promotional budget — while missing the right stores means leaving revenue on the table. The challenge is that <strong>"readiness" isn't a single number</strong>: it's a combination of who is shopping there, how much they spend per visit, and how productively the category is performing per shelf bay.
+  </p>
+  <p class="prose">
+    This project builds a <strong>composite store ranking model</strong> in BigQuery that scores every branch across three independently derived signals — premium customer penetration, category sales per bay, and average basket size — then combines them into a single weighted score using normalized percentages. The result is a ranked list of stores prioritized for premium shampoo range expansion, planogram upgrades, or targeted promotional investment.
+  </p>
+
+  <div class="info-grid">
+    <div class="info-cell">
+      <p class="info-label">Role</p>
+      <p class="info-val">Sole analyst — designed the scoring framework, built all BigQuery CTEs, and delivered the ranked output to the category team</p>
+    </div>
+    <div class="info-cell">
+      <p class="info-label">Stack</p>
+      <p class="info-val">BigQuery SQL · Window functions · DENSE_RANK · Regex extraction · Normalized weighted scoring</p>
+    </div>
+    <div class="info-cell">
+      <p class="info-label">Date window</p>
+      <p class="info-val">6-month transaction history · POG assortment snapshot as of latest month</p>
+    </div>
+    <div class="info-cell">
+      <p class="info-label">Output</p>
+      <p class="info-val">Branch-level ranked table — composite score + individual signal values for category team action</p>
+    </div>
+  </div>
+
+  <div class="result-row">
+    <div class="result-card">
+      <p class="result-num">3</p>
+      <p class="result-label">Independent signals — premium customer %, sales/bay, avg basket size</p>
+    </div>
+    <div class="result-card">
+      <p class="result-num">40/30/30</p>
+      <p class="result-label">Weight split — customer quality weighted highest as the strongest demand signal</p>
+    </div>
+    <div class="result-card">
+      <p class="result-num">฿0.5/ml</p>
+      <p class="result-label">Premium threshold — spend-per-ml ratio derived from transaction data via regex</p>
+    </div>
+  </div>
+
+  <!-- LOGIC DIAGRAM -->
+  <div class="sec-rule"><span class="sec-rule-label">Scoring logic</span><div class="sec-rule-line"></div></div>
+  <p class="prose">The model derives three independent signals from raw transaction data, normalizes each across all stores, then combines them with a weighted formula into a single composite score used for ranking.</p>
+
+  <div class="diagram">
+
+    <!-- INPUT SOURCES -->
+    <div class="diag-inputs">
+      <div class="diag-input">
+        <div class="diag-input-label">Input A</div>
+        <div class="diag-input-title">Transactions</div>
+        <div class="diag-input-sub">6-month sales history — doc_no, customer_code, barcode, branch, sales, qty</div>
+        <span class="diag-input-badge b-blue">FACT table</span>
+      </div>
+      <div class="diag-input">
+        <div class="diag-input-label">Input B</div>
+        <div class="diag-input-title">Product Master</div>
+        <div class="diag-input-sub">Active shampoo + conditioner SKUs — ml extracted via regex from material name</div>
+        <span class="diag-input-badge b-teal">DIM table</span>
+      </div>
+      <div class="diag-input">
+        <div class="diag-input-label">Input C</div>
+        <div class="diag-input-title">POG Master</div>
+        <div class="diag-input-sub">Latest planogram snapshot — branch × SKU assortment, total bay count, urban/non-urban flag</div>
+        <span class="diag-input-badge b-amber">POG table</span>
+      </div>
+    </div>
+
+    <!-- DOWN ARROWS -->
+    <div class="diag-arrows">
+      <div class="diag-arrow-cell">↓</div>
+      <div class="diag-arrow-cell">↓</div>
+      <div class="diag-arrow-cell">↓</div>
+    </div>
+
+    <!-- METRIC DERIVATIONS -->
+    <div class="diag-metrics">
+      <div class="diag-metric">
+        <div class="diag-metric-num">Metric 01</div>
+        <div class="diag-metric-title">Premium customer %</div>
+        <div class="diag-input-sub">Per customer: compute spend ÷ (ml × qty) to get ฿/ml ratio. Customers ≥ ฿0.5/ml = "premium". Count premium ÷ total customers per branch.</div>
+        <div class="diag-metric-formula">spend / (ml × qty) ≥ 0.5</div>
+        <div class="diag-metric-weight">Weight: 40%</div>
+      </div>
+      <div class="diag-metric">
+        <div class="diag-metric-num">Metric 02</div>
+        <div class="diag-metric-title">Sales per bay</div>
+        <div class="diag-input-sub">Total category sales in the branch ÷ total POG bays allocated to the category. Measures how productively each shelf bay generates revenue.</div>
+        <div class="diag-metric-formula">Σ sales_exc_vat / total_bay</div>
+        <div class="diag-metric-weight">Weight: 30%</div>
+      </div>
+      <div class="diag-metric">
+        <div class="diag-metric-num">Metric 03</div>
+        <div class="diag-metric-title">Avg basket size</div>
+        <div class="diag-input-sub">Per customer per branch: total sales ÷ distinct transactions. Averaged across all customers. Indicates willingness to spend per shopping trip.</div>
+        <div class="diag-metric-formula">Σ sales / COUNT(doc_no)</div>
+        <div class="diag-metric-weight">Weight: 30%</div>
+      </div>
+    </div>
+
+    <!-- COMBINE ARROW -->
+    <div class="diag-combine">
+      <div class="diag-combine-line"></div>
+      <div class="diag-combine-center">Normalize each metric: value ÷ SUM(value) OVER() → then weight & sum</div>
+      <div class="diag-combine-line"></div>
+    </div>
+
+    <!-- SCORE FORMULA -->
+    <div class="diag-score" style="margin-bottom:10px">
+      <div class="diag-score-title">Composite score formula</div>
+      <div class="diag-score-formula">
+        score = (pct_premium / Σ pct_premium) × 0.4<br>
+              + (sales_per_bay / Σ sales_per_bay) × 0.3<br>
+              + (avg_basket / Σ avg_basket) × 0.3
+      </div>
+      <div class="diag-score-sub">All three signals are normalized to the same scale before weighting — so a store with extremely high sales/bay can't dominate just because of volume. Each metric contributes proportionally within its own distribution.</div>
+    </div>
+
+    <div style="text-align:center;font-size:18px;color:var(--text-3);padding:6px 0">↓</div>
+
+    <!-- OUTPUT -->
+    <div class="diag-output">
+      <div class="diag-output-title">Output — Branch ranking table</div>
+      <div class="diag-output-sub">One row per branch: composite score + individual signal values + DENSE_RANK() ordered by score descending. New stores (opened after [date threshold]) visible alongside existing stores for fair comparison. Category team uses this to prioritize planogram upgrades, range expansions, and premium promotion investment.</div>
+    </div>
+
+  </div>
+
+  <!-- SQL SECTIONS -->
+  <div class="sec-rule"><span class="sec-rule-label">SQL walkthrough</span><div class="sec-rule-line"></div></div>
+  <p class="prose">The query is one BigQuery SQL script structured as a chain of CTEs — each building a clean intermediate result that the next step consumes. Below each section is explained before the code.</p>
+
+  <!-- 01: Variables + filters -->
+  <div class="code-section">
+    <div class="cs-head"><span class="cs-num">01</span><span class="cs-title">Variables, product filter &amp; branch filter</span></div>
+    <p class="cs-desc">
+      Define the <strong>6-month analysis window</strong> in a single place so dates never need to be hardcoded elsewhere. Product filter targets active shampoo and conditioner SKUs only — discontinued statuses are excluded. A key technique here: <strong>ml is extracted from the material name using regex</strong> (<code>REGEXP_EXTRACT</code>) because pack size isn't stored as a separate column in the product master, but is always embedded in the name string (e.g. "Brand X Shampoo 400ml"). Branch filter excludes specific store formats and tags each store as new or old based on opening date.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">BigQuery SQL</span><button class="copy-btn" onclick="copyBlock(this,'s1')">Copy</button></div>
+      <pre id="s1"><span class="kw">WITH</span>
+
+<span class="cm">-- ── Date window ───────────────────────────────────────────</span>
+_var <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    <span class="fn">DATE</span>(<span class="str">'[START_DATE]'</span>) <span class="kw">AS</span> std,
+    <span class="fn">DATE</span>(<span class="str">'[END_DATE]'</span>)   <span class="kw">AS</span> endd
+),
+
+<span class="cm">-- ── Active shampoo + conditioner SKUs ─────────────────────</span>
+<span class="cm">-- ml extracted via regex — pack size lives in the name string</span>
+_product <span class="kw">AS</span> (
+  <span class="kw">SELECT DISTINCT</span>
+    barcode,
+    material_code,
+    material_name,
+    brand_name,
+    category_name,
+    <span class="fn">SAFE_CAST</span>(
+      <span class="fn">REGEXP_EXTRACT</span>(material_name, <span class="str">r'([0-9]+)ml'</span>)
+    <span class="kw">AS</span> INT64) <span class="kw">AS</span> ml     <span class="cm">-- e.g. "Brand X 400ml" → 400</span>
+
+  <span class="kw">FROM</span> <span class="str">`[project].[dataset].product_master`</span>
+  <span class="kw">WHERE</span>
+    category_name <span class="kw">IN</span> (<span class="str">'SHAMPOO'</span>, <span class="str">'CONDITIONER'</span>)
+    <span class="kw">AND</span> material_name <span class="kw">NOT LIKE</span> <span class="str">'%+%'</span>          <span class="cm">-- exclude bundle packs</span>
+    <span class="kw">AND</span> product_status <span class="kw">NOT IN</span> (<span class="str">'C'</span>,<span class="str">'CP'</span>,<span class="str">'CD'</span>,<span class="str">'D'</span>)  <span class="cm">-- exclude discontinued</span>
+),
+
+<span class="cm">-- ── Shampoo+conditioner barcodes only (for basket calc) ───</span>
+_shamp <span class="kw">AS</span> (
+  <span class="kw">SELECT DISTINCT</span> barcode
+  <span class="kw">FROM</span> <span class="str">`[project].[dataset].product_master`</span>
+  <span class="kw">WHERE</span>
+    category_name <span class="kw">IN</span> (<span class="str">'SHAMPOO'</span>, <span class="str">'CONDITIONER'</span>)
+    <span class="kw">AND</span> material_name <span class="kw">NOT LIKE</span> <span class="str">'%+%'</span>
+),
+
+<span class="cm">-- ── Branch master — tag new vs. existing stores ───────────</span>
+_branch <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    *,
+    <span class="kw">CASE WHEN</span> opening_date <span class="op">&gt;=</span> <span class="str">'[NEW_STORE_CUTOFF]'</span>
+         <span class="kw">THEN</span> <span class="str">'new'</span> <span class="kw">ELSE</span> <span class="str">'old'</span>
+    <span class="kw">END AS</span> new_store
+  <span class="kw">FROM</span> <span class="str">`[project].[dataset].branch_master`</span>
+  <span class="kw">WHERE</span> storetype <span class="kw">NOT IN</span> (<span class="str">'[Excluded Format]'</span>)
+),</pre>
+    </div>
+  </div>
+
+  <!-- 02: POG filter -->
+  <div class="code-section">
+    <div class="cs-head"><span class="cs-num">02</span><span class="cs-title">POG assortment — filter to urban stores, latest snapshot</span></div>
+    <p class="cs-desc">
+      The POG (planogram) master records which SKUs are assigned to which stores, and how many bays each store has allocated to the category. Two important filters are applied here: <strong>only the latest month's snapshot</strong> is used (pog_on_month), and <strong>standalone display units ("Stand") are excluded</strong> — those are temporary fixtures, not the main shelf, so including them would overcount bay space and distort the sales-per-bay metric.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">BigQuery SQL</span><button class="copy-btn" onclick="copyBlock(this,'s2')">Copy</button></div>
+      <pre id="s2">_pog <span class="kw">AS</span> (
+  <span class="kw">SELECT DISTINCT</span>
+    pog_category,
+    pog_name,
+    total_bay,
+    barcode,
+    <span class="kw">CASE</span>
+      <span class="kw">WHEN</span> pog_name <span class="kw">LIKE</span> <span class="str">'%Stand%'</span>  <span class="kw">THEN</span> <span class="str">'stand'</span>
+      <span class="kw">WHEN</span> pog_name <span class="kw">LIKE</span> <span class="str">'%[Urban Keyword]%'</span> <span class="kw">THEN</span> <span class="str">'urban'</span>
+      <span class="kw">ELSE</span> <span class="str">'other'</span>
+    <span class="kw">END AS</span> store_type,
+    branch_code
+
+  <span class="kw">FROM</span> <span class="str">`[project].[dataset].pog_master`</span>
+  <span class="kw">WHERE</span>
+    pog_category  <span class="op">=</span> <span class="str">'[Target Category]'</span>
+    <span class="kw">AND</span> pog_on_month <span class="op">=</span> <span class="str">'[LATEST_MONTH]'</span>
+
+  <span class="kw">GROUP BY ALL</span>
+  <span class="kw">HAVING</span> store_type <span class="op">&lt;&gt;</span> <span class="str">'stand'</span>   <span class="cm">-- exclude temporary display fixtures</span>
+),
+
+<span class="cm">-- ── Transaction base table ────────────────────────────────</span>
+_receipt <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    doc_date, doc_no, customer_code,
+    barcode, branch_code,
+    sales_exc_vat,
+    sales_exc_vat <span class="op">+</span> sales_vat <span class="kw">AS</span> sales,
+    sales_qty
+  <span class="kw">FROM</span> <span class="str">`[project].[dataset].transactions`</span>
+  <span class="kw">WHERE</span>
+    doc_date <span class="kw">BETWEEN</span> (<span class="kw">SELECT</span> std <span class="kw">FROM</span> _var) <span class="kw">AND</span> (<span class="kw">SELECT</span> endd <span class="kw">FROM</span> _var)
+    <span class="kw">AND</span> sales_qty     <span class="op">&lt;&gt;</span> <span class="num">0</span>
+    <span class="kw">AND</span> sales_exc_vat <span class="op">&lt;&gt;</span> <span class="num">0</span>
+),</pre>
+    </div>
+  </div>
+
+  <!-- 03: Premium customer signal -->
+  <div class="code-section">
+    <div class="cs-head"><span class="cs-num">03</span><span class="cs-title">Signal 1 — Premium customer penetration</span></div>
+    <p class="cs-desc">
+      This is the most analytically interesting signal. "Premium" is not defined by price tier alone — it's derived from each customer's <strong>spend-per-ml ratio</strong> across their category purchases. A customer who buys ฿200 for 400ml is paying ฿0.5/ml, exactly at the premium threshold. A customer who buys ฿80 for 400ml (฿0.2/ml) is buying mass-market. By computing this ratio per customer, the model identifies stores where shoppers are already demonstrating premium buying behavior — the strongest signal that premium range expansion will perform.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">BigQuery SQL</span><button class="copy-btn" onclick="copyBlock(this,'s3')">Copy</button></div>
+      <pre id="s3"><span class="cm">-- Step 1: compute spend-per-ml ratio per customer per branch</span>
+_premium_raw <span class="kw">AS</span> (
+  <span class="kw">SELECT DISTINCT</span>
+    g.branch_code,
+    customer_code,
+    <span class="fn">SUM</span>(sales) <span class="op">/</span> <span class="fn">SUM</span>(ml <span class="op">*</span> sales_qty) <span class="kw">AS</span> spend_per_ml
+                <span class="cm">-- e.g. 200 / (400 × 1) = 0.50 ฿/ml → premium</span>
+  <span class="kw">FROM</span>       _receipt  r
+  <span class="kw">INNER JOIN</span> _product  p <span class="kw">ON</span> r.barcode      <span class="op">=</span> p.barcode
+  <span class="kw">INNER JOIN</span> _pog      g <span class="kw">ON</span> r.branch_code  <span class="op">=</span> g.branch_code
+  <span class="kw">GROUP BY ALL</span>
+  <span class="kw">HAVING</span> spend_per_ml <span class="kw">IS NOT NULL</span>
+),
+
+<span class="cm">-- Step 2: classify each customer as premium or normal</span>
+_premium_classified <span class="kw">AS</span> (
+  <span class="kw">SELECT DISTINCT</span>
+    branch_code,
+    <span class="kw">CASE WHEN</span> spend_per_ml <span class="op">&gt;=</span> <span class="num">0.5</span> <span class="kw">THEN</span> <span class="str">'premium'</span> <span class="kw">ELSE</span> <span class="str">'normal'</span> <span class="kw">END AS</span> segment,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> customer_code) <span class="kw">AS</span> customer_count
+  <span class="kw">FROM</span> _premium_raw
+  <span class="kw">GROUP BY ALL</span>
+),
+
+<span class="cm">-- Step 3: compute % premium per branch</span>
+_premium_pct <span class="kw">AS</span> (
+  <span class="kw">SELECT DISTINCT</span>
+    branch_code,
+    customer_count <span class="op">/</span> <span class="fn">SUM</span>(customer_count) <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> branch_code) <span class="kw">AS</span> pct_premium
+  <span class="kw">FROM</span> _premium_classified
+  <span class="kw">WHERE</span> segment <span class="op">=</span> <span class="str">'premium'</span>   <span class="cm">-- keep only the premium row per branch</span>
+),</pre>
+    </div>
+  </div>
+
+  <!-- 04: Sales per bay -->
+  <div class="code-section">
+    <div class="cs-head"><span class="cs-num">04</span><span class="cs-title">Signal 2 — Category sales per shelf bay</span></div>
+    <p class="cs-desc">
+      Sales/bay measures how <strong>productively each store converts its allocated shelf space into revenue</strong>. The join here requires both the branch code AND barcode to match between the transaction and the POG — this ensures only sales of POG-assorted products are counted, preventing a store with high total sales (perhaps from promotions) from being credited with productivity on a shelf that isn't performing.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">BigQuery SQL</span><button class="copy-btn" onclick="copyBlock(this,'s4')">Copy</button></div>
+      <pre id="s4">_sales_per_bay <span class="kw">AS</span> (
+  <span class="kw">SELECT DISTINCT</span>
+    r.branch_code,
+    total_bay,
+    pog_name,
+    <span class="fn">SUM</span>(sales_exc_vat) <span class="op">/</span> total_bay <span class="kw">AS</span> sales_per_bay
+                <span class="cm">-- double join: branch AND barcode must match POG</span>
+  <span class="kw">FROM</span>       _receipt  r
+  <span class="kw">INNER JOIN</span> _pog      g <span class="kw">ON</span> r.branch_code <span class="op">=</span> g.branch_code
+                        <span class="kw">AND</span> r.barcode     <span class="op">=</span> g.barcode
+  <span class="kw">GROUP BY ALL</span>
+),</pre>
+    </div>
+  </div>
+
+  <!-- 05: Avg basket -->
+  <div class="code-section">
+    <div class="cs-head"><span class="cs-num">05</span><span class="cs-title">Signal 3 — Average basket size</span></div>
+    <p class="cs-desc">
+      Average basket size is computed at the customer level first (total category spend ÷ distinct transactions per customer), then averaged across all customers in the branch. Computing it this way — <strong>customer-average rather than a raw per-store average</strong> — prevents a small number of very high-spend customers from inflating the metric and misrepresenting the typical shopper experience in that store.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">BigQuery SQL</span><button class="copy-btn" onclick="copyBlock(this,'s5')">Copy</button></div>
+      <pre id="s5">_avg_basket <span class="kw">AS</span> (
+  <span class="kw">SELECT DISTINCT</span>
+    branch_code,
+    <span class="fn">AVG</span>(basket_per_customer) <span class="kw">AS</span> avg_basket
+  <span class="kw">FROM</span> (
+    <span class="cm">-- inner: basket size per customer per branch</span>
+    <span class="kw">SELECT</span>
+      r.branch_code,
+      r.customer_code,
+      <span class="fn">SUM</span>(sales) <span class="op">/</span> <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> doc_no) <span class="kw">AS</span> basket_per_customer
+
+    <span class="kw">FROM</span>       _receipt  r
+    <span class="kw">INNER JOIN</span> _branch   b <span class="kw">ON</span> r.branch_code <span class="op">=</span> b.branch_code
+    <span class="kw">INNER JOIN</span> _shamp    s <span class="kw">ON</span> r.barcode     <span class="op">=</span> s.barcode
+    <span class="kw">GROUP BY ALL</span>
+  )
+  <span class="kw">GROUP BY ALL</span>
+),</pre>
+    </div>
+  </div>
+
+  <!-- 06: Final scoring -->
+  <div class="code-section">
+    <div class="cs-head"><span class="cs-num">06</span><span class="cs-title">Final scoring — normalize, weight &amp; rank</span></div>
+    <p class="cs-desc">
+      The three signals are on completely different scales — a percentage, a sales figure, and a basket size. Combining them directly would let the largest numbers dominate. The solution: <strong>normalize each signal by dividing by its own SUM() OVER()</strong>, which converts every value to a proportion of the total across all branches. Each store's normalized score now represents its fair share of that metric. The weighted sum is then ranked using <code>DENSE_RANK()</code> so tied stores share the same rank position.
+    </p>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">BigQuery SQL</span><button class="copy-btn" onclick="copyBlock(this,'s6')">Copy</button></div>
+      <pre id="s6"><span class="cm">-- Assemble all three signals per branch, normalize, then score</span>
+_scored <span class="kw">AS</span> (
+  <span class="kw">SELECT DISTINCT</span>
+    b.branch_code,
+    b.new_store,
+    s.total_bay,
+    c.pct_premium                                           <span class="kw">AS</span> premium_cust_pct,
+    s.sales_per_bay,
+    z.avg_basket,
+
+    <span class="cm">-- Normalize each signal to its share of the total across all branches</span>
+    c.pct_premium  <span class="op">/</span> <span class="fn">SUM</span>(c.pct_premium)  <span class="kw">OVER</span>()             <span class="kw">AS</span> norm_premium,
+    s.sales_per_bay <span class="op">/</span> <span class="fn">SUM</span>(s.sales_per_bay) <span class="kw">OVER</span>()            <span class="kw">AS</span> norm_sales,
+    z.avg_basket    <span class="op">/</span> <span class="fn">SUM</span>(z.avg_basket)    <span class="kw">OVER</span>()            <span class="kw">AS</span> norm_basket
+
+  <span class="kw">FROM</span>       _branch        b
+  <span class="kw">INNER JOIN</span> _premium_pct   c <span class="kw">ON</span> b.branch_code <span class="op">=</span> c.branch_code
+  <span class="kw">INNER JOIN</span> _sales_per_bay s <span class="kw">ON</span> b.branch_code <span class="op">=</span> s.branch_code
+  <span class="kw">INNER JOIN</span> _avg_basket    z <span class="kw">ON</span> b.branch_code <span class="op">=</span> z.branch_code
+)
+
+<span class="cm">-- Final output: composite score + rank</span>
+<span class="kw">SELECT</span>
+  branch_code,
+  new_store,
+  total_bay,
+  premium_cust_pct,
+  sales_per_bay,
+  avg_basket,
+
+  <span class="cm">-- Weighted composite score (signals already normalized)</span>
+  norm_premium <span class="op">*</span> <span class="num">0.4</span>
+  <span class="op">+</span> norm_sales  <span class="op">*</span> <span class="num">0.3</span>
+  <span class="op">+</span> norm_basket <span class="op">*</span> <span class="num">0.3</span>                                        <span class="kw">AS</span> composite_score,
+
+  <span class="fn">DENSE_RANK</span>() <span class="kw">OVER</span> (
+    <span class="kw">ORDER BY</span>
+      norm_premium <span class="op">*</span> <span class="num">0.4</span>
+      <span class="op">+</span> norm_sales  <span class="op">*</span> <span class="num">0.3</span>
+      <span class="op">+</span> norm_basket <span class="op">*</span> <span class="num">0.3</span> <span class="kw">DESC</span>
+  )                                                           <span class="kw">AS</span> store_rank
+
+<span class="kw">FROM</span> _scored
+<span class="kw">ORDER BY</span> new_store, store_rank</pre>
+    </div>
+  </div>
+
+  <!-- BACK -->
+  <div class="back-row">
+    <a class="back-link" href="index.html">← Back to all projects</a>
+    <span style="font-size:12px;color:var(--text-3)">© 2026 Jiranuwat Noonduang</span>
+  </div>
+
+</div>
+
+<script>
+var root = document.documentElement;
+var btn  = document.querySelector('.theme-btn');
+var dark = localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+function applyTheme() {
+  dark ? root.setAttribute('data-theme','dark') : root.removeAttribute('data-theme');
+  btn.textContent = dark ? '\u2600' : '\u263e';
+  localStorage.setItem('theme', dark ? 'dark' : 'light');
+}
+function toggleTheme() { dark = !dark; applyTheme(); }
+applyTheme();
+
+function copyBlock(btn, id) {
+  navigator.clipboard.writeText(document.getElementById(id).innerText).then(function() {
+    btn.textContent = 'Copied!'; btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>
